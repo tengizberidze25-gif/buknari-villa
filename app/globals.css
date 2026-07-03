@@ -358,6 +358,155 @@ a {
   margin: 0;
 }
 
+/* ---------- Owner dashboard ---------- */
+
+.dashboard-page {
+  min-height: 100vh;
+}
+
+.dashboard-content {
+  padding-top: 48px;
+  padding-bottom: 80px;
+}
+
+.dashboard-title {
+  font-family: var(--serif);
+  font-size: 30px;
+  margin: 0 0 32px;
+}
+
+.dashboard-villa-section {
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  margin-bottom: 24px;
+  background: var(--bg-panel);
+}
+
+.dashboard-villa-title {
+  font-family: var(--serif);
+  font-size: 20px;
+  margin: 0 0 20px;
+  color: var(--sea-bright);
+}
+
+.dashboard-group {
+  margin-bottom: 22px;
+}
+
+.dashboard-group h3 {
+  font-size: 14px;
+  color: var(--sand-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 12px;
+}
+
+.dashboard-empty-hint {
+  color: var(--sand-dim);
+  font-size: 14px;
+  margin: 0 0 12px;
+}
+
+.booking-request-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.booking-request-dates {
+  color: var(--sea-bright);
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+.booking-request-message {
+  color: var(--sand-dim);
+  font-size: 13px;
+  margin: 8px 0 0;
+}
+
+.booking-request-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-confirm,
+.btn-decline,
+.btn-unblock {
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 9px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-confirm {
+  background: var(--sea-bright);
+  color: var(--bg);
+}
+
+.btn-decline {
+  background: none;
+  border: 1px solid var(--glass-border);
+  color: var(--foam);
+}
+
+.btn-unblock {
+  background: none;
+  border: 1px solid var(--glass-border);
+  color: var(--foam);
+}
+
+.booking-list-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--glass-border);
+  font-size: 14px;
+}
+
+.dashboard-block-form {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.dashboard-block-form input {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  padding: 9px 12px;
+  color: var(--foam);
+  font-family: var(--sans);
+  font-size: 13px;
+}
+
+.dashboard-block-form button {
+  background: var(--sand);
+  color: var(--bg);
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 9px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.dashboard-block-form button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 /* ---------- Booking calendar ---------- */
 
 .booking-box {
