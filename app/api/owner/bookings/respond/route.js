@@ -96,7 +96,7 @@ export async function POST(request) {
     if (action === 'confirm' && booking.guest_phone) {
       const normalized = normalizeSmsPhone(booking.guest_phone);
       if (normalized) {
-        sendSms(
+        await sendSms(
           normalized,
           `თქვენი ჯავშანი დადასტურდა! "${booking.villas.title}" — ${booking.check_in} → ${booking.check_out}. მადლობა, რომ ირჩევთ Buknari Villa-ს.`
         );
