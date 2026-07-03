@@ -20,6 +20,46 @@ function verifyToken(token, ownerId) {
   }
 }
 
+function normalizeSmsPhone(phone) {
+  let digits = String(phone || '').replace(/\D/g, '');
+  if (digits.indexOf('995') === 0) digits = digits.substring(3);
+  if (digits.length !== 9) return '';
+  return '995' + digits;
+}
+
+async function sendSms(phone, text) {
+  const publicKey = process.env.BULKSMS_PUBLIC_KEY;
+  const privateKey = process.env.BULKSMS_API_TOKEN;
+  const sender = process.env.BULKSMS_SENDER || 'BUKNARI';
+
+  const url =
+    'https://api.bulksms.ge/gateway/api/sms/v1/message/send?publicKey=' +
+    encodeURIComponent(publicKey);
+
+  try {
+    await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + privateKey,
+      },
+      body: JSON.stringify({
+        Text: text,
+        Purpose: 'INF',
+        Options: {
+          Originator: sender,
+          Encoding: 'UNICODE',
+          SmsType: 'SMS',
+          ReportLabel: 'Buknari Villa Booking',
+        },
+        Receivers: [{ Receiver: phone }],
+      }),
+    });
+  } catch (e) {
+    // Best-effort
+  }
+}
+
 export async function POST(request) {
   try {
     const { ownerId, token, bookingId, action } = await request.json();
@@ -34,7 +74,7 @@ export async function POST(request) {
     // Confirm this booking belongs to a villa owned by this owner
     const { data: booking } = await supabaseAdmin
       .from('villa_bookings')
-      .select('id, villa_id, villas!inner(owner_id)')
+      .select('id, villa_id, check_in, check_out, guest_phone, villas!inner(owner_id, title)')
       .eq('id', bookingId)
       .single();
 
@@ -51,6 +91,16 @@ export async function POST(request) {
 
     if (error) {
       return Response.json({ ok: false, message: 'განახლება ვერ მოხერხდა' }, { status: 500 });
+    }
+
+    if (action === 'confirm' && booking.guest_phone) {
+      const normalized = normalizeSmsPhone(booking.guest_phone);
+      if (normalized) {
+        sendSms(
+          normalized,
+          `თქვენი ჯავშანი დადასტურდა! "${booking.villas.title}" — ${booking.check_in} → ${booking.check_out}. მადლობა, რომ ირჩევთ Buknari Villa-ს.`
+        );
+      }
     }
 
     return Response.json({ ok: true });
