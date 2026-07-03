@@ -390,6 +390,7 @@ a {
   border-radius: var(--radius-lg);
   overflow: hidden;
   height: 460px;
+  position: relative;
 }
 
 .villa-gallery-main {
