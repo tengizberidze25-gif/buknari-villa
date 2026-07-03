@@ -762,3 +762,144 @@ a {
   border-radius: 100px;
   text-decoration: none;
 }
+
+/* ---------- Add villa form ---------- */
+
+.form-page {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 24px;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% 0%, rgba(63,98,89,0.2), transparent),
+    linear-gradient(180deg, #14160f 0%, #12130f 55%, #0d0e0a 100%);
+}
+
+.form-card {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 620px;
+  background: var(--glass-bg-strong);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: 44px 40px;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 30px 60px -20px rgba(0,0,0,0.6);
+}
+
+.form-card h1 {
+  font-family: var(--serif);
+  font-size: 30px;
+  font-weight: 600;
+  margin: 0 0 12px;
+  color: var(--foam);
+}
+
+.form-card form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 12px;
+}
+
+.form-row {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 18px;
+}
+
+.form-row label {
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--sea-bright);
+  margin-bottom: 6px;
+}
+
+.form-row input,
+.form-row textarea {
+  background: rgba(0,0,0,0.2);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  padding: 13px 16px;
+  color: var(--foam);
+  font-family: var(--sans);
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.2s ease;
+  resize: vertical;
+}
+
+.form-row input:focus,
+.form-row textarea:focus {
+  border-color: var(--sea-bright);
+}
+
+.form-row input[type='file'] {
+  padding: 10px;
+  font-size: 13px;
+  color: var(--sand);
+}
+
+.form-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.form-grid-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 18px;
+}
+
+.photo-preview-list {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.photo-preview {
+  font-size: 12px;
+  color: var(--sand-dim);
+  background: rgba(0,0,0,0.2);
+  padding: 6px 10px;
+  border-radius: 8px;
+}
+
+.form-card button[type='submit'] {
+  background: var(--accent);
+  border: none;
+  color: var(--foam);
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: 15px;
+  padding: 16px;
+  border-radius: 100px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  margin-top: 8px;
+}
+
+.form-card button[type='submit']:hover {
+  background: var(--accent-bright);
+}
+
+.form-card button[type='submit']:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 560px) {
+  .form-card {
+    padding: 32px 24px;
+  }
+  .form-grid-2,
+  .form-grid-3 {
+    grid-template-columns: 1fr;
+  }
+}
