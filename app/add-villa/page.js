@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { supabase } from '../../lib/supabase';
 
 export default function AddVillaPage() {
   const [ownerId, setOwnerId] = useState(null);
@@ -32,28 +33,64 @@ export default function AddVillaPage() {
     setLoading(true);
 
     const form = e.target;
-    const formData = new FormData();
-    formData.append('ownerId', ownerId);
-    formData.append('token', token);
-    formData.append('title', form.title.value);
-    formData.append('description', form.description.value);
-    formData.append('location_name', form.location_name.value);
-    formData.append('price_per_night', form.price_per_night.value);
-    formData.append('max_guests', form.max_guests.value);
-    formData.append('bedrooms', form.bedrooms.value);
-    formData.append('bathrooms', form.bathrooms.value);
-    formData.append('contact_phone', form.contact_phone.value);
-    formData.append('contact_whatsapp', form.contact_whatsapp.value);
-    photos.forEach((file) => formData.append('photos', file));
 
     try {
-      const res = await fetch('/api/add-villa', { method: 'POST', body: formData });
-      const data = await res.json();
-      if (!data.ok) {
-        setError(data.message || 'დაფიქსირდა შეცდომა');
-      } else {
-        setDone(true);
+      // 1) Create the villa row (small JSON payload — no photo bytes here,
+      // this avoids Vercel's ~4.5MB function body limit / 413 errors)
+      const createRes = await fetch('/api/add-villa', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ownerId,
+          token,
+          title: form.title.value,
+          description: form.description.value,
+          location_name: form.location_name.value,
+          price_per_night: form.price_per_night.value,
+          max_guests: form.max_guests.value,
+          bedrooms: form.bedrooms.value,
+          bathrooms: form.bathrooms.value,
+          contact_phone: form.contact_phone.value,
+          contact_whatsapp: form.contact_whatsapp.value,
+        }),
+      });
+      const createData = await createRes.json();
+      if (!createData.ok) {
+        setError(createData.message || 'დაფიქსირდა შეცდომა');
+        setLoading(false);
+        return;
       }
+
+      const villaId = createData.villaId;
+
+      // 2) Upload each photo directly from the browser to Supabase Storage,
+      // using a short-lived signed URL — the file bytes never pass through
+      // our Vercel function, so large iPhone photos (HEIC) won't hit the 413 limit.
+      for (let i = 0; i < photos.length; i++) {
+        const file = photos[i];
+
+        const urlRes = await fetch('/api/upload-url', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ownerId, token, villaId, filename: file.name, sortOrder: i }),
+        });
+        const urlData = await urlRes.json();
+        if (!urlData.ok) continue; // skip this photo, keep going with the rest
+
+        const { error: uploadError } = await supabase.storage
+          .from('villa-photos')
+          .uploadToSignedUrl(urlData.path, urlData.token, file);
+
+        if (uploadError) continue;
+
+        await fetch('/api/add-photo', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ownerId, token, villaId, path: urlData.path, sortOrder: i }),
+        });
+      }
+
+      setDone(true);
     } catch (err) {
       setError('კავშირის შეცდომა, სცადეთ თავიდან');
     }
