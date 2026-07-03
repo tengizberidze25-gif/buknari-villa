@@ -23,7 +23,7 @@ export default function AddVillaPage() {
   }, []);
 
   function handlePhotoChange(e) {
-    const files = Array.from(e.target.files || []).slice(0, 8);
+    const files = Array.from(e.target.files || []).slice(0, 20);
     setPhotos(files);
   }
 
