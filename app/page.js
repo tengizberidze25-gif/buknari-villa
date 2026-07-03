@@ -51,7 +51,7 @@ export default async function HomePage() {
         <div className="wrap hero-inner">
           <div className="eyebrow">შავი ზღვის სანაპირო · ბუკნარი</div>
           <h1>
-            შენი დასვენება <em>ბუკნარის</em><br />ზღვისპირას იწყება აქ
+            შენი დასვენება <em>ბუკნარის</em><br />სანაპიროზე<br />იწყება აქ
           </h1>
           <p className="hero-sub">
             ხელით შერჩეული ვილები და სახლები ბუკნარში — ზღვის ხედით,
