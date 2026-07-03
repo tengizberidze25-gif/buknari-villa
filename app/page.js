@@ -106,17 +106,8 @@ export default async function HomePage() {
             <div className="villa-grid">
               {villas.map((villa) => {
                 const photo = coverPhoto(villa);
-                const whatsapp = villa.contact_whatsapp
-                  ? `https://wa.me/${villa.contact_whatsapp.replace(/\D/g, '')}`
-                  : null;
                 return (
-                  <a
-                    href={whatsapp || '#'}
-                    target={whatsapp ? '_blank' : undefined}
-                    rel={whatsapp ? 'noopener noreferrer' : undefined}
-                    className="villa-card"
-                    key={villa.id}
-                  >
+                  <a href={`/villa/${villa.id}`} className="villa-card" key={villa.id}>
                     <div className="villa-photo">
                       <img src={photo || '/placeholder-villa.jpg'} alt={villa.title} />
                       <div className="villa-price-tag">
