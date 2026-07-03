@@ -1,166 +1,192 @@
-'use client';
+import { supabase } from '../lib/supabase';
 
-import { useState, useEffect } from 'react';
+export const revalidate = 30; // 30 წამში ერთხელ ახლდება (ISR)
 
-export default function AddVillaPage() {
-  const [ownerId, setOwnerId] = useState(null);
-  const [token, setToken] = useState(null);
-  const [photos, setPhotos] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [done, setDone] = useState(false);
+async function getVillas() {
+  const { data, error } = await supabase
+    .from('villas')
+    .select('*, villa_photos(url, sort_order)')
+    .eq('status', 'approved')
+    .eq('is_available', true)
+    .order('created_at', { ascending: false });
 
-  useEffect(() => {
-    const storedOwnerId = localStorage.getItem('buknari_owner_id');
-    const storedToken = localStorage.getItem('buknari_owner_token');
-    if (!storedOwnerId || !storedToken) {
-      window.location.href = '/register';
-      return;
-    }
-    setOwnerId(storedOwnerId);
-    setToken(storedToken);
-  }, []);
-
-  function handlePhotoChange(e) {
-    const files = Array.from(e.target.files || []).slice(0, 8);
-    setPhotos(files);
+  if (error) {
+    console.error('Supabase error:', error.message);
+    return [];
   }
+  return data || [];
+}
 
-  async function handleSubmit(e) {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
+function coverPhoto(villa) {
+  if (!villa.villa_photos || villa.villa_photos.length === 0) return null;
+  const sorted = [...villa.villa_photos].sort((a, b) => a.sort_order - b.sort_order);
+  return sorted[0].url;
+}
 
-    const form = e.target;
-    const formData = new FormData();
-    formData.append('ownerId', ownerId);
-    formData.append('token', token);
-    formData.append('title', form.title.value);
-    formData.append('description', form.description.value);
-    formData.append('location_name', form.location_name.value);
-    formData.append('price_per_night', form.price_per_night.value);
-    formData.append('max_guests', form.max_guests.value);
-    formData.append('bedrooms', form.bedrooms.value);
-    formData.append('bathrooms', form.bathrooms.value);
-    formData.append('contact_phone', form.contact_phone.value);
-    formData.append('contact_whatsapp', form.contact_whatsapp.value);
-    photos.forEach((file) => formData.append('photos', file));
-
-    try {
-      const res = await fetch('/api/add-villa', { method: 'POST', body: formData });
-      const data = await res.json();
-      if (!data.ok) {
-        setError(data.message || 'დაფიქსირდა შეცდომა');
-      } else {
-        setDone(true);
-      }
-    } catch (err) {
-      setError('კავშირის შეცდომა, სცადეთ თავიდან');
-    }
-    setLoading(false);
-  }
-
-  if (!ownerId) return null;
-
-  if (done) {
-    return (
-      <div className="auth-page">
-        <div className="auth-texture" />
-        <div className="auth-card">
-          <a href="/" className="auth-logo">
-            <img src="/logo-nav.png" alt="Buknari Villa" style={{ height: '34px', width: 'auto' }} />
-          </a>
-          <h1>განცხადება გაგზავნილია ✓</h1>
-          <p className="auth-sub">
-            თქვენი ვილა გადაეცა განხილვას. საიტზე გამოჩნდება დამტკიცების შემდეგ — ჩვეულებრივ 24 საათის განმავლობაში.
-          </p>
-          <a href="/" className="auth-cta">
-            მთავარ გვერდზე დაბრუნება →
-          </a>
-        </div>
-      </div>
-    );
-  }
+export default async function HomePage() {
+  const villas = await getVillas();
 
   return (
-    <div className="form-page">
-      <div className="auth-texture" />
-      <div className="form-card">
-        <a href="/" className="auth-logo">
-          <img src="/logo-nav.png" alt="Buknari Villa" style={{ height: '34px', width: 'auto' }} />
-        </a>
-        <h1>ვილის დამატება</h1>
-        <p className="auth-sub">შეავსეთ ინფორმაცია ქართულად — ტექსტი ავტომატურად ითარგმნება ინგლისურად და რუსულად.</p>
+    <main style={styles.main}>
+      <header style={styles.header}>
+        <div style={styles.headerInner}>
+          <span style={styles.logo}>ბუკნარი <span style={styles.logoAccent}>ვილა</span></span>
+          <nav style={styles.nav}>
+            <a href="#listings" style={styles.navLink}>განცხადებები</a>
+            <a href="/add" style={styles.navLinkCta}>დაამატე სახლი</a>
+          </nav>
+        </div>
+      </header>
 
-        <form onSubmit={handleSubmit}>
-          <div className="form-row">
-            <label>სათაური *</label>
-            <input name="title" type="text" placeholder="ზღვის ხედის ვილა, მეზონინით" required />
+      <section style={styles.hero}>
+        <h1 style={styles.heroTitle}>დაისვენე ბუკნარის ზღვის სანაპიროზე</h1>
+        <p style={styles.heroSubtitle}>
+          გაქირავებული სახლები და ვილები — პირდაპირ მფლობელისგან, WhatsApp-ით დაკავშირებით
+        </p>
+      </section>
+
+      <section id="listings" style={styles.listings}>
+        {villas.length === 0 ? (
+          <div style={styles.empty}>
+            <p style={styles.emptyTitle}>ჯერ არცერთი ვილა არ არის დამატებული</p>
+            <p style={styles.emptyText}>
+              როგორც კი მფლობელი დაარეგისტრირებს და ადმინი დაამტკიცებს განცხადებას, აქ გამოჩნდება.
+            </p>
           </div>
-
-          <div className="form-row">
-            <label>აღწერა</label>
-            <textarea name="description" rows={4} placeholder="აღწერეთ თქვენი ვილა — რამდენ ოთახს, რა ხედს, რა კომფორტს სთავაზობთ სტუმრებს" />
-          </div>
-
-          <div className="form-grid-2">
-            <div className="form-row">
-              <label>ლოკაცია</label>
-              <input name="location_name" type="text" placeholder="ბუკნარი, პირველი ხაზი" />
-            </div>
-            <div className="form-row">
-              <label>ფასი ღამეში (₾) *</label>
-              <input name="price_per_night" type="number" min="1" placeholder="200" required />
-            </div>
-          </div>
-
-          <div className="form-grid-3">
-            <div className="form-row">
-              <label>სტუმრები</label>
-              <input name="max_guests" type="number" min="1" placeholder="4" />
-            </div>
-            <div className="form-row">
-              <label>საძინებელი</label>
-              <input name="bedrooms" type="number" min="0" placeholder="2" />
-            </div>
-            <div className="form-row">
-              <label>სააბაზანო</label>
-              <input name="bathrooms" type="number" min="0" placeholder="1" />
-            </div>
-          </div>
-
-          <div className="form-grid-2">
-            <div className="form-row">
-              <label>საკონტაქტო ტელეფონი</label>
-              <input name="contact_phone" type="tel" placeholder="599 123 456" />
-            </div>
-            <div className="form-row">
-              <label>WhatsApp ნომერი</label>
-              <input name="contact_whatsapp" type="tel" placeholder="599 123 456" />
-            </div>
-          </div>
-
-          <div className="form-row">
-            <label>ფოტოები (მაქს. 8)</label>
-            <input type="file" accept="image/*" multiple onChange={handlePhotoChange} />
-            {photos.length > 0 && (
-              <div className="photo-preview-list">
-                {photos.map((file, i) => (
-                  <div className="photo-preview" key={i}>
-                    {file.name}
+        ) : (
+          <div style={styles.grid}>
+            {villas.map((villa) => {
+              const photo = coverPhoto(villa);
+              return (
+                <article key={villa.id} style={styles.card}>
+                  <div style={styles.cardImageWrap}>
+                    {photo ? (
+                      <img src={photo} alt={villa.title} style={styles.cardImage} />
+                    ) : (
+                      <div style={styles.cardImagePlaceholder}>ფოტო არ არის</div>
+                    )}
                   </div>
-                ))}
-              </div>
-            )}
+                  <div style={styles.cardBody}>
+                    <h3 style={styles.cardTitle}>{villa.title}</h3>
+                    <p style={styles.cardLocation}>{villa.location_name}</p>
+                    <div style={styles.cardMeta}>
+                      {villa.max_guests ? <span>{villa.max_guests} სტუმარი</span> : null}
+                      {villa.bedrooms ? <span> · {villa.bedrooms} საძინებელი</span> : null}
+                    </div>
+                    <div style={styles.cardFooter}>
+                      <span style={styles.price}>
+                        {villa.price_per_night ? `${villa.price_per_night} ₾ / ღამე` : 'ფასი შეთანხმებით'}
+                      </span>
+                      {villa.contact_whatsapp ? (
+                        <a
+                          href={`https://wa.me/${villa.contact_whatsapp.replace(/\D/g, '')}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={styles.whatsappBtn}
+                        >
+                          WhatsApp
+                        </a>
+                      ) : null}
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
           </div>
-
-          {error && <div className="auth-error">{error}</div>}
-
-          <button type="submit" disabled={loading}>
-            {loading ? 'იგზავნება...' : 'განცხადების გაგზავნა'}
-          </button>
-        </form>
-      </div>
-    </div>
+        )}
+      </section>
+    </main>
   );
 }
+
+const styles = {
+  main: {
+    minHeight: '100vh',
+    background: '#0f1210',
+    color: '#f2ede4',
+    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+  },
+  header: {
+    borderBottom: '1px solid rgba(255,255,255,0.08)',
+    position: 'sticky',
+    top: 0,
+    background: 'rgba(15,18,16,0.9)',
+    backdropFilter: 'blur(8px)',
+    zIndex: 10,
+  },
+  headerInner: {
+    maxWidth: 1200,
+    margin: '0 auto',
+    padding: '18px 24px',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  logo: { fontSize: 20, fontWeight: 600, letterSpacing: 0.5 },
+  logoAccent: { color: '#c9a86a' },
+  nav: { display: 'flex', gap: 24, alignItems: 'center' },
+  navLink: { color: '#cfc9bd', textDecoration: 'none', fontSize: 15 },
+  navLinkCta: {
+    color: '#0f1210',
+    background: '#c9a86a',
+    padding: '9px 18px',
+    borderRadius: 6,
+    textDecoration: 'none',
+    fontSize: 14,
+    fontWeight: 600,
+  },
+  hero: {
+    maxWidth: 800,
+    margin: '0 auto',
+    padding: '80px 24px 56px',
+    textAlign: 'center',
+  },
+  heroTitle: { fontSize: 40, fontWeight: 600, margin: 0, lineHeight: 1.25 },
+  heroSubtitle: { marginTop: 16, fontSize: 17, color: '#b7b0a2' },
+  listings: { maxWidth: 1200, margin: '0 auto', padding: '0 24px 80px' },
+  empty: {
+    textAlign: 'center',
+    padding: '80px 24px',
+    border: '1px dashed rgba(255,255,255,0.15)',
+    borderRadius: 12,
+  },
+  emptyTitle: { fontSize: 18, fontWeight: 600, marginBottom: 8 },
+  emptyText: { color: '#a9a296', fontSize: 15 },
+  grid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+    gap: 28,
+  },
+  card: {
+    background: '#171a17',
+    border: '1px solid rgba(255,255,255,0.06)',
+    borderRadius: 14,
+    overflow: 'hidden',
+  },
+  cardImageWrap: { aspectRatio: '4 / 3', background: '#20241f' },
+  cardImage: { width: '100%', height: '100%', objectFit: 'cover', display: 'block' },
+  cardImagePlaceholder: {
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    color: '#5c6058',
+    fontSize: 14,
+  },
+  cardBody: { padding: '16px 18px 18px' },
+  cardTitle: { fontSize: 17, fontWeight: 600, margin: '0 0 4px' },
+  cardLocation: { fontSize: 14, color: '#a9a296', margin: '0 0 8px' },
+  cardMeta: { fontSize: 13, color: '#8f9089', marginBottom: 14 },
+  cardFooter: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
+  price: { fontSize: 15, fontWeight: 600, color: '#c9a86a' },
+  whatsappBtn: {
+    background: '#25D366',
+    color: '#0f1210',
+    fontSize: 13,
+    fontWeight: 600,
+    padding: '7px 14px',
+    borderRadius: 6,
+    textDecoration: 'none',
+  },
+};
