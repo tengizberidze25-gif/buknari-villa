@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import { supabase } from '../../../lib/supabase';
 import Gallery from './Gallery';
+import BookingCalendar from './BookingCalendar';
 
 export const revalidate = 30;
 
@@ -85,6 +86,8 @@ export default async function VillaDetailPage({ params }) {
                 <p className="villa-detail-nocontact">საკონტაქტო ინფორმაცია მალე დაემატება</p>
               ) : null}
             </div>
+
+            <BookingCalendar villaId={villa.id} />
           </aside>
         </div>
       </main>
