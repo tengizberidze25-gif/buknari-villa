@@ -454,6 +454,24 @@ a {
   cursor: pointer;
 }
 
+.villa-gallery-all-btn {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  background: var(--foam);
+  color: var(--bg);
+  border: none;
+  border-radius: 999px;
+  padding: 10px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.villa-gallery-all-btn:hover {
+  background: var(--sand);
+}
+
 .villa-detail-grid {
   display: grid;
   grid-template-columns: 1fr 340px;
