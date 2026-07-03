@@ -110,7 +110,7 @@ export async function POST(request) {
       if (normalized) {
         await sendSms(
           normalized,
-          `ახალი ჯავშნის მოთხოვნა "${villa.title}" — ${checkIn} → ${checkOut}. სტუმარი: ${guestName}, ${guestPhone}. იხილეთ: buknarivilla.ge/dashboard`
+          `ახალი ჯავშნის მოთხოვნა "${villa.title}" — ${checkIn} → ${checkOut}. სტუმარი: ${guestName}, ${guestPhone}. იხილეთ: https://buknarivilla.ge/dashboard`
         );
       }
     }
