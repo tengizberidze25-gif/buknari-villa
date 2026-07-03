@@ -469,6 +469,8 @@ a {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
   padding: 10px 0;
   border-bottom: 1px solid var(--glass-border);
   font-size: 14px;
