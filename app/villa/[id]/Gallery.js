@@ -50,13 +50,11 @@ export default function Gallery({ photos, title }) {
                 <img src={url} alt={`${title} ${i + 2}`} />
               </button>
             ))}
-            {photos.length > 5 && (
-              <button className="villa-gallery-more" onClick={() => setOpenIndex(5)}>
-                +{photos.length - 5} ფოტო
-              </button>
-            )}
           </div>
         )}
+        <button className="villa-gallery-all-btn" onClick={() => setOpenIndex(0)}>
+          🖼 ყველა ფოტოს ნახვა · {photos.length}
+        </button>
       </div>
 
       {openIndex !== null && (
