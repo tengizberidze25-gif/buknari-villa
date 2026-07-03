@@ -60,8 +60,7 @@ export default function HomePage() {
     <>
       <nav className="nav">
         <a href="/" className="nav-logo">
-          <span className="nav-logo-mark">♥</span>
-          Buknari Villa
+          <img src="/logo-nav.png" alt="Buknari Villa" style={{ height: '38px', width: 'auto' }} />
         </a>
         <div className="nav-links">
           <a href="#listings">ვილები</a>
@@ -162,7 +161,7 @@ export default function HomePage() {
                 უფასოა, დამოწმება SMS-ით.
               </p>
             </div>
-            <a href="#" className="cta-btn">
+            <a href="/register" className="cta-btn">
               ვილის დამატება →
             </a>
           </div>
