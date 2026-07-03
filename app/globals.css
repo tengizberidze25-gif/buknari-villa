@@ -359,6 +359,14 @@ a {
 }
 
 /* ---------- Villa cards ---------- */
+.empty-state {
+  text-align: center;
+  padding: 64px 24px;
+  border: 1px dashed var(--glass-border);
+  border-radius: var(--radius-lg);
+  color: var(--text-muted, #a9a296);
+  font-size: 15px;
+}
 
 .villa-grid {
   display: grid;
