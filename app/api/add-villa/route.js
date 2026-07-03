@@ -54,30 +54,28 @@ async function translateText(text, targetLang) {
 
 export async function POST(request) {
   try {
-    const formData = await request.formData();
-
-    const ownerId = formData.get('ownerId');
-    const token = formData.get('token');
+    const body = await request.json();
+    const { ownerId, token } = body;
 
     if (!ownerId || !token || !verifyToken(token, ownerId)) {
       return Response.json({ ok: false, message: 'სესია ამოიწურა, გთხოვთ ხელახლა შეხვიდეთ' }, { status: 401 });
     }
 
-    const title = (formData.get('title') || '').toString().trim();
-    const description = (formData.get('description') || '').toString().trim();
-    const locationName = (formData.get('location_name') || '').toString().trim();
-    const pricePerNight = Number(formData.get('price_per_night')) || null;
-    const maxGuests = Number(formData.get('max_guests')) || null;
-    const bedrooms = Number(formData.get('bedrooms')) || null;
-    const bathrooms = Number(formData.get('bathrooms')) || null;
-    const contactPhone = (formData.get('contact_phone') || '').toString().trim();
-    const contactWhatsapp = (formData.get('contact_whatsapp') || '').toString().trim();
+    const title = (body.title || '').toString().trim();
+    const description = (body.description || '').toString().trim();
+    const locationName = (body.location_name || '').toString().trim();
+    const pricePerNight = Number(body.price_per_night) || null;
+    const maxGuests = Number(body.max_guests) || null;
+    const bedrooms = Number(body.bedrooms) || null;
+    const bathrooms = Number(body.bathrooms) || null;
+    const contactPhone = (body.contact_phone || '').toString().trim();
+    const contactWhatsapp = (body.contact_whatsapp || '').toString().trim();
 
     if (!title || !pricePerNight) {
       return Response.json({ ok: false, message: 'გთხოვთ შეავსოთ სავალდებულო ველები' }, { status: 400 });
     }
 
-    // Create the villa row first (status pending — admin must approve)
+    // Create the villa row (status pending — admin must approve)
     const { data: villa, error: villaError } = await supabaseAdmin
       .from('villas')
       .insert({
@@ -101,53 +99,26 @@ export async function POST(request) {
       return Response.json({ ok: false, message: 'ვილის შენახვა ვერ მოხერხდა' }, { status: 500 });
     }
 
-    // Upload photos
-    const photos = formData.getAll('photos');
-    let sortOrder = 0;
-
-    for (const photo of photos) {
-      if (!photo || typeof photo === 'string') continue;
-      const bytes = await photo.arrayBuffer();
-      const buffer = Buffer.from(bytes);
-      const ext = photo.name.split('.').pop() || 'jpg';
-      const path = `${villa.id}/${Date.now()}-${sortOrder}.${ext}`;
-
-      const { error: uploadError } = await supabaseAdmin.storage
-        .from('villa-photos')
-        .upload(path, buffer, { contentType: photo.type });
-
-      if (!uploadError) {
-        const { data: publicUrlData } = supabaseAdmin.storage
-          .from('villa-photos')
-          .getPublicUrl(path);
-
-        await supabaseAdmin.from('villa_photos').insert({
-          villa_id: villa.id,
-          url: publicUrlData.publicUrl,
-          sort_order: sortOrder,
-        });
-        sortOrder++;
-      }
-    }
-
     // Translate title + description (best effort, does not block success)
-    const [titleEn, titleRu, descEn, descRu] = await Promise.all([
-      translateText(title, 'en'),
-      translateText(title, 'ru'),
-      translateText(description, 'en'),
-      translateText(description, 'ru'),
-    ]);
-
-    await supabaseAdmin
-      .from('villas')
-      .update({
-        title_en: titleEn,
-        title_ru: titleRu,
-        description_en: descEn,
-        description_ru: descRu,
-        translation_status: titleEn || descEn ? 'done' : 'failed',
+    translateText(title, 'en')
+      .then(async (titleEn) => {
+        const [titleRu, descEn, descRu] = await Promise.all([
+          translateText(title, 'ru'),
+          translateText(description, 'en'),
+          translateText(description, 'ru'),
+        ]);
+        await supabaseAdmin
+          .from('villas')
+          .update({
+            title_en: titleEn,
+            title_ru: titleRu,
+            description_en: descEn,
+            description_ru: descRu,
+            translation_status: titleEn || descEn ? 'done' : 'failed',
+          })
+          .eq('id', villa.id);
       })
-      .eq('id', villa.id);
+      .catch(() => {});
 
     return Response.json({ ok: true, villaId: villa.id });
   } catch (err) {
