@@ -194,6 +194,9 @@ export default function DashboardPage() {
                     <div key={b.id} className="booking-list-row">
                       <span>{b.guest_name} · {b.guest_phone}</span>
                       <span>{fmt(b.check_in)} → {fmt(b.check_out)}</span>
+                      <button disabled={actingId === b.id} className="btn-unblock" onClick={() => unblock(b.id)}>
+                        გაუქმება
+                      </button>
                     </div>
                   ))}
                 </div>
