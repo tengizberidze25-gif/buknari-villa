@@ -1,10 +1,16 @@
 import { supabaseAdmin } from '../../../lib/supabaseAdmin';
+import crypto from 'crypto';
 
 function normalizeSmsPhone(phone) {
   let digits = String(phone || '').replace(/\D/g, '');
   if (digits.indexOf('995') === 0) digits = digits.substring(3);
   if (digits.length !== 9) return '';
   return '995' + digits;
+}
+
+function signBookingToken(bookingId) {
+  const secret = process.env.SESSION_SECRET;
+  return crypto.createHmac('sha256', secret).update(bookingId).digest('hex');
 }
 
 async function sendSms(phone, text) {
@@ -84,17 +90,21 @@ export async function POST(request) {
       return Response.json({ ok: false, message: 'სამწუხაროდ, ეს თარიღები უკვე დაკავებულია' }, { status: 409 });
     }
 
-    const { error } = await supabaseAdmin.from('villa_bookings').insert({
-      villa_id: villaId,
-      check_in: checkIn,
-      check_out: checkOut,
-      guest_name: guestName,
-      guest_phone: guestPhone,
-      guest_message: guestMessage,
-      status: 'pending',
-    });
+    const { data: inserted, error } = await supabaseAdmin
+      .from('villa_bookings')
+      .insert({
+        villa_id: villaId,
+        check_in: checkIn,
+        check_out: checkOut,
+        guest_name: guestName,
+        guest_phone: guestPhone,
+        guest_message: guestMessage,
+        status: 'pending',
+      })
+      .select()
+      .single();
 
-    if (error) {
+    if (error || !inserted) {
       return Response.json({ ok: false, message: 'მოთხოვნის გაგზავნა ვერ მოხერხდა' }, { status: 500 });
     }
 
@@ -115,11 +125,14 @@ export async function POST(request) {
       }
     }
 
+    // Confirm to the guest, with a self-service cancel link (no login needed)
     const normalizedGuest = normalizeSmsPhone(guestPhone);
     if (normalizedGuest) {
+      const cancelToken = signBookingToken(inserted.id);
+      const cancelUrl = `https://buknarivilla.ge/cancel/${inserted.id}?t=${cancelToken}`;
       await sendSms(
         normalizedGuest,
-        `თქვენი ჯავშნის მოთხოვნა მიღებულია — "${villa.title}", ${checkIn} → ${checkOut}. მფლობელი დაგიკავშირდებათ დასადასტურებლად.`
+        `თქვენი ჯავშნის მოთხოვნა მიღებულია — "${villa.title}", ${checkIn} → ${checkOut}. მფლობელი დაგიკავშირდებათ დასადასტურებლად. გაუქმება: ${cancelUrl}`
       );
     }
 
