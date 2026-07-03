@@ -1,5 +1,45 @@
 import { supabaseAdmin } from '../../../lib/supabaseAdmin';
 
+function normalizeSmsPhone(phone) {
+  let digits = String(phone || '').replace(/\D/g, '');
+  if (digits.indexOf('995') === 0) digits = digits.substring(3);
+  if (digits.length !== 9) return '';
+  return '995' + digits;
+}
+
+async function sendSms(phone, text) {
+  const publicKey = process.env.BULKSMS_PUBLIC_KEY;
+  const privateKey = process.env.BULKSMS_API_TOKEN;
+  const sender = process.env.BULKSMS_SENDER || 'BUKNARI';
+
+  const url =
+    'https://api.bulksms.ge/gateway/api/sms/v1/message/send?publicKey=' +
+    encodeURIComponent(publicKey);
+
+  try {
+    await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + privateKey,
+      },
+      body: JSON.stringify({
+        Text: text,
+        Purpose: 'INF',
+        Options: {
+          Originator: sender,
+          Encoding: 'UNICODE',
+          SmsType: 'SMS',
+          ReportLabel: 'Buknari Villa Booking',
+        },
+        Receivers: [{ Receiver: phone }],
+      }),
+    });
+  } catch (e) {
+    // Best-effort — booking already succeeded even if SMS fails
+  }
+}
+
 export async function POST(request) {
   try {
     const body = await request.json();
@@ -21,7 +61,7 @@ export async function POST(request) {
     // Confirm the villa exists and is approved
     const { data: villa } = await supabaseAdmin
       .from('villas')
-      .select('id, status')
+      .select('id, title, status, owner_id')
       .eq('id', villaId)
       .single();
 
@@ -56,6 +96,23 @@ export async function POST(request) {
 
     if (error) {
       return Response.json({ ok: false, message: 'მოთხოვნის გაგზავნა ვერ მოხერხდა' }, { status: 500 });
+    }
+
+    // Notify the owner by SMS (best-effort, doesn't block the response)
+    const { data: owner } = await supabaseAdmin
+      .from('owners')
+      .select('phone')
+      .eq('id', villa.owner_id)
+      .single();
+
+    if (owner?.phone) {
+      const normalized = normalizeSmsPhone(owner.phone);
+      if (normalized) {
+        sendSms(
+          normalized,
+          `ახალი ჯავშნის მოთხოვნა "${villa.title}" — ${checkIn} → ${checkOut}. სტუმარი: ${guestName}, ${guestPhone}. იხილეთ: buknarivilla.ge/dashboard`
+        );
+      }
     }
 
     return Response.json({ ok: true });
