@@ -108,7 +108,7 @@ export async function POST(request) {
     if (owner?.phone) {
       const normalized = normalizeSmsPhone(owner.phone);
       if (normalized) {
-        sendSms(
+        await sendSms(
           normalized,
           `ახალი ჯავშნის მოთხოვნა "${villa.title}" — ${checkIn} → ${checkOut}. სტუმარი: ${guestName}, ${guestPhone}. იხილეთ: buknarivilla.ge/dashboard`
         );
