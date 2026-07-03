@@ -37,10 +37,11 @@ export async function POST(request) {
       .eq('id', bookingId)
       .single();
 
-    if (!booking || booking.villas.owner_id !== ownerId || booking.status !== 'owner_block') {
+    if (!booking || booking.villas.owner_id !== ownerId) {
       return Response.json({ ok: false, message: 'წვდომა უარყოფილია' }, { status: 403 });
     }
 
+    // Any booking type can be released — manual blocks, confirmed reservations, or pending requests
     const { error } = await supabaseAdmin.from('villa_bookings').delete().eq('id', bookingId);
 
     if (error) {
