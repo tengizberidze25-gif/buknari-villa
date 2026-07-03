@@ -115,6 +115,14 @@ export async function POST(request) {
       }
     }
 
+    const normalizedGuest = normalizeSmsPhone(guestPhone);
+    if (normalizedGuest) {
+      await sendSms(
+        normalizedGuest,
+        `თქვენი ჯავშნის მოთხოვნა მიღებულია — "${villa.title}", ${checkIn} → ${checkOut}. მფლობელი დაგიკავშირდებათ დასადასტურებლად.`
+      );
+    }
+
     return Response.json({ ok: true });
   } catch (err) {
     return Response.json({ ok: false, message: String(err) }, { status: 500 });
