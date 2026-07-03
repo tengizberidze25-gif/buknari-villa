@@ -1,61 +1,31 @@
-const demoVillas = [
-  {
-    id: 1,
-    title: 'ზღვის ხედის ვილა, მეზონინით',
-    location: 'ბუკნარი, პირველი ხაზი',
-    price: 280,
-    guests: 6,
-    bedrooms: 3,
-    img: 'https://picsum.photos/seed/buknari-villa-1/900/700',
-  },
-  {
-    id: 2,
-    title: 'მუქი ხის კოტეჯი, კერძო ეზოთი',
-    location: 'ბუკნარი, ცენტრი',
-    price: 190,
-    guests: 4,
-    bedrooms: 2,
-    img: 'https://picsum.photos/seed/buknari-villa-2/900/700',
-  },
-  {
-    id: 3,
-    title: 'მინის ფასადის სახლი ზღვასთან',
-    location: 'ბუკნარი, სანაპირო',
-    price: 340,
-    guests: 8,
-    bedrooms: 4,
-    img: 'https://picsum.photos/seed/buknari-villa-3/900/700',
-  },
-  {
-    id: 4,
-    title: 'პატარა საოჯახო სახლი ბაღით',
-    location: 'ბუკნარი, ზემო უბანი',
-    price: 130,
-    guests: 3,
-    bedrooms: 1,
-    img: 'https://picsum.photos/seed/buknari-villa-4/900/700',
-  },
-  {
-    id: 5,
-    title: 'პანორამული ვილა აუზით',
-    location: 'ბუკნარი, პირველი ხაზი',
-    price: 420,
-    guests: 10,
-    bedrooms: 5,
-    img: 'https://picsum.photos/seed/buknari-villa-5/900/700',
-  },
-  {
-    id: 6,
-    title: 'მოდერნისტული სტუდიო ზღვასთან',
-    location: 'ბუკნარი, სანაპირო',
-    price: 150,
-    guests: 2,
-    bedrooms: 1,
-    img: 'https://picsum.photos/seed/buknari-villa-6/900/700',
-  },
-];
+import { supabase } from '../lib/supabase';
 
-export default function HomePage() {
+export const revalidate = 30; // 30 წამში ერთხელ ახლდება (ISR)
+
+async function getVillas() {
+  const { data, error } = await supabase
+    .from('villas')
+    .select('*, villa_photos(url, sort_order)')
+    .eq('status', 'approved')
+    .eq('is_available', true)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Supabase error:', error.message);
+    return [];
+  }
+  return data || [];
+}
+
+function coverPhoto(villa) {
+  if (!villa.villa_photos || villa.villa_photos.length === 0) return null;
+  const sorted = [...villa.villa_photos].sort((a, b) => a.sort_order - b.sort_order);
+  return sorted[0].url;
+}
+
+export default async function HomePage() {
+  const villas = await getVillas();
+
   return (
     <>
       <nav className="nav">
@@ -128,26 +98,44 @@ export default function HomePage() {
             <p>ყველა განცხადება პირადად არის შემოწმებული მფლობელის მიერ, დაკავშირება — პირდაპირ WhatsApp-ით.</p>
           </div>
 
-          <div className="villa-grid">
-            {demoVillas.map((villa) => (
-              <a href="#" className="villa-card" key={villa.id}>
-                <div className="villa-photo">
-                  <img src={villa.img} alt={villa.title} />
-                  <div className="villa-price-tag">
-                    <span>₾{villa.price}</span> / ღამე
-                  </div>
-                </div>
-                <div className="villa-body">
-                  <div className="villa-location">{villa.location}</div>
-                  <h3 className="villa-title">{villa.title}</h3>
-                  <div className="villa-meta">
-                    <span>👤 {villa.guests} სტუმარი</span>
-                    <span>🛏 {villa.bedrooms} საძინებელი</span>
-                  </div>
-                </div>
-              </a>
-            ))}
-          </div>
+          {villas.length === 0 ? (
+            <div className="empty-state">
+              <p>ჯერ არცერთი ვილა არ არის დამატებული — მალე გამოჩნდება პირველი განცხადებები.</p>
+            </div>
+          ) : (
+            <div className="villa-grid">
+              {villas.map((villa) => {
+                const photo = coverPhoto(villa);
+                const whatsapp = villa.contact_whatsapp
+                  ? `https://wa.me/${villa.contact_whatsapp.replace(/\D/g, '')}`
+                  : null;
+                return (
+                  <a
+                    href={whatsapp || '#'}
+                    target={whatsapp ? '_blank' : undefined}
+                    rel={whatsapp ? 'noopener noreferrer' : undefined}
+                    className="villa-card"
+                    key={villa.id}
+                  >
+                    <div className="villa-photo">
+                      <img src={photo || '/placeholder-villa.jpg'} alt={villa.title} />
+                      <div className="villa-price-tag">
+                        <span>₾{villa.price_per_night || '—'}</span> / ღამე
+                      </div>
+                    </div>
+                    <div className="villa-body">
+                      <div className="villa-location">{villa.location_name}</div>
+                      <h3 className="villa-title">{villa.title}</h3>
+                      <div className="villa-meta">
+                        {villa.max_guests ? <span>👤 {villa.max_guests} სტუმარი</span> : null}
+                        {villa.bedrooms ? <span>🛏 {villa.bedrooms} საძინებელი</span> : null}
+                      </div>
+                    </div>
+                  </a>
+                );
+              })}
+            </div>
+          )}
         </section>
 
         <div className="section-divider" />
