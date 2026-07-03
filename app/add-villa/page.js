@@ -114,6 +114,9 @@ export default function AddVillaPage() {
           <a href="/" className="auth-cta">
             მთავარ გვერდზე დაბრუნება →
           </a>
+          <a href="/dashboard" className="auth-cta" style={{ marginTop: '10px' }}>
+            ჯავშნების მართვა →
+          </a>
         </div>
       </div>
     );
@@ -178,7 +181,7 @@ export default function AddVillaPage() {
           </div>
 
           <div className="form-row">
-            <label>ფოტოები (მაქს. 8)</label>
+            <label>ფოტოები (მაქს. 20)</label>
             <input type="file" accept="image/*" multiple onChange={handlePhotoChange} />
             {photos.length > 0 && (
               <div className="photo-preview-list">
