@@ -967,6 +967,112 @@ a {
   color: var(--foam);
 }
 
+.villa-rating-badge {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  font-size: 13px;
+  color: var(--sand);
+}
+
+.villa-rating-score {
+  background: var(--sea-bright);
+  color: var(--bg);
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 18px;
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.villa-reviews-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.villa-review-item {
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  padding: 16px 18px;
+}
+
+.villa-review-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+  font-size: 13px;
+}
+
+.villa-review-score {
+  background: var(--glass-bg-strong);
+  color: var(--sea-bright);
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 6px;
+}
+
+.villa-review-name {
+  color: var(--foam);
+  font-weight: 600;
+}
+
+.villa-review-date {
+  color: var(--sand-dim);
+  margin-left: auto;
+}
+
+.villa-review-comment {
+  color: var(--sand);
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.review-score-picker {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.review-score-btn {
+  aspect-ratio: 1;
+  border: 1px solid var(--glass-border);
+  background: rgba(0, 0, 0, 0.2);
+  color: var(--sand);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.review-score-btn.active {
+  background: var(--sea-bright);
+  border-color: var(--sea-bright);
+  color: var(--bg);
+}
+
+.review-score-hint {
+  font-size: 13px;
+  color: var(--sand-dim);
+  margin: 0 0 18px;
+  text-align: center;
+}
+
+@media (max-width: 480px) {
+  .review-score-picker {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
 .villa-detail-meta {
   display: flex;
   gap: 20px;
@@ -1225,6 +1331,28 @@ a {
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--sand-dim);
+}
+
+.villa-location-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.villa-card-rating {
+  font-size: 11px;
+  color: var(--sea-bright);
+  white-space: nowrap;
+}
+
+.villa-card-rating span {
+  background: var(--sea-bright);
+  color: var(--bg);
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 5px;
+  margin-right: 4px;
 }
 
 .villa-title {
@@ -1494,6 +1622,25 @@ a {
   outline: none;
   margin-bottom: 18px;
   transition: border-color 0.2s ease;
+}
+
+.auth-card textarea {
+  background: rgba(0,0,0,0.2);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  color: var(--foam);
+  font-family: var(--sans);
+  font-size: 15px;
+  outline: none;
+  margin-bottom: 18px;
+  width: 100%;
+  resize: vertical;
+  transition: border-color 0.2s ease;
+}
+
+.auth-card textarea:focus {
+  border-color: var(--sea-bright);
 }
 
 .auth-card input:focus {
