@@ -1,6 +1,46 @@
 import { supabaseAdmin } from '../../../lib/supabaseAdmin';
 import crypto from 'crypto';
 
+function normalizeSmsPhone(phone) {
+  let digits = String(phone || '').replace(/\D/g, '');
+  if (digits.indexOf('995') === 0) digits = digits.substring(3);
+  if (digits.length !== 9) return '';
+  return '995' + digits;
+}
+
+async function sendSms(phone, text) {
+  const publicKey = process.env.BULKSMS_PUBLIC_KEY;
+  const privateKey = process.env.BULKSMS_API_TOKEN;
+  const sender = process.env.BULKSMS_SENDER || 'BUKNARI';
+
+  const url =
+    'https://api.bulksms.ge/gateway/api/sms/v1/message/send?publicKey=' +
+    encodeURIComponent(publicKey);
+
+  try {
+    await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + privateKey,
+      },
+      body: JSON.stringify({
+        Text: text,
+        Purpose: 'INF',
+        Options: {
+          Originator: sender,
+          Encoding: 'UNICODE',
+          SmsType: 'SMS',
+          ReportLabel: 'Buknari Villa Admin',
+        },
+        Receivers: [{ Receiver: phone }],
+      }),
+    });
+  } catch (e) {
+    // Best-effort
+  }
+}
+
 function verifyToken(token, ownerId) {
   try {
     const decoded = Buffer.from(token, 'base64').toString('utf-8');
@@ -101,6 +141,15 @@ export async function POST(request) {
 
     if (villaError || !villa) {
       return Response.json({ ok: false, message: 'ვილის შენახვა ვერ მოხერხდა' }, { status: 500 });
+    }
+
+    // Notify the admin by SMS that a new villa needs review (best-effort)
+    const adminPhone = normalizeSmsPhone(process.env.ADMIN_PHONE);
+    if (adminPhone) {
+      await sendSms(
+        adminPhone,
+        `ახალი ვილა დაემატა და ელოდება დამტკიცებას: "${title}" — ${locationName || '—'}, ₾${pricePerNight}/ღამე. იხილეთ: https://buknarivilla.ge/admin`
+      );
     }
 
     // Translate title + description (best effort, does not block success)
