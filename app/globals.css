@@ -278,6 +278,11 @@ a {
   background: var(--bg-panel);
 }
 
+.search-field input[type='date']::-webkit-calendar-picker-indicator {
+  filter: invert(0.9);
+  cursor: pointer;
+}
+
 .search-btn {
   background: var(--accent);
   border: none;
