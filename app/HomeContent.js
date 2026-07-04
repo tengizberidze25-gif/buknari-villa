@@ -1,9 +1,12 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import dynamic from 'next/dynamic';
 import { useLanguage } from './LanguageContext';
 import { t } from './i18n';
 import LangSwitch from './LangSwitch';
+
+const VillaMap = dynamic(() => import('./VillaMap'), { ssr: false });
 
 function coverPhoto(villa) {
   if (!villa.villa_photos || villa.villa_photos.length === 0) return null;
@@ -154,6 +157,18 @@ export default function HomeContent({ villas }) {
               })}
             </div>
           )}
+        </section>
+
+        <div className="section-divider" />
+
+        <section className="section" id="map">
+          <div className="section-head">
+            <div>
+              <div className="section-eyebrow">{tt('mapEyebrow')}</div>
+              <h2>{tt('mapTitle')}</h2>
+            </div>
+          </div>
+          <VillaMap villas={filteredVillas} villaTitle={villaTitle} lang={lang} />
         </section>
 
         <div className="section-divider" />
