@@ -955,6 +955,33 @@ a {
   white-space: pre-wrap;
 }
 
+.villa-amenities-title {
+  font-family: var(--serif);
+  font-size: 18px;
+  margin: 0 0 16px;
+  color: var(--foam);
+}
+
+.villa-amenities-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.villa-amenity-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--sand);
+}
+
+@media (max-width: 560px) {
+  .villa-amenities-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .villa-detail-sidebar {
   position: sticky;
   top: 100px;
@@ -1594,6 +1621,38 @@ a {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 18px;
+}
+
+.amenities-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.amenity-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--sand);
+  cursor: pointer;
+  font-weight: normal;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.amenity-checkbox input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--sea-bright);
+  cursor: pointer;
+}
+
+@media (max-width: 560px) {
+  .amenities-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .photo-preview-list {
