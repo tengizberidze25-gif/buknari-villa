@@ -4,6 +4,7 @@ import Gallery from './Gallery';
 import BookingCalendar from './BookingCalendar';
 import { AMENITIES } from '../../amenities';
 import VillaLocationMap from './VillaLocationMap';
+import { ratingLabel, averageRating } from '../../ratingLabel';
 
 export const revalidate = 30;
 
@@ -19,9 +20,21 @@ async function getVilla(id) {
   return data;
 }
 
+async function getReviews(villaId) {
+  const { data } = await supabase
+    .from('villa_reviews')
+    .select('*')
+    .eq('villa_id', villaId)
+    .order('created_at', { ascending: false });
+  return data || [];
+}
+
 export default async function VillaDetailPage({ params }) {
   const villa = await getVilla(params.id);
   if (!villa) notFound();
+
+  const reviews = await getReviews(villa.id);
+  const avgRating = averageRating(reviews);
 
   const photos = (villa.villa_photos || [])
     .sort((a, b) => a.sort_order - b.sort_order)
@@ -55,6 +68,17 @@ export default async function VillaDetailPage({ params }) {
             <div className="villa-detail-location">{villa.location_name}</div>
             <h1 className="villa-detail-title">{villa.title}</h1>
 
+            {avgRating ? (
+              <div className="villa-rating-badge">
+                <span className="villa-rating-score">{avgRating}</span>
+                <span>
+                  <strong>{ratingLabel(avgRating)}</strong>
+                  <br />
+                  {reviews.length} შეფასება
+                </span>
+              </div>
+            ) : null}
+
             <div className="villa-detail-meta">
               {villa.max_guests ? <span>👤 {villa.max_guests} სტუმარი</span> : null}
               {villa.bedrooms ? <span>🛏 {villa.bedrooms} საძინებელი</span> : null}
@@ -87,6 +111,27 @@ export default async function VillaDetailPage({ params }) {
                 <div className="section-divider" />
                 <h3 className="villa-amenities-title">მდებარეობა</h3>
                 <VillaLocationMap villa={villa} />
+              </>
+            ) : null}
+
+            {reviews.length > 0 ? (
+              <>
+                <div className="section-divider" />
+                <h3 className="villa-amenities-title">სტუმრების შეფასებები ({reviews.length})</h3>
+                <div className="villa-reviews-list">
+                  {reviews.map((r) => (
+                    <div key={r.id} className="villa-review-item">
+                      <div className="villa-review-header">
+                        <span className="villa-review-score">{r.rating}/10</span>
+                        <span className="villa-review-name">{r.guest_name || 'სტუმარი'}</span>
+                        <span className="villa-review-date">
+                          {new Date(r.created_at).toLocaleDateString('ka-GE', { year: 'numeric', month: 'long' })}
+                        </span>
+                      </div>
+                      {r.comment ? <p className="villa-review-comment">{r.comment}</p> : null}
+                    </div>
+                  ))}
+                </div>
               </>
             ) : null}
           </div>
