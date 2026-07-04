@@ -1,5 +1,6 @@
 import { supabase } from '../lib/supabase';
 import HomeContent from './HomeContent';
+import { averageRating } from './ratingLabel';
 
 export const revalidate = 30; // 30 წამში ერთხელ ახლდება (ISR)
 
@@ -15,7 +16,21 @@ async function getVillas() {
     console.error('Supabase error:', error.message);
     return [];
   }
-  return data || [];
+
+  const villas = data || [];
+
+  const { data: reviews } = await supabase.from('villa_reviews').select('villa_id, rating');
+  const byVilla = {};
+  (reviews || []).forEach((r) => {
+    if (!byVilla[r.villa_id]) byVilla[r.villa_id] = [];
+    byVilla[r.villa_id].push(r);
+  });
+
+  return villas.map((v) => ({
+    ...v,
+    avg_rating: averageRating(byVilla[v.id]),
+    review_count: byVilla[v.id]?.length || 0,
+  }));
 }
 
 export default async function HomePage() {
