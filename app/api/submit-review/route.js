@@ -7,6 +7,46 @@ function verifyBookingToken(bookingId, token) {
   return token === expected;
 }
 
+function normalizeSmsPhone(phone) {
+  let digits = String(phone || '').replace(/\D/g, '');
+  if (digits.indexOf('995') === 0) digits = digits.substring(3);
+  if (digits.length !== 9) return '';
+  return '995' + digits;
+}
+
+async function sendSms(phone, text) {
+  const publicKey = process.env.BULKSMS_PUBLIC_KEY;
+  const privateKey = process.env.BULKSMS_API_TOKEN;
+  const sender = process.env.BULKSMS_SENDER || 'BUKNARI';
+
+  const url =
+    'https://api.bulksms.ge/gateway/api/sms/v1/message/send?publicKey=' +
+    encodeURIComponent(publicKey);
+
+  try {
+    await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + privateKey,
+      },
+      body: JSON.stringify({
+        Text: text,
+        Purpose: 'INF',
+        Options: {
+          Originator: sender,
+          Encoding: 'UNICODE',
+          SmsType: 'SMS',
+          ReportLabel: 'Buknari Villa Review',
+        },
+        Receivers: [{ Receiver: phone }],
+      }),
+    });
+  } catch (e) {
+    // Best-effort
+  }
+}
+
 export async function POST(request) {
   try {
     const { bookingId, token, rating, comment } = await request.json();
@@ -22,7 +62,7 @@ export async function POST(request) {
 
     const { data: booking } = await supabaseAdmin
       .from('villa_bookings')
-      .select('id, villa_id, status, guest_name')
+      .select('id, villa_id, status, guest_name, villas(title, owner_id, owners(phone))')
       .eq('id', bookingId)
       .single();
 
@@ -50,6 +90,15 @@ export async function POST(request) {
 
     if (error) {
       return Response.json({ ok: false, message: 'შეფასების შენახვა ვერ მოხერხდა' }, { status: 500 });
+    }
+
+    const ownerPhone = normalizeSmsPhone(booking.villas?.owners?.phone);
+    if (ownerPhone) {
+      const commentPart = comment ? ` კომენტარი: "${comment}"` : '';
+      await sendSms(
+        ownerPhone,
+        `ახალი შეფასება "${booking.villas?.title || ''}"-ზე — ${ratingNum}/10 (${booking.guest_name || 'სტუმარი'}-სგან).${commentPart}`
+      );
     }
 
     return Response.json({ ok: true });
