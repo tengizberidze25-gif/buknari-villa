@@ -32,6 +32,8 @@ export const dict = {
     ctaSub: 'დაარეგისტრირე შენი ქონება რამდენიმე წუთში და დაიწყე სტუმრების მიღება. უფასოა, დამოწმება SMS-ით.',
     ctaBtn: 'ვილის დამატება →',
     footerMeta: '© 2026 buknarivilla.ge',
+    mapEyebrow: 'ყველა ვილა რუკაზე',
+    mapTitle: 'სად მდებარეობს ეს ვილები',
   },
   en: {
     navListings: 'Villas',
@@ -66,6 +68,8 @@ export const dict = {
     ctaSub: 'List your property in a few minutes and start welcoming guests. Free, verified by SMS.',
     ctaBtn: 'Add a villa →',
     footerMeta: '© 2026 buknarivilla.ge',
+    mapEyebrow: 'All villas on the map',
+    mapTitle: 'Where these villas are located',
   },
   ru: {
     navListings: 'Виллы',
@@ -100,6 +104,8 @@ export const dict = {
     ctaSub: 'Разместите объект за несколько минут и начните принимать гостей. Бесплатно, подтверждение по SMS.',
     ctaBtn: 'Добавить виллу →',
     footerMeta: '© 2026 buknarivilla.ge',
+    mapEyebrow: 'Все виллы на карте',
+    mapTitle: 'Где находятся эти виллы',
   },
 };
 
