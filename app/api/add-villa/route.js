@@ -110,8 +110,8 @@ export async function POST(request) {
     const maxGuests = Number(body.max_guests) || null;
     const bedrooms = Number(body.bedrooms) || null;
     const bathrooms = Number(body.bathrooms) || null;
+    const amenities = Array.isArray(body.amenities) ? body.amenities : [];
     const contactPhone = (body.contact_phone || '').toString().trim();
-    const contactWhatsapp = (body.contact_whatsapp || '').toString().trim();
 
     if (!title || !pricePerNight) {
       return Response.json({ ok: false, message: 'გთხოვთ შეავსოთ სავალდებულო ველები' }, { status: 400 });
@@ -131,6 +131,7 @@ export async function POST(request) {
         max_guests: maxGuests,
         bedrooms,
         bathrooms,
+        amenities,
         contact_phone: contactPhone,
         contact_whatsapp: contactWhatsapp,
         status: 'pending',
