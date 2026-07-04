@@ -60,7 +60,7 @@ export default function HomeContent({ villas }) {
         <div className="nav-links">
           <a href="#listings">{tt('navListings')}</a>
           <a href="#owner">{tt('navOwners')}</a>
-          <a href="/dashboard">{tt('navBookings')}</a>
+          <a href="/my-bookings">{tt('navBookings')}</a>
           <a href="#contact">{tt('navContact')}</a>
         </div>
         <LangSwitch />
@@ -187,9 +187,14 @@ export default function HomeContent({ villas }) {
               <h3>{tt('ctaTitle')}</h3>
               <p>{tt('ctaSub')}</p>
             </div>
-            <a href="/register" className="cta-btn">
-              {tt('ctaBtn')}
-            </a>
+            <div className="cta-actions">
+              <a href="/register" className="cta-btn">
+                {tt('ctaBtn')}
+              </a>
+              <a href="/dashboard" className="cta-secondary-link">
+                {tt('ownerLoginLink')}
+              </a>
+            </div>
           </div>
         </section>
       </main>
