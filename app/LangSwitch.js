@@ -3,10 +3,10 @@
 import { useLanguage } from './LanguageContext';
 
 const LANG_LABELS = {
-  ka: 'ქარ',
-  en: 'ENG',
-  ru: 'РУС',
-  hy: 'ՀԱՅ',
+  ka: '🇬🇪 ქარ',
+  en: '🇬🇧 ENG',
+  ru: '🇷🇺 РУС',
+  hy: '🇦🇲 ՀԱՅ',
 };
 
 export default function LangSwitch() {
