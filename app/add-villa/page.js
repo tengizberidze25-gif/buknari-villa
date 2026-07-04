@@ -47,6 +47,8 @@ export default function AddVillaPage() {
           description: form.description.value,
           location_name: form.location_name.value,
           price_per_night: form.price_per_night.value,
+          lat: form.lat.value,
+          lng: form.lng.value,
           max_guests: form.max_guests.value,
           bedrooms: form.bedrooms.value,
           bathrooms: form.bathrooms.value,
@@ -151,6 +153,21 @@ export default function AddVillaPage() {
             <div className="form-row">
               <label>ფასი ღამეში (₾) *</label>
               <input name="price_per_night" type="number" min="1" placeholder="200" required />
+            </div>
+          </div>
+
+          <div className="form-row">
+            <label>ვილის ადგილმდებარეობა რუკაზე (არასავალდებულო)</label>
+            <p className="form-hint">
+              გახსენი{' '}
+              <a href="https://www.google.com/maps" target="_blank" rel="noopener noreferrer">
+                Google Maps
+              </a>
+              , იპოვე შენი ვილის ადგილი, დააჭირე მარჯვენა ღილაკს ზუსტ წერტილზე და დააკოპირე გამოსული კოორდინატები (მაგ. 41.7180, 41.7550) — ჩააკოპირე ორივე ველში.
+            </p>
+            <div className="form-grid-2">
+              <input name="lat" type="number" step="any" placeholder="Latitude, მაგ. 41.7180" />
+              <input name="lng" type="number" step="any" placeholder="Longitude, მაგ. 41.7550" />
             </div>
           </div>
 
