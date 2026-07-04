@@ -644,6 +644,94 @@ a {
   cursor: not-allowed;
 }
 
+.guest-logout-link {
+  background: none;
+  border: 1px solid var(--glass-border);
+  color: var(--sand);
+  font-family: var(--sans);
+  font-size: 13px;
+  padding: 9px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.guest-logout-link:hover {
+  border-color: var(--sea-bright);
+  color: var(--sea-bright);
+}
+
+.guest-bookings-phone {
+  color: var(--sand-dim);
+  font-size: 14px;
+  margin: -20px 0 28px;
+}
+
+.guest-booking-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: 20px 24px;
+  margin-bottom: 14px;
+  background: var(--bg-panel);
+  flex-wrap: wrap;
+}
+
+.guest-booking-title {
+  font-family: var(--serif);
+  font-size: 18px;
+  color: var(--foam);
+  text-decoration: none;
+}
+
+.guest-booking-title:hover {
+  color: var(--sea-bright);
+}
+
+.guest-booking-location {
+  color: var(--sand-dim);
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.guest-booking-dates {
+  color: var(--sea-bright);
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+.guest-booking-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.guest-booking-status {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.guest-booking-status-pending {
+  background: rgba(203, 191, 164, 0.15);
+  color: var(--sand);
+}
+
+.guest-booking-status-confirmed {
+  background: rgba(111, 168, 154, 0.2);
+  color: var(--sea-bright);
+}
+
+.guest-booking-status-declined {
+  background: rgba(163, 53, 47, 0.2);
+  color: var(--accent-bright);
+}
+
 /* ---------- Booking calendar ---------- */
 
 .booking-box {
@@ -1462,6 +1550,25 @@ a {
 
 .cta-btn:hover {
   transform: scale(1.04);
+}
+
+.cta-actions {
+  position: relative;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.cta-secondary-link {
+  color: var(--sand-dim);
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.cta-secondary-link:hover {
+  color: var(--sea-bright);
 }
 
 /* ---------- Footer ---------- */
