@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import { supabase } from '../../../lib/supabase';
 import Gallery from './Gallery';
 import BookingCalendar from './BookingCalendar';
+import { AMENITIES } from '../../amenities';
 
 export const revalidate = 30;
 
@@ -63,6 +64,20 @@ export default async function VillaDetailPage({ params }) {
               <>
                 <div className="section-divider" />
                 <p className="villa-detail-description">{villa.description}</p>
+              </>
+            ) : null}
+
+            {villa.amenities && villa.amenities.length > 0 ? (
+              <>
+                <div className="section-divider" />
+                <h3 className="villa-amenities-title">კეთილმოწყობა</h3>
+                <div className="villa-amenities-grid">
+                  {AMENITIES.filter((a) => villa.amenities.includes(a.key)).map((a) => (
+                    <div key={a.key} className="villa-amenity-item">
+                      <span>{a.icon}</span> {a.label}
+                    </div>
+                  ))}
+                </div>
               </>
             ) : null}
           </div>
