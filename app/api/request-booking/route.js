@@ -82,24 +82,6 @@ export async function POST(request) {
     }
 
     await supabaseAdmin.from('security_attempts').insert({ key: `booking:${normalizedForLimit}` });
-    // Rate limit: max 3 booking requests per phone number per hour —
-    // prevents calendar-squatting spam and SMS-cost abuse
-    const normalizedForLimit = guestPhone.replace(/\D/g, '');
-    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
-    const { data: recentAttempts } = await supabaseAdmin
-      .from('security_attempts')
-      .select('id')
-      .eq('key', `booking:${normalizedForLimit}`)
-      .gte('created_at', oneHourAgo);
-
-    if (recentAttempts && recentAttempts.length >= 3) {
-      return Response.json(
-        { ok: false, message: 'ძალიან ბევრი მოთხოვნა ამ ნომრიდან, სცადეთ მოგვიანებით' },
-        { status: 429 }
-      );
-    }
-
-    await supabaseAdmin.from('security_attempts').insert({ key: `booking:${normalizedForLimit}` });
 
     // Confirm the villa exists and is approved
     const { data: villa } = await supabaseAdmin
