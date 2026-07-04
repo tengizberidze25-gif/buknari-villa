@@ -1,4 +1,5 @@
 import './globals.css';
+import { LanguageProvider } from './LanguageContext';
 
 export const metadata = {
   title: 'Buknari Villa — ვილების და სახლების გაქირავება ბუკნარში',
@@ -16,7 +17,9 @@ export default function RootLayout({ children }) {
           rel="stylesheet"
         />
       </head>
-      <body>{children}</body>
+      <body>
+        <LanguageProvider>{children}</LanguageProvider>
+      </body>
     </html>
   );
 }
