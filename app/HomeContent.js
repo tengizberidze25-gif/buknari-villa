@@ -61,8 +61,8 @@ export default function HomeContent({ villas }) {
           <a href="#owner">{tt('navOwners')}</a>
           <a href="/dashboard">{tt('navBookings')}</a>
           <a href="#contact">{tt('navContact')}</a>
-          <LangSwitch />
         </div>
+        <LangSwitch />
       </nav>
 
       <header className="hero">
