@@ -34,7 +34,7 @@ export default async function VillaDetailPage({ params }) {
     <>
       <nav className="nav">
         <a href="/" className="nav-logo">
-          <img src="/logo-nav.png" alt="Buknari Villa" style={{ height: '38px', width: 'auto' }} />
+          <img src="/logo-nav.png" alt="Buknari Villa" style={{ height: '56px', width: 'auto' }} />
         </a>
         <div className="nav-links">
           <a href="/#listings">ვილები</a>
