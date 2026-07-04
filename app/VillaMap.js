@@ -1,6 +1,6 @@
 'use client';
 
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, LayersControl } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -17,6 +17,12 @@ const markerIcon = new L.Icon({
 });
 
 const BUKNARI_CENTER = [41.718, 41.755];
+
+function coverPhoto(villa) {
+  if (!villa.villa_photos || villa.villa_photos.length === 0) return null;
+  const sorted = [...villa.villa_photos].sort((a, b) => a.sort_order - b.sort_order);
+  return sorted[0].url;
+}
 
 export default function VillaMap({ villas, villaTitle, lang }) {
   const withCoords = villas.filter((v) => v.lat && v.lng);
@@ -36,23 +42,37 @@ export default function VillaMap({ villas, villaTitle, lang }) {
   return (
     <div className="villa-map-wrap">
       <MapContainer center={center} zoom={13} scrollWheelZoom={false} style={{ height: '480px', width: '100%' }}>
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
-        {withCoords.map((villa) => (
-          <Marker key={villa.id} position={[Number(villa.lat), Number(villa.lng)]} icon={markerIcon}>
-            <Popup>
-              <strong>{villaTitle ? villaTitle(villa, lang) : villa.title}</strong>
-              <br />
-              {villa.location_name}
-              <br />
-              ₾{villa.price_per_night} / ღამე
-              <br />
-              <a href={`/villa/${villa.id}`}>ნახვა →</a>
-            </Popup>
-          </Marker>
-        ))}
+        <LayersControl position="topright">
+          <LayersControl.BaseLayer checked name="სატელიტი">
+            <TileLayer
+              attribution='Imagery &copy; Esri'
+              url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+              maxZoom={19}
+            />
+          </LayersControl.BaseLayer>
+          <LayersControl.BaseLayer name="რუკა">
+            <TileLayer
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+          </LayersControl.BaseLayer>
+        </LayersControl>
+        {withCoords.map((villa) => {
+          const photo = coverPhoto(villa);
+          return (
+            <Marker key={villa.id} position={[Number(villa.lat), Number(villa.lng)]} icon={markerIcon}>
+              <Popup>
+                <div className="villa-map-popup">
+                  {photo && <img src={photo} alt="" className="villa-map-popup-photo" />}
+                  <strong>{villaTitle ? villaTitle(villa, lang) : villa.title}</strong>
+                  <div>{villa.location_name}</div>
+                  <div className="villa-map-popup-price">₾{villa.price_per_night} / ღამე</div>
+                  <a href={`/villa/${villa.id}`}>ნახვა →</a>
+                </div>
+              </Popup>
+            </Marker>
+          );
+        })}
       </MapContainer>
     </div>
   );
