@@ -3,6 +3,7 @@ import { supabase } from '../../../lib/supabase';
 import Gallery from './Gallery';
 import BookingCalendar from './BookingCalendar';
 import { AMENITIES } from '../../amenities';
+import VillaLocationMap from './VillaLocationMap';
 
 export const revalidate = 30;
 
@@ -78,6 +79,14 @@ export default async function VillaDetailPage({ params }) {
                     </div>
                   ))}
                 </div>
+              </>
+            ) : null}
+
+            {villa.lat && villa.lng ? (
+              <>
+                <div className="section-divider" />
+                <h3 className="villa-amenities-title">მდებარეობა</h3>
+                <VillaLocationMap villa={villa} />
               </>
             ) : null}
           </div>
