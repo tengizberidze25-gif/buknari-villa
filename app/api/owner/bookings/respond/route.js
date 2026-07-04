@@ -96,12 +96,9 @@ export async function POST(request) {
     if (action === 'confirm' && booking.guest_phone) {
       const normalized = normalizeSmsPhone(booking.guest_phone);
       if (normalized) {
-        const secret = process.env.SESSION_SECRET;
-        const reviewToken = crypto.createHmac('sha256', secret).update(booking.id).digest('hex');
-        const reviewUrl = `https://buknarivilla.ge/review/${booking.id}?t=${reviewToken}`;
         await sendSms(
           normalized,
-          `თქვენი ჯავშანი დადასტურდა! "${booking.villas.title}" — ${booking.check_in} → ${booking.check_out}. მადლობა, რომ ირჩევთ Buknari Villa-ს. დასვენების შემდეგ დაგვიტოვეთ შეფასება: ${reviewUrl}`
+          `თქვენი ჯავშანი დადასტურდა! "${booking.villas.title}" — ${booking.check_in} → ${booking.check_out}. მადლობა, რომ ირჩევთ Buknari Villa-ს.`
         );
       }
     }
