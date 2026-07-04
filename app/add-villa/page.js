@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
+import { AMENITIES } from '../amenities';
 
 export default function AddVillaPage() {
   const [ownerId, setOwnerId] = useState(null);
@@ -33,6 +34,9 @@ export default function AddVillaPage() {
     setLoading(true);
 
     const form = e.target;
+    const selectedAmenities = Array.from(form.querySelectorAll('input[name="amenities"]:checked')).map(
+      (el) => el.value
+    );
 
     try {
       // 1) Create the villa row (small JSON payload — no photo bytes here,
@@ -52,6 +56,7 @@ export default function AddVillaPage() {
           max_guests: form.max_guests.value,
           bedrooms: form.bedrooms.value,
           bathrooms: form.bathrooms.value,
+          amenities: selectedAmenities,
           contact_phone: form.contact_phone.value,
           contact_whatsapp: form.contact_whatsapp.value,
         }),
@@ -183,6 +188,18 @@ export default function AddVillaPage() {
             <div className="form-row">
               <label>სააბაზანო</label>
               <input name="bathrooms" type="number" min="0" placeholder="1" />
+            </div>
+          </div>
+
+          <div className="form-row">
+            <label>კეთილმოწყობა</label>
+            <div className="amenities-grid">
+              {AMENITIES.map((a) => (
+                <label key={a.key} className="amenity-checkbox">
+                  <input type="checkbox" name="amenities" value={a.key} />
+                  <span>{a.icon} {a.label}</span>
+                </label>
+              ))}
             </div>
           </div>
 
