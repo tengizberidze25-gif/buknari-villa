@@ -138,6 +138,33 @@ a {
   color: var(--bg);
 }
 
+.lang-select {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  color: var(--foam);
+  font-family: var(--sans);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  padding: 8px 12px;
+  border-radius: 100px;
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+  outline: none;
+  flex-shrink: 0;
+}
+
+.lang-select option {
+  background: var(--bg-panel);
+  color: var(--foam);
+}
+
+@media (max-width: 620px) {
+  .lang-select {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+}
+
 /* ---------- Hero ---------- */
 
 .hero {
@@ -1344,6 +1371,10 @@ a {
   }
   .nav-links {
     display: none;
+  }
+
+  .hero-inner {
+    padding-top: 150px;
   }
   .villa-grid {
     grid-template-columns: 1fr;
