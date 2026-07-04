@@ -60,7 +60,7 @@ export default function RegisterPage() {
       <div className="auth-texture" />
       <div className="auth-card">
         <a href="/" className="auth-logo">
-          <img src="/logo-nav.png" alt="Buknari Villa" style={{ height: '34px', width: 'auto' }} />
+          <img src="/logo-nav.png" alt="Buknari Villa" style={{ height: '56px', width: 'auto' }} />
         </a>
 
         {step === 'phone' && (
