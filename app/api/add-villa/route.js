@@ -64,7 +64,8 @@ async function translateText(text, targetLang) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey || !text) return null;
 
-  const langName = targetLang === 'en' ? 'English' : 'Russian';
+  const langNames = { en: 'English', ru: 'Russian', hy: 'Armenian' };
+  const langName = langNames[targetLang] || 'English';
 
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
@@ -156,18 +157,22 @@ export async function POST(request) {
     // Translate title + description (best effort, does not block success)
     translateText(title, 'en')
       .then(async (titleEn) => {
-        const [titleRu, descEn, descRu] = await Promise.all([
+        const [titleRu, titleHy, descEn, descRu, descHy] = await Promise.all([
           translateText(title, 'ru'),
+          translateText(title, 'hy'),
           translateText(description, 'en'),
           translateText(description, 'ru'),
+          translateText(description, 'hy'),
         ]);
         await supabaseAdmin
           .from('villas')
           .update({
             title_en: titleEn,
             title_ru: titleRu,
+            title_hy: titleHy,
             description_en: descEn,
             description_ru: descRu,
+            description_hy: descHy,
             translation_status: titleEn || descEn ? 'done' : 'failed',
           })
           .eq('id', villa.id);
