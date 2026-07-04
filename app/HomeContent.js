@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useMemo } from 'react';
 import { useLanguage } from './LanguageContext';
 import { t } from './i18n';
 import LangSwitch from './LangSwitch';
@@ -16,9 +17,35 @@ function villaTitle(villa, lang) {
   return villa.title;
 }
 
+function matchesLocation(villa, filter) {
+  if (filter === 'all') return true;
+  const loc = (villa.location_name || '').toLowerCase();
+  if (filter === 'firstline') return loc.includes('პირველი') || loc.includes('ზღვასთან') || loc.includes('ზღვის');
+  if (filter === 'center') return loc.includes('ცენტრ');
+  return true;
+}
+
 export default function HomeContent({ villas }) {
   const { lang } = useLanguage();
   const tt = (key) => t(lang, key);
+
+  const [locationFilter, setLocationFilter] = useState('all');
+  const [guestsFilter, setGuestsFilter] = useState('2');
+  const [checkInDate, setCheckInDate] = useState('');
+
+  const filteredVillas = useMemo(() => {
+    const minGuests = Number(guestsFilter.replace('+', ''));
+    return villas.filter((villa) => {
+      const locOk = matchesLocation(villa, locationFilter);
+      const guestsOk = !villa.max_guests || villa.max_guests >= minGuests;
+      return locOk && guestsOk;
+    });
+  }, [villas, locationFilter, guestsFilter]);
+
+  function scrollToListings(e) {
+    e.preventDefault();
+    document.getElementById('listings')?.scrollIntoView({ behavior: 'smooth' });
+  }
 
   return (
     <>
@@ -52,7 +79,7 @@ export default function HomeContent({ villas }) {
           <div className="search-panel">
             <div className="search-field">
               <label>{tt('searchLocationLabel')}</label>
-              <select defaultValue="all">
+              <select value={locationFilter} onChange={(e) => setLocationFilter(e.target.value)}>
                 <option value="all">{tt('searchLocationAll')}</option>
                 <option value="firstline">{tt('searchLocationFirstline')}</option>
                 <option value="center">{tt('searchLocationCenter')}</option>
@@ -60,7 +87,7 @@ export default function HomeContent({ villas }) {
             </div>
             <div className="search-field">
               <label>{tt('searchGuestsLabel')}</label>
-              <select defaultValue="2">
+              <select value={guestsFilter} onChange={(e) => setGuestsFilter(e.target.value)}>
                 <option value="2">2 {tt('guestsLabel')}</option>
                 <option value="4">4 {tt('guestsLabel')}</option>
                 <option value="6">6+ {tt('guestsLabel')}</option>
@@ -68,9 +95,16 @@ export default function HomeContent({ villas }) {
             </div>
             <div className="search-field">
               <label>{tt('searchDateLabel')}</label>
-              <input type="text" placeholder={tt('searchDatePlaceholder')} />
+              <input
+                type="date"
+                min={new Date().toISOString().slice(0, 10)}
+                value={checkInDate}
+                onChange={(e) => setCheckInDate(e.target.value)}
+              />
             </div>
-            <button className="search-btn">{tt('searchBtn')}</button>
+            <button className="search-btn" onClick={scrollToListings}>
+              {tt('searchBtn')}
+            </button>
           </div>
         </div>
 
@@ -90,13 +124,13 @@ export default function HomeContent({ villas }) {
             <p>{tt('sectionSub')}</p>
           </div>
 
-          {villas.length === 0 ? (
+          {filteredVillas.length === 0 ? (
             <div className="empty-state">
-              <p>{tt('emptyState')}</p>
+              <p>{villas.length === 0 ? tt('emptyState') : tt('noResults')}</p>
             </div>
           ) : (
             <div className="villa-grid">
-              {villas.map((villa) => {
+              {filteredVillas.map((villa) => {
                 const photo = coverPhoto(villa);
                 const title = villaTitle(villa, lang);
                 return (
