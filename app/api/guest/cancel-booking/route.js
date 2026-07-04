@@ -43,7 +43,7 @@ export async function POST(request) {
       .eq('id', bookingId)
       .single();
 
-    if (!booking || booking.guest_phone !== normalized) {
+    if (!booking || normalizeSmsPhone(booking.guest_phone) !== normalized) {
       return Response.json({ ok: false, message: 'ჯავშანი ვერ მოიძებნა' }, { status: 404 });
     }
 
