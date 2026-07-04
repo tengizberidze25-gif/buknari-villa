@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic';
 import { useLanguage } from './LanguageContext';
 import { t } from './i18n';
 import LangSwitch from './LangSwitch';
+import { ratingLabel } from './ratingLabel';
 
 const VillaMap = dynamic(() => import('./VillaMap'), { ssr: false });
 
@@ -145,7 +146,14 @@ export default function HomeContent({ villas }) {
                       </div>
                     </div>
                     <div className="villa-body">
-                      <div className="villa-location">{villa.location_name}</div>
+                      <div className="villa-location-row">
+                        <div className="villa-location">{villa.location_name}</div>
+                        {villa.avg_rating ? (
+                          <div className="villa-card-rating">
+                            <span>{villa.avg_rating}</span> {ratingLabel(villa.avg_rating)}
+                          </div>
+                        ) : null}
+                      </div>
                       <h3 className="villa-title">{title}</h3>
                       <div className="villa-meta">
                         {villa.max_guests ? <span>👤 {villa.max_guests} {tt('guestsLabel')}</span> : null}
