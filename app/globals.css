@@ -835,15 +835,26 @@ a {
 /* ---------- Villa detail page ---------- */
 
 .back-link {
-  display: inline-block;
-  color: var(--sand-dim);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--sand);
   text-decoration: none;
   font-size: 14px;
+  font-weight: 600;
   margin: 32px 0 20px;
+  padding: 10px 18px 10px 14px;
+  background: rgba(47, 127, 181, 0.14);
+  border: 1px solid rgba(47, 127, 181, 0.4);
+  border-radius: 999px;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease, color 0.2s ease;
 }
 
 .back-link:hover {
-  color: var(--sea-bright);
+  color: #fff;
+  background: var(--sea-bright);
+  border-color: var(--sea-bright);
+  transform: translateX(-3px);
 }
 
 .villa-gallery-empty {
