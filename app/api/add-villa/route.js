@@ -64,6 +64,8 @@ export async function POST(request) {
     const title = (body.title || '').toString().trim();
     const description = (body.description || '').toString().trim();
     const locationName = (body.location_name || '').toString().trim();
+    const lat = body.lat ? Number(body.lat) : null;
+    const lng = body.lng ? Number(body.lng) : null;
     const pricePerNight = Number(body.price_per_night) || null;
     const maxGuests = Number(body.max_guests) || null;
     const bedrooms = Number(body.bedrooms) || null;
@@ -83,6 +85,8 @@ export async function POST(request) {
         title,
         description,
         location_name: locationName,
+        lat,
+        lng,
         price_per_night: pricePerNight,
         max_guests: maxGuests,
         bedrooms,
