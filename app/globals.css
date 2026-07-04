@@ -339,6 +339,29 @@ a {
   background: var(--bg-panel);
 }
 
+.villa-map-popup {
+  min-width: 160px;
+}
+
+.villa-map-popup-photo {
+  width: 100%;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+
+.villa-map-popup-price {
+  color: #3f6259;
+  font-weight: 600;
+  margin: 2px 0 4px;
+}
+
+.leaflet-control-layers {
+  border-radius: 10px !important;
+  overflow: hidden;
+}
+
 .form-hint {
   font-size: 13px;
   color: var(--sand-dim);
