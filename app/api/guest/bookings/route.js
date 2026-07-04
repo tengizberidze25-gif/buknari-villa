@@ -36,17 +36,23 @@ export async function POST(request) {
       return Response.json({ ok: false, message: 'სესია ამოიწურა' }, { status: 401 });
     }
 
-    const { data: bookings, error } = await supabaseAdmin
+    const { data: candidates, error } = await supabaseAdmin
       .from('villa_bookings')
-      .select('id, villa_id, check_in, check_out, status, created_at, villas(title, location_name)')
-      .eq('guest_phone', normalized)
+      .select('id, villa_id, check_in, check_out, status, created_at, guest_phone, villas(title, location_name)')
+      .ilike('guest_phone', `%${normalized.slice(-9)}%`)
       .order('created_at', { ascending: false });
 
     if (error) {
       return Response.json({ ok: false, message: 'ჯავშნების წამოღება ვერ მოხერხდა' }, { status: 500 });
     }
 
-    return Response.json({ ok: true, bookings: bookings || [] });
+    // guest_phone is stored exactly as the guest typed it at booking time (not normalized),
+    // so we normalize here before comparing to make sure formatting differences don't hide bookings
+    const bookings = (candidates || [])
+      .filter((b) => normalizeSmsPhone(b.guest_phone) === normalized)
+      .map(({ guest_phone, ...rest }) => rest);
+
+    return Response.json({ ok: true, bookings });
   } catch (err) {
     return Response.json({ ok: false, message: String(err) }, { status: 500 });
   }
