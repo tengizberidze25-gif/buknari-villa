@@ -122,6 +122,10 @@ export default function AdminPage() {
       <main className="wrap dashboard-content">
         <h1 className="dashboard-title">ადმინ პანელი — ვილების მართვა</h1>
 
+        <a href="/admin/add-villa" className="cta-btn" style={{ marginBottom: '24px', display: 'inline-flex' }}>
+          + ვილის დამატება მფლობელის სახელით
+        </a>
+
         <div className="admin-filter-tabs">
           {['pending', 'approved', 'declined', 'all'].map((f) => (
             <button
