@@ -462,6 +462,61 @@ a {
   margin: 8px 0 0;
 }
 
+.admin-filter-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.admin-filter-tabs button {
+  background: var(--bg-panel);
+  border: 1px solid var(--glass-border);
+  color: var(--sand-dim);
+  padding: 9px 18px;
+  border-radius: 999px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.admin-filter-tabs button.active {
+  background: var(--sea-bright);
+  color: var(--bg);
+  border-color: var(--sea-bright);
+}
+
+.admin-villa-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.admin-status-badge {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.admin-status-pending {
+  background: rgba(203, 191, 164, 0.15);
+  color: var(--sand);
+}
+
+.admin-status-approved {
+  background: rgba(111, 168, 154, 0.2);
+  color: var(--sea-bright);
+}
+
+.admin-status-declined {
+  background: rgba(163, 53, 47, 0.2);
+  color: var(--accent-bright);
+}
+
 .booking-request-actions {
   display: flex;
   gap: 8px;
