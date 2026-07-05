@@ -264,7 +264,7 @@ a {
   position: relative;
   z-index: 3;
   display: grid;
-  grid-template-columns: 1.3fr 1fr 1fr auto;
+  grid-template-columns: 1.1fr 0.8fr 1.6fr auto;
   gap: 1px;
   background: var(--glass-border);
   border: 1px solid var(--glass-border);
@@ -308,6 +308,28 @@ a {
 .search-field input[type='date']::-webkit-calendar-picker-indicator {
   filter: invert(0.9);
   cursor: pointer;
+}
+
+.search-dates-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.search-dates-row input[type='date'] {
+  min-width: 0;
+  flex: 1;
+  font-size: 13px;
+}
+
+.search-dates-arrow {
+  color: var(--sand-dim);
+  flex-shrink: 0;
+}
+
+.search-dates-row input[type='date']:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 .search-btn {
