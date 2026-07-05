@@ -30,7 +30,7 @@ export default function CancelBookingPage({ params, searchParams }) {
       setLoading(false);
       return;
     }
-    fetch(`/api/booking-info?bookingId=${bookingId}&t=${token}`)
+    fetch(`/api/booking-info?bookingId=${bookingId}&t=${token}&lang=${lang}`)
       .then((res) => res.json())
       .then((data) => {
         if (!data.ok) setError(data.message || tt('cbNotFound'));
@@ -39,7 +39,7 @@ export default function CancelBookingPage({ params, searchParams }) {
       .catch(() => setError(tt('connectionError')))
       .finally(() => setLoading(false));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [bookingId, token]);
+  }, [bookingId, token, lang]);
 
   async function handleCancel() {
     setCancelling(true);
