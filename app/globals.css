@@ -1439,6 +1439,27 @@ a {
   color: var(--sea-bright);
 }
 
+.villa-unavailable-badge {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  background: rgba(163, 53, 47, 0.85);
+  backdrop-filter: blur(8px);
+  color: var(--foam);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 100px;
+}
+
+.villa-card-unavailable {
+  opacity: 0.6;
+}
+
+.villa-card-unavailable:hover {
+  opacity: 0.85;
+}
+
 .villa-body {
   padding: 22px 24px 26px;
   display: flex;
