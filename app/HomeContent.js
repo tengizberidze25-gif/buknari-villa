@@ -22,6 +22,13 @@ function villaTitle(villa, lang) {
   return villa.title;
 }
 
+function villaLocation(villa, lang) {
+  if (lang === 'en' && villa.location_name_en) return villa.location_name_en;
+  if (lang === 'ru' && villa.location_name_ru) return villa.location_name_ru;
+  if (lang === 'hy' && villa.location_name_hy) return villa.location_name_hy;
+  return villa.location_name;
+}
+
 function matchesLocation(villa, filter) {
   if (filter === 'all') return true;
   const loc = (villa.location_name || '').toLowerCase();
@@ -148,7 +155,7 @@ export default function HomeContent({ villas }) {
                     </div>
                     <div className="villa-body">
                       <div className="villa-location-row">
-                        <div className="villa-location">{villa.location_name}</div>
+                        <div className="villa-location">{villaLocation(villa, lang)}</div>
                         {villa.avg_rating ? (
                           <div className="villa-card-rating">
                             <span>{villa.avg_rating}</span> {ratingLabel(villa.avg_rating, lang)}
