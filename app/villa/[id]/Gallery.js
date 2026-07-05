@@ -1,8 +1,12 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useLanguage } from '../../LanguageContext';
+import { t } from '../../i18n';
 
 export default function Gallery({ photos, title }) {
+  const { lang } = useLanguage();
+  const tt = (key) => t(lang, key);
   const [openIndex, setOpenIndex] = useState(null);
 
   const close = useCallback(() => setOpenIndex(null), []);
@@ -29,7 +33,7 @@ export default function Gallery({ photos, title }) {
   if (!photos || photos.length === 0) {
     return (
       <div className="villa-gallery-empty">
-        <span>ფოტო არ არის დამატებული</span>
+        <span>{tt('vdNoPhotos')}</span>
       </div>
     );
   }
@@ -53,13 +57,13 @@ export default function Gallery({ photos, title }) {
           </div>
         )}
         <button className="villa-gallery-all-btn" onClick={() => setOpenIndex(0)}>
-          🖼 ყველა ფოტოს ნახვა · {photos.length}
+          🖼 {tt('vdViewAllPhotos')} · {photos.length}
         </button>
       </div>
 
       {openIndex !== null && (
         <div className="villa-lightbox" onClick={close}>
-          <button className="villa-lightbox-close" onClick={close} aria-label="დახურვა">✕</button>
+          <button className="villa-lightbox-close" onClick={close} aria-label={tt('vdClose')}>✕</button>
 
           {photos.length > 1 && (
             <button
@@ -68,7 +72,7 @@ export default function Gallery({ photos, title }) {
                 e.stopPropagation();
                 prev();
               }}
-              aria-label="წინა"
+              aria-label={tt('vdPrev')}
             >
               ‹
             </button>
@@ -88,7 +92,7 @@ export default function Gallery({ photos, title }) {
                 e.stopPropagation();
                 next();
               }}
-              aria-label="შემდეგი"
+              aria-label={tt('vdNext')}
             >
               ›
             </button>
