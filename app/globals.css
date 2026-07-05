@@ -1067,6 +1067,10 @@ a {
   background: var(--sand);
 }
 
+.villa-detail {
+  padding-top: 100px;
+}
+
 .villa-detail-grid {
   display: grid;
   grid-template-columns: 1fr 340px;
