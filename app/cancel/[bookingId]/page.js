@@ -1,14 +1,20 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-
-const STATUS_LABELS = {
-  pending: 'მოლოდინში',
-  confirmed: 'დადასტურებული',
-  declined: 'უარყოფილი',
-};
+import { useLanguage } from '../../LanguageContext';
+import { t } from '../../i18n';
+import LangSwitch from '../../LangSwitch';
 
 export default function CancelBookingPage({ params, searchParams }) {
+  const { lang } = useLanguage();
+  const tt = (key) => t(lang, key);
+
+  const STATUS_LABELS = {
+    pending: tt('statusPending'),
+    confirmed: tt('statusConfirmed'),
+    declined: tt('statusDeclined'),
+  };
+
   const bookingId = params.bookingId;
   const token = searchParams.t;
 
@@ -20,18 +26,19 @@ export default function CancelBookingPage({ params, searchParams }) {
 
   useEffect(() => {
     if (!token) {
-      setError('ბმული არასრულია');
+      setError(tt('cbLinkIncomplete'));
       setLoading(false);
       return;
     }
     fetch(`/api/booking-info?bookingId=${bookingId}&t=${token}`)
       .then((res) => res.json())
       .then((data) => {
-        if (!data.ok) setError(data.message || 'ჯავშანი ვერ მოიძებნა');
+        if (!data.ok) setError(data.message || tt('cbNotFound'));
         else setBooking(data.booking);
       })
-      .catch(() => setError('კავშირის შეცდომა'))
+      .catch(() => setError(tt('connectionError')))
       .finally(() => setLoading(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bookingId, token]);
 
   async function handleCancel() {
@@ -45,9 +52,9 @@ export default function CancelBookingPage({ params, searchParams }) {
       });
       const data = await res.json();
       if (data.ok) setDone(true);
-      else setError(data.message || 'დაფიქსირდა შეცდომა');
+      else setError(data.message || tt('genericError'));
     } catch (e) {
-      setError('კავშირის შეცდომა');
+      setError(tt('connectionError'));
     }
     setCancelling(false);
   }
@@ -60,24 +67,28 @@ export default function CancelBookingPage({ params, searchParams }) {
           <img src="/logo-nav.png" alt="Buknari Villa" style={{ height: '56px', width: 'auto' }} />
         </a>
 
-        {loading && <p className="booking-loading">იტვირთება...</p>}
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '12px' }}>
+          <LangSwitch />
+        </div>
+
+        {loading && <p className="booking-loading">{tt('loadingGeneric')}</p>}
 
         {!loading && error && <div className="auth-error">{error}</div>}
 
         {!loading && booking && !done && (
           <>
-            <h1>ჯავშნის გაუქმება</h1>
+            <h1>{tt('cbTitle')}</h1>
             <p className="auth-sub">
               "{booking.villaTitle}" — {booking.checkIn} → {booking.checkOut}
               <br />
-              სტატუსი: {STATUS_LABELS[booking.status] || booking.status}
+              {tt('cbStatusPrefix')} {STATUS_LABELS[booking.status] || booking.status}
             </p>
 
             {booking.status === 'declined' ? (
-              <p className="dashboard-empty-hint">ეს ჯავშანი უკვე უარყოფილია.</p>
+              <p className="dashboard-empty-hint">{tt('cbAlreadyDeclined')}</p>
             ) : (
               <button className="auth-cta" style={{ border: 'none', cursor: 'pointer' }} onClick={handleCancel} disabled={cancelling}>
-                {cancelling ? 'მიმდინარეობს...' : 'ჯავშნის გაუქმება'}
+                {cancelling ? tt('mbCancelling') : tt('cbCancelBtn')}
               </button>
             )}
           </>
@@ -85,9 +96,9 @@ export default function CancelBookingPage({ params, searchParams }) {
 
         {done && (
           <>
-            <h1>ჯავშანი გაუქმებულია ✓</h1>
-            <p className="auth-sub">თქვენი ჯავშანი წარმატებით გაუქმდა.</p>
-            <a href="/" className="auth-cta">მთავარ გვერდზე დაბრუნება →</a>
+            <h1>{tt('cbDoneTitle')}</h1>
+            <p className="auth-sub">{tt('cbDoneMessage')}</p>
+            <a href="/" className="auth-cta">{tt('backHome')}</a>
           </>
         )}
       </div>
