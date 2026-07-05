@@ -154,7 +154,12 @@ export default function DashboardPage() {
 
           return (
             <section key={villa.id} className="dashboard-villa-section">
-              <h2 className="dashboard-villa-title">{villa.title}</h2>
+              <div className="admin-villa-header">
+                <h2 className="dashboard-villa-title">{villa.title}</h2>
+                <a href={`/edit-villa/${villa.id}`} className="guest-logout-link">
+                  რედაქტირება
+                </a>
+              </div>
 
               {pending.length > 0 && (
                 <div className="dashboard-group">
