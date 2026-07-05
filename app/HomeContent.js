@@ -209,6 +209,7 @@ export default function HomeContent({ villas }) {
 
       <footer className="wrap footer" id="contact">
         <div className="footer-logo">Buknari Villa</div>
+        <a href="mailto:info@buknarivilla.ge" className="footer-email">info@buknarivilla.ge</a>
         <div className="footer-meta">{tt('footerMeta')}</div>
       </footer>
     </>
