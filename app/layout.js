@@ -3,19 +3,19 @@ import { LanguageProvider } from './LanguageContext';
 
 export const metadata = {
   metadataBase: new URL('https://www.buknarivilla.ge'),
-  title: 'BUKNARI/ბუკნარი — ვილების და სახლების გაქირავება ბუკნარში',
+  title: 'BUKNARI / ბუკნარი — ვილების და სახლების გაქირავება ბუკნარში',
   description: 'ზღვისპირა ვილები და სახლები ბუკნარში. დაათვალიერე, დაუკავშირდი მფლობელს WhatsApp-ით, დაჯავშნე შენი დასვენება.',
   openGraph: {
-    title: 'BUKNARI/ბუკნარი — ვილების და სახლების გაქირავება ბუკნარში',
+    title: 'BUKNARI / ბუკნარი — ვილების და სახლების გაქირავება ბუკნარში',
     description: 'ზღვისპირა ვილები და სახლები ბუკნარში. დაათვალიერე, დაუკავშირდი მფლობელს WhatsApp-ით, დაჯავშნე შენი დასვენება.',
     url: 'https://www.buknarivilla.ge',
-    siteName: 'Buknari Villa',
+    siteName: 'BUKNARI',
     locale: 'ka_GE',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'BUKNARI/ბუკნარი — ვილების და სახლების გაქირავება ბუკნარში',
+    title: 'BUKNARI / ბუკნარი — ვილების და სახლების გაქირავება ბუკნარში',
     description: 'ზღვისპირა ვილები და სახლები ბუკნარში. დაათვალიერე, დაუკავშირდი მფლობელს WhatsApp-ით, დაჯავშნე შენი დასვენება.',
   },
 };
