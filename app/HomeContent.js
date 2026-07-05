@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { useLanguage } from './LanguageContext';
 import { t } from './i18n';
@@ -44,15 +44,41 @@ export default function HomeContent({ villas }) {
   const [locationFilter, setLocationFilter] = useState('all');
   const [guestsFilter, setGuestsFilter] = useState('2');
   const [checkInDate, setCheckInDate] = useState('');
+  const [checkOutDate, setCheckOutDate] = useState('');
+  const [availabilityMap, setAvailabilityMap] = useState({});
+
+  useEffect(() => {
+    fetch('/api/villas-availability')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.ok) setAvailabilityMap(data.availability);
+      })
+      .catch(() => {});
+  }, []);
+
+  function isVillaAvailable(villaId) {
+    if (!checkInDate || !checkOutDate) return true;
+    const ranges = availabilityMap[villaId] || [];
+    const start = new Date(checkInDate);
+    const end = new Date(checkOutDate);
+    if (!(start < end)) return true; // ignore an invalid/incomplete range rather than hiding everything
+    return !ranges.some((r) => {
+      const rStart = new Date(r.check_in);
+      const rEnd = new Date(r.check_out);
+      return start < rEnd && rStart < end;
+    });
+  }
 
   const filteredVillas = useMemo(() => {
     const minGuests = Number(guestsFilter.replace('+', ''));
     return villas.filter((villa) => {
       const locOk = matchesLocation(villa, locationFilter);
       const guestsOk = !villa.max_guests || villa.max_guests >= minGuests;
-      return locOk && guestsOk;
+      const availableOk = isVillaAvailable(villa.id);
+      return locOk && guestsOk && availableOk;
     });
-  }, [villas, locationFilter, guestsFilter]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [villas, locationFilter, guestsFilter, checkInDate, checkOutDate, availabilityMap]);
 
   function scrollToListings(e) {
     e.preventDefault();
@@ -105,14 +131,27 @@ export default function HomeContent({ villas }) {
                 <option value="6">6+ {tt('guestsLabel')}</option>
               </select>
             </div>
-            <div className="search-field">
+            <div className="search-field search-field-dates">
               <label>{tt('searchDateLabel')}</label>
-              <input
-                type="date"
-                min={new Date().toISOString().slice(0, 10)}
-                value={checkInDate}
-                onChange={(e) => setCheckInDate(e.target.value)}
-              />
+              <div className="search-dates-row">
+                <input
+                  type="date"
+                  min={new Date().toISOString().slice(0, 10)}
+                  value={checkInDate}
+                  onChange={(e) => {
+                    setCheckInDate(e.target.value);
+                    if (checkOutDate && e.target.value >= checkOutDate) setCheckOutDate('');
+                  }}
+                />
+                <span className="search-dates-arrow">→</span>
+                <input
+                  type="date"
+                  min={checkInDate || new Date().toISOString().slice(0, 10)}
+                  value={checkOutDate}
+                  onChange={(e) => setCheckOutDate(e.target.value)}
+                  disabled={!checkInDate}
+                />
+              </div>
             </div>
             <button className="search-btn" onClick={scrollToListings}>
               {tt('searchBtn')}
