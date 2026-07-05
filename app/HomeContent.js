@@ -71,11 +71,18 @@ export default function HomeContent({ villas }) {
 
   const filteredVillas = useMemo(() => {
     const minGuests = Number(guestsFilter.replace('+', ''));
-    return villas.filter((villa) => {
+    const matching = villas.filter((villa) => {
       const locOk = matchesLocation(villa, locationFilter);
       const guestsOk = !villa.max_guests || villa.max_guests >= minGuests;
-      const availableOk = isVillaAvailable(villa.id);
-      return locOk && guestsOk && availableOk;
+      return locOk && guestsOk;
+    });
+
+    // Don't hide villas booked on the selected dates — show them, but sink them
+    // below available ones and mark them, so the guest can still view/adjust dates.
+    return [...matching].sort((a, b) => {
+      const aAvail = isVillaAvailable(a.id) ? 0 : 1;
+      const bAvail = isVillaAvailable(b.id) ? 0 : 1;
+      return aAvail - bAvail;
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [villas, locationFilter, guestsFilter, checkInDate, checkOutDate, availabilityMap]);
@@ -184,13 +191,20 @@ export default function HomeContent({ villas }) {
               {filteredVillas.map((villa) => {
                 const photo = coverPhoto(villa);
                 const title = villaTitle(villa, lang);
+                const available = isVillaAvailable(villa.id);
+                const showBadge = checkInDate && checkOutDate && !available;
                 return (
-                  <a href={`/villa/${villa.id}`} className="villa-card" key={villa.id}>
+                  
+                    href={`/villa/${villa.id}`}
+                    className={`villa-card${showBadge ? ' villa-card-unavailable' : ''}`}
+                    key={villa.id}
+                  >
                     <div className="villa-photo">
                       <img src={photo || '/placeholder-villa.jpg'} alt={title} />
                       <div className="villa-price-tag">
                         <span>₾{villa.price_per_night || '—'}</span> {tt('perNight')}
                       </div>
+                      {showBadge && <div className="villa-unavailable-badge">{tt('datesBookedBadge')}</div>}
                     </div>
                     <div className="villa-body">
                       <div className="villa-location-row">
