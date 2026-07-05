@@ -17,6 +17,14 @@ function localizedVillaTitle(villa, lang) {
   return villa.title;
 }
 
+function localizedVillaLocation(villa, lang) {
+  if (!villa) return null;
+  if (lang === 'en' && villa.location_name_en) return villa.location_name_en;
+  if (lang === 'ru' && villa.location_name_ru) return villa.location_name_ru;
+  if (lang === 'hy' && villa.location_name_hy) return villa.location_name_hy;
+  return villa.location_name;
+}
+
 export default function MyBookingsPage() {
   const { lang } = useLanguage();
   const tt = (key) => t(lang, key);
@@ -259,7 +267,7 @@ export default function MyBookingsPage() {
                   {localizedVillaTitle(b.villas, lang) || 'Villa'}
                 </a>
                 {b.villas?.location_name && (
-                  <div className="guest-booking-location">{b.villas.location_name}</div>
+                  <div className="guest-booking-location">{localizedVillaLocation(b.villas, lang)}</div>
                 )}
                 <div className="guest-booking-dates">
                   {fmt(b.check_in)} → {fmt(b.check_out)}
