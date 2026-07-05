@@ -2,8 +2,22 @@ import './globals.css';
 import { LanguageProvider } from './LanguageContext';
 
 export const metadata = {
+  metadataBase: new URL('https://www.buknarivilla.ge'),
   title: 'Buknari Villa — ვილების და სახლების გაქირავება ბუკნარში',
   description: 'ზღვისპირა ვილები და სახლები ბუკნარში. დაათვალიერე, დაუკავშირდი მფლობელს WhatsApp-ით, დაჯავშნე შენი დასვენება.',
+  openGraph: {
+    title: 'Buknari Villa — ვილების და სახლების გაქირავება ბუკნარში',
+    description: 'ზღვისპირა ვილები და სახლები ბუკნარში. დაათვალიერე, დაუკავშირდი მფლობელს WhatsApp-ით, დაჯავშნე შენი დასვენება.',
+    url: 'https://www.buknarivilla.ge',
+    siteName: 'Buknari Villa',
+    locale: 'ka_GE',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Buknari Villa — ვილების და სახლების გაქირავება ბუკნარში',
+    description: 'ზღვისპირა ვილები და სახლები ბუკნარში. დაათვალიერე, დაუკავშირდი მფლობელს WhatsApp-ით, დაჯავშნე შენი დასვენება.',
+  },
 };
 
 export default function RootLayout({ children }) {
