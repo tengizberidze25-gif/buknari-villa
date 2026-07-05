@@ -27,7 +27,7 @@ export default function ReviewPage({ params, searchParams }) {
       setLoading(false);
       return;
     }
-    fetch(`/api/review-info?bookingId=${bookingId}&t=${token}`)
+    fetch(`/api/review-info?bookingId=${bookingId}&t=${token}&lang=${lang}`)
       .then((res) => res.json())
       .then((data) => {
         if (!data.ok) setError(data.message || tt('cbNotFound'));
@@ -36,7 +36,7 @@ export default function ReviewPage({ params, searchParams }) {
       .catch(() => setError(tt('connectionError')))
       .finally(() => setLoading(false));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [bookingId, token]);
+  }, [bookingId, token, lang]);
 
   async function handleSubmit(e) {
     e.preventDefault();
