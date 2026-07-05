@@ -640,6 +640,12 @@ a {
   flex-wrap: wrap;
 }
 
+.admin-phone-change-box {
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--glass-border);
+}
+
 .dashboard-block-form input {
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
