@@ -53,7 +53,7 @@ export default function VillaDetailContent({ villa, reviews, avgRating, photos, 
 
         <div className="villa-detail-grid">
           <div className="villa-detail-main">
-            <div className="villa-detail-location">{villa.location_name}</div>
+            <div className="villa-detail-location">{localized(villa, 'location_name', lang)}</div>
             <h1 className="villa-detail-title">{title}</h1>
 
             {avgRating ? (
