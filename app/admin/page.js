@@ -20,6 +20,10 @@ export default function AdminPage() {
   const [filter, setFilter] = useState('pending');
   const [backfilling, setBackfilling] = useState(false);
   const [backfillMsg, setBackfillMsg] = useState('');
+  const [oldPhone, setOldPhone] = useState('');
+  const [newPhone, setNewPhone] = useState('');
+  const [changingPhone, setChangingPhone] = useState(false);
+  const [phoneChangeMsg, setPhoneChangeMsg] = useState('');
 
   useEffect(() => {
     const stored = localStorage.getItem('buknari_admin_token');
@@ -108,6 +112,33 @@ export default function AdminPage() {
     setBackfilling(false);
   }
 
+  async function changeOwnerPhone() {
+    if (!oldPhone.trim() || !newPhone.trim()) {
+      setPhoneChangeMsg('შეავსეთ ორივე ველი');
+      return;
+    }
+    setChangingPhone(true);
+    setPhoneChangeMsg('');
+    try {
+      const res = await fetch('/api/admin/change-owner-phone', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token, oldPhone, newPhone }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        setPhoneChangeMsg(`ნომერი წარმატებით შეიცვალა${data.ownerName ? ` (${data.ownerName})` : ''} ✓`);
+        setOldPhone('');
+        setNewPhone('');
+      } else {
+        setPhoneChangeMsg(data.message || 'დაფიქსირდა შეცდომა');
+      }
+    } catch (e) {
+      setPhoneChangeMsg('კავშირის შეცდომა');
+    }
+    setChangingPhone(false);
+  }
+
   if (!token) {
     return (
       <div className="auth-page">
@@ -159,6 +190,31 @@ export default function AdminPage() {
             {backfilling ? 'მიმდინარეობს...' : 'ლოკაციების თარგმანის შევსება (ერთჯერადი)'}
           </button>
           {backfillMsg && <p className="dashboard-empty-hint" style={{ marginTop: '8px' }}>{backfillMsg}</p>}
+        </div>
+
+        <div className="admin-phone-change-box">
+          <h3 className="villa-amenities-title">მფლობელის ტელეფონის შეცვლა</h3>
+          <p className="dashboard-empty-hint">
+            გამოიყენე, თუ მფლობელმა ძველი ნომერი დაკარგა და ვეღარ შედის — ჩაწერე მისი ძველი ნომერი და ახალი.
+          </p>
+          <div className="dashboard-block-form">
+            <input
+              type="tel"
+              placeholder="ძველი ნომერი"
+              value={oldPhone}
+              onChange={(e) => setOldPhone(e.target.value)}
+            />
+            <input
+              type="tel"
+              placeholder="ახალი ნომერი"
+              value={newPhone}
+              onChange={(e) => setNewPhone(e.target.value)}
+            />
+            <button disabled={changingPhone} onClick={changeOwnerPhone}>
+              {changingPhone ? 'იცვლება...' : 'ნომრის შეცვლა'}
+            </button>
+          </div>
+          {phoneChangeMsg && <p className="dashboard-empty-hint" style={{ marginTop: '8px' }}>{phoneChangeMsg}</p>}
         </div>
 
         <div className="admin-filter-tabs">
