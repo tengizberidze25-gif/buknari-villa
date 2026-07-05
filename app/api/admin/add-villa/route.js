@@ -136,6 +136,7 @@ export async function POST(request) {
         contact_whatsapp: contactWhatsapp,
         status: 'approved',
         translation_status: 'pending',
+        is_available: true,
       })
       .select()
       .single();
