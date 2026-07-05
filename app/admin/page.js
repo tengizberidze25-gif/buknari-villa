@@ -18,6 +18,8 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(false);
   const [actingId, setActingId] = useState(null);
   const [filter, setFilter] = useState('pending');
+  const [backfilling, setBackfilling] = useState(false);
+  const [backfillMsg, setBackfillMsg] = useState('');
 
   useEffect(() => {
     const stored = localStorage.getItem('buknari_admin_token');
@@ -85,6 +87,27 @@ export default function AdminPage() {
     setActingId(null);
   }
 
+  async function backfillLocations() {
+    setBackfilling(true);
+    setBackfillMsg('');
+    try {
+      const res = await fetch('/api/admin/backfill-locations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        setBackfillMsg(`გადათარგმნილია ${data.processed} ვილის ლოკაცია (სულ ${data.total} საჭიროებდა).`);
+      } else {
+        setBackfillMsg(data.message || 'დაფიქსირდა შეცდომა');
+      }
+    } catch (e) {
+      setBackfillMsg('კავშირის შეცდომა');
+    }
+    setBackfilling(false);
+  }
+
   if (!token) {
     return (
       <div className="auth-page">
@@ -125,6 +148,18 @@ export default function AdminPage() {
         <a href="/admin/add-villa" className="cta-btn" style={{ marginBottom: '24px', display: 'inline-flex' }}>
           + ვილის დამატება მფლობელის სახელით
         </a>
+
+        <div style={{ marginBottom: '24px' }}>
+          <button
+            type="button"
+            className="guest-logout-link"
+            disabled={backfilling}
+            onClick={backfillLocations}
+          >
+            {backfilling ? 'მიმდინარეობს...' : 'ლოკაციების თარგმანის შევსება (ერთჯერადი)'}
+          </button>
+          {backfillMsg && <p className="dashboard-empty-hint" style={{ marginTop: '8px' }}>{backfillMsg}</p>}
+        </div>
 
         <div className="admin-filter-tabs">
           {['pending', 'approved', 'declined', 'all'].map((f) => (
