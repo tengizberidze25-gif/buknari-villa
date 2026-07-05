@@ -138,6 +138,7 @@ export async function POST(request) {
         contact_whatsapp: contactWhatsapp,
         status: 'pending',
         translation_status: 'pending',
+        is_available: true,
       })
       .select()
       .single();
