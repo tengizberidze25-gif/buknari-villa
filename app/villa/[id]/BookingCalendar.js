@@ -1,12 +1,8 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-
-const MONTH_NAMES = [
-  'იანვარი', 'თებერვალი', 'მარტი', 'აპრილი', 'მაისი', 'ივნისი',
-  'ივლისი', 'აგვისტო', 'სექტემბერი', 'ოქტომბერი', 'ნოემბერი', 'დეკემბერი',
-];
-const DAY_NAMES = ['ორშ', 'სამ', 'ოთხ', 'ხუთ', 'პარ', 'შაბ', 'კვ'];
+import { useLanguage } from '../../LanguageContext';
+import { t } from '../../i18n';
 
 function toISO(date) {
   return date.toISOString().slice(0, 10);
@@ -23,6 +19,11 @@ function isSameDay(a, b) {
 }
 
 export default function BookingCalendar({ villaId }) {
+  const { lang } = useLanguage();
+  const tt = (key) => t(lang, key);
+  const MONTH_NAMES = t(lang, 'monthNames');
+  const DAY_NAMES = t(lang, 'dayNames');
+
   const today = useMemo(() => {
     const d = new Date();
     d.setHours(0, 0, 0, 0);
@@ -84,7 +85,7 @@ export default function BookingCalendar({ villaId }) {
       return;
     }
     if (hasBlockedBetween(checkIn, date)) {
-      setError('არჩეულ დიაპაზონში დაკავებული თარიღია — აირჩიეთ სხვა');
+      setError(tt('bcErrorRangeBlocked'));
       return;
     }
     setError('');
@@ -95,11 +96,11 @@ export default function BookingCalendar({ villaId }) {
     e.preventDefault();
     setError('');
     if (!checkIn || !checkOut) {
-      setError('აირჩიეთ ჩამოსვლისა და გამგზავრების თარიღები');
+      setError(tt('bcErrorSelectDates'));
       return;
     }
     if (!guestName.trim() || !guestPhone.trim()) {
-      setError('შეავსეთ სახელი და ტელეფონი');
+      setError(tt('bcErrorNamePhone'));
       return;
     }
     setSubmitting(true);
@@ -118,7 +119,7 @@ export default function BookingCalendar({ villaId }) {
       });
       const data = await res.json();
       if (!data.ok) {
-        setError(data.message || 'დაფიქსირდა შეცდომა');
+        setError(data.message || tt('genericError'));
         if (res.status === 409) {
           // Dates got taken in the meantime — refresh availability
           const r = await fetch(`/api/villa-availability?villaId=${villaId}`).then((x) => x.json());
@@ -130,7 +131,7 @@ export default function BookingCalendar({ villaId }) {
         setDone(true);
       }
     } catch (err) {
-      setError('კავშირის შეცდომა, სცადეთ თავიდან');
+      setError(tt('connectionErrorRetry'));
     }
     setSubmitting(false);
   }
@@ -149,31 +150,29 @@ export default function BookingCalendar({ villaId }) {
     checkIn && checkOut ? Math.round((checkOut - checkIn) / (1000 * 60 * 60 * 24)) : 0;
 
   if (done) {
+    const dateRange = `${toISO(checkIn)} — ${toISO(checkOut)}`;
     return (
       <div className="booking-box booking-done">
         <div className="booking-done-icon">✓</div>
-        <h3>მოთხოვნა გაგზავნილია</h3>
-        <p>
-          თქვენი ჯავშნის მოთხოვნა გადაეცა მფლობელს ({toISO(checkIn)} — {toISO(checkOut)}). დაგიკავშირდებათ
-          უახლოეს დროში დასადასტურებლად.
-        </p>
+        <h3>{tt('bcDoneTitle')}</h3>
+        <p>{tt('bcDoneMessage').replace('{dates}', dateRange)}</p>
       </div>
     );
   }
 
   return (
     <div className="booking-box">
-      <h3 className="booking-title">აირჩიეთ თარიღები</h3>
+      <h3 className="booking-title">{tt('bcSelectDates')}</h3>
 
       <div className="booking-cal-nav">
-        <button type="button" onClick={() => setViewMonth(new Date(year, month - 1, 1))} aria-label="წინა თვე">‹</button>
+        <button type="button" onClick={() => setViewMonth(new Date(year, month - 1, 1))} aria-label={tt('bcPrevMonth')}>‹</button>
         <span>{MONTH_NAMES[month]} {year}</span>
-        <button type="button" onClick={() => setViewMonth(new Date(year, month + 1, 1))} aria-label="შემდეგი თვე">›</button>
+        <button type="button" onClick={() => setViewMonth(new Date(year, month + 1, 1))} aria-label={tt('bcNextMonth')}>›</button>
       </div>
 
       <div className="booking-cal-weekdays">
-        {DAY_NAMES.map((d) => (
-          <span key={d}>{d}</span>
+        {DAY_NAMES.map((d, i) => (
+          <span key={i}>{d}</span>
         ))}
       </div>
 
@@ -208,35 +207,35 @@ export default function BookingCalendar({ villaId }) {
         })}
       </div>
 
-      {loadingRanges && <p className="booking-loading">ხელმისაწვდომობა იტვირთება...</p>}
+      {loadingRanges && <p className="booking-loading">{tt('bcLoadingAvailability')}</p>}
 
       <form onSubmit={handleSubmit} className="booking-form">
         <div className="booking-selected-dates">
           <div>
-            <label>ჩამოსვლა</label>
+            <label>{tt('bcCheckIn')}</label>
             <span>{checkIn ? toISO(checkIn) : '—'}</span>
           </div>
           <div>
-            <label>გამგზავრება</label>
+            <label>{tt('bcCheckOut')}</label>
             <span>{checkOut ? toISO(checkOut) : '—'}</span>
           </div>
-          {nights > 0 && <div className="booking-nights">{nights} ღამე</div>}
+          {nights > 0 && <div className="booking-nights">{nights} {tt('nightsLabel')}</div>}
         </div>
 
         <input
           type="text"
-          placeholder="სახელი გვარი"
+          placeholder={tt('bcNamePlaceholder')}
           value={guestName}
           onChange={(e) => setGuestName(e.target.value)}
         />
         <input
           type="tel"
-          placeholder="ტელეფონი"
+          placeholder={tt('bcPhonePlaceholder')}
           value={guestPhone}
           onChange={(e) => setGuestPhone(e.target.value)}
         />
         <textarea
-          placeholder="დამატებითი კომენტარი (არასავალდებულო)"
+          placeholder={tt('bcMessagePlaceholder')}
           rows={2}
           value={guestMessage}
           onChange={(e) => setGuestMessage(e.target.value)}
@@ -245,7 +244,7 @@ export default function BookingCalendar({ villaId }) {
         {error && <div className="auth-error">{error}</div>}
 
         <button type="submit" disabled={submitting || !checkIn || !checkOut}>
-          {submitting ? 'იგზავნება...' : 'ჯავშნის მოთხოვნის გაგზავნა'}
+          {submitting ? tt('bcSubmitting') : tt('bcSubmitBtn')}
         </button>
       </form>
     </div>
