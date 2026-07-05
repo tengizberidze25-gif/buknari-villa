@@ -18,6 +18,7 @@ function coverPhoto(villa) {
 function villaTitle(villa, lang) {
   if (lang === 'en' && villa.title_en) return villa.title_en;
   if (lang === 'ru' && villa.title_ru) return villa.title_ru;
+  if (lang === 'hy' && villa.title_hy) return villa.title_hy;
   return villa.title;
 }
 
