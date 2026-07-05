@@ -9,6 +9,14 @@ function fmt(dateStr) {
   return dateStr;
 }
 
+function localizedVillaTitle(villa, lang) {
+  if (!villa) return null;
+  if (lang === 'en' && villa.title_en) return villa.title_en;
+  if (lang === 'ru' && villa.title_ru) return villa.title_ru;
+  if (lang === 'hy' && villa.title_hy) return villa.title_hy;
+  return villa.title;
+}
+
 export default function MyBookingsPage() {
   const { lang } = useLanguage();
   const tt = (key) => t(lang, key);
@@ -248,7 +256,7 @@ export default function MyBookingsPage() {
             <div key={b.id} className="guest-booking-card">
               <div className="guest-booking-main">
                 <a href={`/villa/${b.villa_id}`} className="guest-booking-title">
-                  {b.villas?.title || 'Villa'}
+                  {localizedVillaTitle(b.villas, lang) || 'Villa'}
                 </a>
                 {b.villas?.location_name && (
                   <div className="guest-booking-location">{b.villas.location_name}</div>
