@@ -151,7 +151,7 @@ export default function HomeContent({ villas }) {
                         <div className="villa-location">{villa.location_name}</div>
                         {villa.avg_rating ? (
                           <div className="villa-card-rating">
-                            <span>{villa.avg_rating}</span> {ratingLabel(villa.avg_rating)}
+                            <span>{villa.avg_rating}</span> {ratingLabel(villa.avg_rating, lang)}
                           </div>
                         ) : null}
                       </div>
