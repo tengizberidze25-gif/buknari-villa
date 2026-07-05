@@ -38,7 +38,7 @@ export async function POST(request) {
 
     const { data: candidates, error } = await supabaseAdmin
       .from('villa_bookings')
-      .select('id, villa_id, check_in, check_out, status, created_at, guest_phone, villas(title, title_en, title_ru, title_hy, location_name)')
+      .select('id, villa_id, check_in, check_out, status, created_at, guest_phone, villas(title, title_en, title_ru, title_hy, location_name, location_name_en, location_name_ru, location_name_hy)')
       .ilike('guest_phone', `%${normalized.slice(-9)}%`)
       .order('created_at', { ascending: false });
 
