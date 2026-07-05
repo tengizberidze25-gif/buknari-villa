@@ -1,8 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useLanguage } from '../../LanguageContext';
+import { t } from '../../i18n';
+import LangSwitch from '../../LangSwitch';
 
 export default function ReviewPage({ params, searchParams }) {
+  const { lang } = useLanguage();
+  const tt = (key) => t(lang, key);
+
   const bookingId = params.bookingId;
   const token = searchParams.t;
 
@@ -17,24 +23,25 @@ export default function ReviewPage({ params, searchParams }) {
 
   useEffect(() => {
     if (!token) {
-      setError('ბმული არასრულია');
+      setError(tt('cbLinkIncomplete'));
       setLoading(false);
       return;
     }
     fetch(`/api/review-info?bookingId=${bookingId}&t=${token}`)
       .then((res) => res.json())
       .then((data) => {
-        if (!data.ok) setError(data.message || 'ჯავშანი ვერ მოიძებნა');
+        if (!data.ok) setError(data.message || tt('cbNotFound'));
         else setBooking(data.booking);
       })
-      .catch(() => setError('კავშირის შეცდომა'))
+      .catch(() => setError(tt('connectionError')))
       .finally(() => setLoading(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bookingId, token]);
 
   async function handleSubmit(e) {
     e.preventDefault();
     if (!rating) {
-      setError('აირჩიეთ შეფასება');
+      setError(tt('rvPickRatingError'));
       return;
     }
     setSubmitting(true);
@@ -47,9 +54,9 @@ export default function ReviewPage({ params, searchParams }) {
       });
       const data = await res.json();
       if (data.ok) setDone(true);
-      else setError(data.message || 'დაფიქსირდა შეცდომა');
+      else setError(data.message || tt('genericError'));
     } catch (e) {
-      setError('კავშირის შეცდომა');
+      setError(tt('connectionError'));
     }
     setSubmitting(false);
   }
@@ -62,16 +69,20 @@ export default function ReviewPage({ params, searchParams }) {
           <img src="/logo-nav.png" alt="Buknari Villa" style={{ height: '56px', width: 'auto' }} />
         </a>
 
-        {loading && <p className="booking-loading">იტვირთება...</p>}
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '12px' }}>
+          <LangSwitch />
+        </div>
+
+        {loading && <p className="booking-loading">{tt('loadingGeneric')}</p>}
         {!loading && error && !booking && <div className="auth-error">{error}</div>}
 
         {!loading && booking && !done && (
           <>
-            <h1>როგორი იყო თქვენი დასვენება?</h1>
-            <p className="auth-sub">"{booking.villaTitle}" — დაგვეხმარეთ სხვა სტუმრებს, დატოვეთ შეფასება.</p>
+            <h1>{tt('rvTitle')}</h1>
+            <p className="auth-sub">"{booking.villaTitle}" — {tt('rvIntro')}</p>
 
             {booking.alreadyReviewed ? (
-              <p className="dashboard-empty-hint">თქვენ უკვე დატოვეთ შეფასება ამ ჯავშანზე. მადლობა!</p>
+              <p className="dashboard-empty-hint">{tt('rvAlreadyReviewed')}</p>
             ) : (
               <form onSubmit={handleSubmit}>
                 <div className="review-score-picker">
@@ -88,11 +99,13 @@ export default function ReviewPage({ params, searchParams }) {
                     </button>
                   ))}
                 </div>
-                <p className="review-score-hint">{rating ? `თქვენი შეფასება: ${rating}/10` : 'აირჩიეთ ქულა 1-დან 10-მდე'}</p>
+                <p className="review-score-hint">
+                  {rating ? `${tt('rvYourScorePrefix')} ${rating}/10` : tt('rvPickScore')}
+                </p>
 
                 <textarea
                   rows={4}
-                  placeholder="გაგვიზიარეთ თქვენი შთაბეჭდილება (არასავალდებულო)"
+                  placeholder={tt('rvCommentPlaceholder')}
                   value={comment}
                   onChange={(e) => setComment(e.target.value)}
                 />
@@ -100,7 +113,7 @@ export default function ReviewPage({ params, searchParams }) {
                 {error && <div className="auth-error">{error}</div>}
 
                 <button type="submit" disabled={submitting}>
-                  {submitting ? 'იგზავნება...' : 'შეფასების გაგზავნა'}
+                  {submitting ? tt('rvSubmitting') : tt('rvSubmitBtn')}
                 </button>
               </form>
             )}
@@ -109,9 +122,9 @@ export default function ReviewPage({ params, searchParams }) {
 
         {done && (
           <>
-            <h1>მადლობა შეფასებისთვის ✓</h1>
-            <p className="auth-sub">თქვენი გამოხმაურება დაეხმარება სხვა სტუმრებს არჩევანის გაკეთებაში.</p>
-            <a href="/" className="auth-cta">მთავარ გვერდზე დაბრუნება →</a>
+            <h1>{tt('rvDoneTitle')}</h1>
+            <p className="auth-sub">{tt('rvDoneMessage')}</p>
+            <a href="/" className="auth-cta">{tt('backHome')}</a>
           </>
         )}
       </div>
