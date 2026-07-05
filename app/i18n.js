@@ -35,6 +35,7 @@ export const dict = {
     footerMeta: '© 2026 buknarivilla.ge',
     mapEyebrow: 'ყველა ვილა რუკაზე',
     mapTitle: 'სად მდებარეობს ეს ვილები',
+    datesBookedBadge: 'ამ თარიღებში დაკავებულია',
 
     loadingGeneric: 'იტვირთება...',
     connectionError: 'კავშირის შეცდომა',
@@ -156,6 +157,7 @@ export const dict = {
     footerMeta: '© 2026 buknarivilla.ge',
     mapEyebrow: 'All villas on the map',
     mapTitle: 'Where these villas are located',
+    datesBookedBadge: 'Booked for these dates',
 
     loadingGeneric: 'Loading...',
     connectionError: 'Connection error',
@@ -277,6 +279,7 @@ export const dict = {
     footerMeta: '© 2026 buknarivilla.ge',
     mapEyebrow: 'Все виллы на карте',
     mapTitle: 'Где находятся эти виллы',
+    datesBookedBadge: 'Занято на эти даты',
 
     loadingGeneric: 'Загрузка...',
     connectionError: 'Ошибка соединения',
@@ -398,6 +401,7 @@ export const dict = {
     footerMeta: '© 2026 buknarivilla.ge',
     mapEyebrow: 'Բոլոր վիլլաները քարտեզի վրա',
     mapTitle: 'Որտեղ են գտնվում այս վիլլաները',
+    datesBookedBadge: 'Զբաղված է այս ամսաթվերին',
 
     loadingGeneric: 'Բեռնվում է...',
     connectionError: 'Կապի սխալ',
