@@ -16,6 +16,13 @@ function localized(villa, field, lang) {
   return villa[field];
 }
 
+function amenityLabel(a, lang) {
+  if (lang === 'en' && a.label_en) return a.label_en;
+  if (lang === 'ru' && a.label_ru) return a.label_ru;
+  if (lang === 'hy' && a.label_hy) return a.label_hy;
+  return a.label;
+}
+
 const LOCALE_MAP = { ka: 'ka-GE', en: 'en-US', ru: 'ru-RU', hy: 'hy-AM' };
 
 export default function VillaDetailContent({ villa, reviews, avgRating, photos, whatsapp, phone }) {
@@ -53,7 +60,7 @@ export default function VillaDetailContent({ villa, reviews, avgRating, photos, 
               <div className="villa-rating-badge">
                 <span className="villa-rating-score">{avgRating}</span>
                 <span>
-                  <strong>{ratingLabel(avgRating)}</strong>
+                  <strong>{ratingLabel(avgRating, lang)}</strong>
                   <br />
                   {reviews.length} {tt('reviewsLabel')}
                 </span>
@@ -80,7 +87,7 @@ export default function VillaDetailContent({ villa, reviews, avgRating, photos, 
                 <div className="villa-amenities-grid">
                   {AMENITIES.filter((a) => villa.amenities.includes(a.key)).map((a) => (
                     <div key={a.key} className="villa-amenity-item">
-                      <span>{a.icon}</span> {a.label}
+                      <span>{a.icon}</span> {amenityLabel(a, lang)}
                     </div>
                   ))}
                 </div>
