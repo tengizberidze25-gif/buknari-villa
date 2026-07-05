@@ -7,6 +7,7 @@ import { AMENITIES } from '../../amenities';
 export default function AdminAddVillaPage() {
   const [token, setToken] = useState(null);
   const [photos, setPhotos] = useState([]);
+  const [convertingPhotos, setConvertingPhotos] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [done, setDone] = useState(false);
@@ -23,25 +24,45 @@ export default function AdminAddVillaPage() {
   const ALLOWED_PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'];
   const MAX_PHOTO_SIZE = 15 * 1024 * 1024; // 15MB
 
-  function handlePhotoChange(e) {
+  async function handlePhotoChange(e) {
     const files = Array.from(e.target.files || []).slice(0, 20);
     const valid = [];
     const rejected = [];
+    setConvertingPhotos(true);
 
     for (const file of files) {
-      const looksLikeImage =
-        ALLOWED_PHOTO_TYPES.includes(file.type) ||
-        /\.(jpe?g|png|webp|heic|heif)$/i.test(file.name);
+      const isHeic =
+        /\.(heic|heif)$/i.test(file.name) ||
+        file.type === 'image/heic' ||
+        file.type === 'image/heif';
+      const looksLikeImage = ALLOWED_PHOTO_TYPES.includes(file.type) || isHeic;
+
       if (!looksLikeImage) {
         rejected.push(`${file.name} — მხოლოდ სურათებია დაშვებული`);
-      } else if (file.size > MAX_PHOTO_SIZE) {
+        continue;
+      }
+      if (file.size > MAX_PHOTO_SIZE) {
         rejected.push(`${file.name} — ზომა აღემატება 15MB-ს`);
+        continue;
+      }
+
+      if (isHeic) {
+        try {
+          const heic2any = (await import('heic2any')).default;
+          const converted = await heic2any({ blob: file, toType: 'image/jpeg', quality: 0.9 });
+          const jpegBlob = Array.isArray(converted) ? converted[0] : converted;
+          const newName = file.name.replace(/\.(heic|heif)$/i, '.jpg');
+          valid.push(new File([jpegBlob], newName, { type: 'image/jpeg' }));
+        } catch (err) {
+          rejected.push(`${file.name} — HEIC ფაილის დამუშავება ვერ მოხერხდა`);
+        }
       } else {
         valid.push(file);
       }
     }
 
     setPhotos(valid);
+    setConvertingPhotos(false);
     setError(rejected.length > 0 ? `არ აიტვირთა: ${rejected.join(', ')}` : '');
   }
 
@@ -244,11 +265,16 @@ export default function AdminAddVillaPage() {
                 ))}
               </div>
             )}
+            {convertingPhotos && (
+              <p className="dashboard-empty-hint" style={{ marginTop: '8px' }}>
+                HEIC ფოტოები მუშავდება, გთხოვთ დაელოდოთ...
+              </p>
+            )}
           </div>
 
           {error && <div className="auth-error">{error}</div>}
 
-          <button type="submit" disabled={loading}>
+          <button type="submit" disabled={loading || convertingPhotos}>
             {loading ? 'იგზავნება...' : 'ვილის დამატება და გამოქვეყნება'}
           </button>
         </form>
