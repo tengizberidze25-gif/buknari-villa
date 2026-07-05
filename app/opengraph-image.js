@@ -1886,25 +1886,34 @@ export default async function Image() {
             flexDirection: 'column',
           }}
         >
-          <div style={{ fontSize: 60, color: '#F3EFE6', fontFamily: 'Noto Sans Georgian' }}>
+          <div
+            style={{
+              fontSize: 80,
+              color: '#F3EFE6',
+              fontFamily: 'Noto Sans Georgian',
+              textShadow: '0 2px 12px rgba(0,0,0,0.55)',
+            }}
+          >
             Buknari Villa
           </div>
           <div
             style={{
-              fontSize: 28,
+              fontSize: 34,
               color: '#CBBFA4',
-              marginTop: 14,
+              marginTop: 16,
               fontFamily: 'Noto Sans Georgian',
+              textShadow: '0 2px 8px rgba(0,0,0,0.5)',
             }}
           >
             ვილების და სახლების გაქირავება ბუკნარში
           </div>
           <div
             style={{
-              fontSize: 22,
+              fontSize: 24,
               color: '#2F7FB5',
-              marginTop: 18,
+              marginTop: 20,
               fontFamily: 'Noto Sans Georgian',
+              textShadow: '0 2px 8px rgba(0,0,0,0.5)',
             }}
           >
             buknarivilla.ge
