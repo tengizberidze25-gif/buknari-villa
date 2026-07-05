@@ -12,6 +12,7 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const bookingId = searchParams.get('bookingId');
     const token = searchParams.get('t');
+    const lang = searchParams.get('lang') || 'ka';
 
     if (!bookingId || !token || !verifyBookingToken(bookingId, token)) {
       return Response.json({ ok: false, message: 'ბმული არასწორია ან ვადაგასულია' }, { status: 403 });
@@ -19,7 +20,7 @@ export async function GET(request) {
 
     const { data: booking } = await supabaseAdmin
       .from('villa_bookings')
-      .select('id, check_in, check_out, status, villas(title)')
+      .select('id, check_in, check_out, status, villas(title, title_en, title_ru, title_hy)')
       .eq('id', bookingId)
       .single();
 
@@ -27,13 +28,21 @@ export async function GET(request) {
       return Response.json({ ok: false, message: 'ჯავშანი ვერ მოიძებნა' }, { status: 404 });
     }
 
+    const villa = booking.villas || {};
+    const villaTitle =
+      (lang === 'en' && villa.title_en) ||
+      (lang === 'ru' && villa.title_ru) ||
+      (lang === 'hy' && villa.title_hy) ||
+      villa.title ||
+      '';
+
     return Response.json({
       ok: true,
       booking: {
         checkIn: booking.check_in,
         checkOut: booking.check_out,
         status: booking.status,
-        villaTitle: booking.villas?.title || '',
+        villaTitle,
       },
     });
   } catch (err) {
