@@ -1588,6 +1588,16 @@ a {
   color: var(--sand-dim);
 }
 
+.footer-email {
+  font-size: 13px;
+  color: var(--sea-bright);
+  text-decoration: none;
+}
+
+.footer-email:hover {
+  color: var(--foam);
+}
+
 /* ---------- Responsive ---------- */
 
 @media (max-width: 900px) {
