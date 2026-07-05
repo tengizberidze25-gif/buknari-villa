@@ -36,7 +36,15 @@ export async function POST(request) {
       return Response.json({ ok: false, message: 'ვილა ვერ მოიძებნა' }, { status: 404 });
     }
 
-    const ext = (filename.split('.').pop() || 'jpg').toLowerCase();
+    const ext = (filename.split('.').pop() || '').toLowerCase();
+    const allowedExtensions = ['jpg', 'jpeg', 'png', 'webp', 'heic', 'heif'];
+    if (!allowedExtensions.includes(ext)) {
+      return Response.json(
+        { ok: false, message: 'დაშვებულია მხოლოდ სურათის ფაილები (jpg, png, webp, heic)' },
+        { status: 400 }
+      );
+    }
+
     const path = `${villaId}/${Date.now()}-${sortOrder ?? 0}.${ext}`;
 
     const { data, error } = await supabaseAdmin.storage.from('villa-photos').createSignedUploadUrl(path);
