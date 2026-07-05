@@ -1,18 +1,24 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-
-const STATUS_LABELS = {
-  pending: 'მოლოდინში',
-  confirmed: 'დადასტურებული',
-  declined: 'უარყოფილი',
-};
+import { useLanguage } from '../LanguageContext';
+import { t } from '../i18n';
+import LangSwitch from '../LangSwitch';
 
 function fmt(dateStr) {
   return dateStr;
 }
 
 export default function MyBookingsPage() {
+  const { lang } = useLanguage();
+  const tt = (key) => t(lang, key);
+
+  const STATUS_LABELS = {
+    pending: tt('statusPending'),
+    confirmed: tt('statusConfirmed'),
+    declined: tt('statusDeclined'),
+  };
+
   const [step, setStep] = useState('phone'); // phone | code | list
   const [phone, setPhone] = useState('');
   const [code, setCode] = useState('');
@@ -37,15 +43,15 @@ export default function MyBookingsPage() {
           localStorage.removeItem('buknari_guest_phone');
           localStorage.removeItem('buknari_guest_token');
           setStep('phone');
-          setError(data.message || 'სესია ამოიწურა, გთხოვთ ხელახლა შეხვიდეთ');
+          setError(data.message || tt('mbSessionExpired'));
         } else {
           setBookings(data.bookings);
           setStep('list');
         }
       })
-      .catch(() => setError('კავშირის შეცდომა'))
+      .catch(() => setError(tt('connectionError')))
       .finally(() => setLoading(false));
-  }, []);
+  }, [lang]);
 
   useEffect(() => {
     const ph = localStorage.getItem('buknari_guest_phone');
@@ -69,12 +75,12 @@ export default function MyBookingsPage() {
       });
       const data = await res.json();
       if (!data.ok) {
-        setError(data.message || 'დაფიქსირდა შეცდომა');
+        setError(data.message || tt('genericError'));
       } else {
         setStep('code');
       }
     } catch (err) {
-      setError('კავშირის შეცდომა, სცადეთ თავიდან');
+      setError(tt('connectionErrorRetry'));
     }
     setLoading(false);
   }
@@ -91,7 +97,7 @@ export default function MyBookingsPage() {
       });
       const data = await res.json();
       if (!data.ok) {
-        setError(data.message || 'დაფიქსირდა შეცდომა');
+        setError(data.message || tt('genericError'));
       } else {
         localStorage.setItem('buknari_guest_phone', data.phone);
         localStorage.setItem('buknari_guest_token', data.token);
@@ -100,7 +106,7 @@ export default function MyBookingsPage() {
         loadBookings(data.phone, data.token);
       }
     } catch (err) {
-      setError('კავშირის შეცდომა, სცადეთ თავიდან');
+      setError(tt('connectionErrorRetry'));
     }
     setLoading(false);
   }
@@ -117,7 +123,7 @@ export default function MyBookingsPage() {
   }
 
   async function cancelBooking(bookingId) {
-    if (!confirm('დარწმუნებული ხართ, რომ გსურთ ჯავშნის გაუქმება?')) return;
+    if (!confirm(tt('mbConfirmCancel'))) return;
     setCancelingId(bookingId);
     try {
       const res = await fetch('/api/guest/cancel-booking', {
@@ -129,10 +135,10 @@ export default function MyBookingsPage() {
       if (data.ok) {
         setBookings((list) => list.filter((b) => b.id !== bookingId));
       } else {
-        setError(data.message || 'გაუქმება ვერ მოხერხდა');
+        setError(data.message || tt('genericError'));
       }
     } catch (e) {
-      setError('კავშირის შეცდომა');
+      setError(tt('connectionError'));
     }
     setCancelingId(null);
   }
@@ -146,14 +152,16 @@ export default function MyBookingsPage() {
             <img src="/logo-nav.png" alt="Buknari Villa" style={{ height: '56px', width: 'auto' }} />
           </a>
 
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '12px' }}>
+            <LangSwitch />
+          </div>
+
           {step === 'phone' && (
             <>
-              <h1>ჩემი ჯავშნები</h1>
-              <p className="auth-sub">
-                შეიყვანეთ ტელეფონის ნომერი, რომლითაც ჯავშანი გააკეთეთ — გამოგიგზავნით დამადასტურებელ კოდს SMS-ით.
-              </p>
+              <h1>{tt('mbTitle')}</h1>
+              <p className="auth-sub">{tt('mbPhoneIntro')}</p>
               <form onSubmit={handleSendOtp}>
-                <label>ტელეფონის ნომერი</label>
+                <label>{tt('mbPhoneLabel')}</label>
                 <input
                   type="tel"
                   placeholder="599 123 456"
@@ -163,7 +171,7 @@ export default function MyBookingsPage() {
                 />
                 {error && <div className="auth-error">{error}</div>}
                 <button type="submit" disabled={loading}>
-                  {loading ? 'იგზავნება...' : 'კოდის გაგზავნა'}
+                  {loading ? tt('mbSending') : tt('mbSendCode')}
                 </button>
               </form>
             </>
@@ -171,12 +179,12 @@ export default function MyBookingsPage() {
 
           {step === 'code' && (
             <>
-              <h1>შეიყვანეთ კოდი</h1>
+              <h1>{tt('mbCodeTitle')}</h1>
               <p className="auth-sub">
-                SMS კოდი გამოგზავნილია ნომერზე <strong>{phone}</strong>
+                {tt('mbCodeIntro')} <strong>{phone}</strong>
               </p>
               <form onSubmit={handleVerifyOtp}>
-                <label>დამადასტურებელი კოდი</label>
+                <label>{tt('mbCodeLabel')}</label>
                 <input
                   type="text"
                   placeholder="123456"
@@ -187,7 +195,7 @@ export default function MyBookingsPage() {
                 />
                 {error && <div className="auth-error">{error}</div>}
                 <button type="submit" disabled={loading}>
-                  {loading ? 'მოწმდება...' : 'დადასტურება'}
+                  {loading ? tt('mbVerifying') : tt('mbVerify')}
                 </button>
                 <button
                   type="button"
@@ -197,7 +205,7 @@ export default function MyBookingsPage() {
                     setError('');
                   }}
                 >
-                  ← ნომრის შეცვლა
+                  {tt('mbChangeNumber')}
                 </button>
               </form>
             </>
@@ -214,23 +222,24 @@ export default function MyBookingsPage() {
           <img src="/logo-nav.png" alt="Buknari Villa" style={{ height: '56px', width: 'auto' }} />
         </a>
         <div className="nav-links">
-          <a href="/#listings">ვილები</a>
+          <a href="/#listings">{tt('navListings')}</a>
           <button type="button" className="guest-logout-link" onClick={handleLogout}>
-            ნომრის შეცვლა
+            {tt('mbLogout')}
           </button>
         </div>
+        <LangSwitch />
       </nav>
 
       <main className="wrap dashboard-content">
-        <h1 className="dashboard-title">ჩემი ჯავშნები</h1>
-        <p className="guest-bookings-phone">ნომერი: {sessionPhone}</p>
+        <h1 className="dashboard-title">{tt('mbTitle')}</h1>
+        <p className="guest-bookings-phone">{tt('mbPhoneNumberPrefix')} {sessionPhone}</p>
 
-        {loading && <p className="booking-loading">იტვირთება...</p>}
+        {loading && <p className="booking-loading">{tt('loadingGeneric')}</p>}
         {error && <div className="auth-error">{error}</div>}
 
         {!loading && bookings.length === 0 && (
           <div className="empty-state">
-            <p>თქვენს ნომერზე ჯავშანი ვერ მოიძებნა.</p>
+            <p>{tt('mbEmpty')}</p>
           </div>
         )}
 
@@ -239,7 +248,7 @@ export default function MyBookingsPage() {
             <div key={b.id} className="guest-booking-card">
               <div className="guest-booking-main">
                 <a href={`/villa/${b.villa_id}`} className="guest-booking-title">
-                  {b.villas?.title || 'ვილა'}
+                  {b.villas?.title || 'Villa'}
                 </a>
                 {b.villas?.location_name && (
                   <div className="guest-booking-location">{b.villas.location_name}</div>
@@ -258,7 +267,7 @@ export default function MyBookingsPage() {
                     disabled={cancelingId === b.id}
                     onClick={() => cancelBooking(b.id)}
                   >
-                    {cancelingId === b.id ? 'მიმდინარეობს...' : 'გაუქმება'}
+                    {cancelingId === b.id ? tt('mbCancelling') : tt('mbCancelBtn')}
                   </button>
                 )}
               </div>
