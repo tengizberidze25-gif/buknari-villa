@@ -158,12 +158,15 @@ export async function POST(request) {
     // Translate title + description (best effort, does not block success)
     translateText(title, 'en')
       .then(async (titleEn) => {
-        const [titleRu, titleHy, descEn, descRu, descHy] = await Promise.all([
+        const [titleRu, titleHy, descEn, descRu, descHy, locEn, locRu, locHy] = await Promise.all([
           translateText(title, 'ru'),
           translateText(title, 'hy'),
           translateText(description, 'en'),
           translateText(description, 'ru'),
           translateText(description, 'hy'),
+          translateText(locationName, 'en'),
+          translateText(locationName, 'ru'),
+          translateText(locationName, 'hy'),
         ]);
         await supabaseAdmin
           .from('villas')
@@ -174,6 +177,9 @@ export async function POST(request) {
             description_en: descEn,
             description_ru: descRu,
             description_hy: descHy,
+            location_name_en: locEn,
+            location_name_ru: locRu,
+            location_name_hy: locHy,
             translation_status: titleEn || descEn ? 'done' : 'failed',
           })
           .eq('id', villa.id);
