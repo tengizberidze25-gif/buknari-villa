@@ -12,7 +12,7 @@ export function LanguageProvider({ children }) {
 
   useEffect(() => {
     const stored = localStorage.getItem('buknari_lang');
-    if (stored === 'ka' || stored === 'en' || stored === 'ru') {
+    if (stored === 'ka' || stored === 'en' || stored === 'ru' || stored === 'hy') {
       setLangState(stored);
     }
   }, []);
