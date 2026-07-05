@@ -23,9 +23,29 @@ export default function AddVillaPage() {
     setToken(storedToken);
   }, []);
 
+  const ALLOWED_PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'];
+  const MAX_PHOTO_SIZE = 15 * 1024 * 1024; // 15MB
+
   function handlePhotoChange(e) {
     const files = Array.from(e.target.files || []).slice(0, 20);
-    setPhotos(files);
+    const valid = [];
+    const rejected = [];
+
+    for (const file of files) {
+      const looksLikeImage =
+        ALLOWED_PHOTO_TYPES.includes(file.type) ||
+        /\.(jpe?g|png|webp|heic|heif)$/i.test(file.name);
+      if (!looksLikeImage) {
+        rejected.push(`${file.name} — მხოლოდ სურათებია დაშვებული`);
+      } else if (file.size > MAX_PHOTO_SIZE) {
+        rejected.push(`${file.name} — ზომა აღემატება 15MB-ს`);
+      } else {
+        valid.push(file);
+      }
+    }
+
+    setPhotos(valid);
+    setError(rejected.length > 0 ? `არ აიტვირთა: ${rejected.join(', ')}` : '');
   }
 
   async function handleSubmit(e) {
