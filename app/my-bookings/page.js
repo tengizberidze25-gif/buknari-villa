@@ -35,7 +35,7 @@ export default function MyBookingsPage() {
     declined: tt('statusDeclined'),
   };
 
-  const [step, setStep] = useState('phone'); // phone | code | list
+  const [step, setStep] = useState('checking'); // checking | phone | code | list
   const [phone, setPhone] = useState('');
   const [code, setCode] = useState('');
   const [token, setToken] = useState(null);
@@ -76,6 +76,8 @@ export default function MyBookingsPage() {
       setSessionPhone(ph);
       setToken(tok);
       loadBookings(ph, tok);
+    } else {
+      setStep('phone');
     }
   }, [loadBookings]);
 
@@ -157,6 +159,17 @@ export default function MyBookingsPage() {
       setError(tt('connectionError'));
     }
     setCancelingId(null);
+  }
+
+  if (step === 'checking') {
+    return (
+      <div className="auth-page">
+        <div className="auth-texture" />
+        <div className="auth-card">
+          <p className="booking-loading">{tt('loadingGeneric')}</p>
+        </div>
+      </div>
+    );
   }
 
   if (step === 'phone' || step === 'code') {
