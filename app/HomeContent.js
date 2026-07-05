@@ -194,8 +194,7 @@ export default function HomeContent({ villas }) {
                 const available = isVillaAvailable(villa.id);
                 const showBadge = checkInDate && checkOutDate && !available;
                 return (
-                  
-                    href={`/villa/${villa.id}`}
+                  <a href={`/villa/${villa.id}`}
                     className={`villa-card${showBadge ? ' villa-card-unavailable' : ''}`}
                     key={villa.id}
                   >
