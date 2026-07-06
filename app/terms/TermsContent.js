@@ -73,6 +73,7 @@ const CONTENT = {
     disclaimer:
       'ეს გვერდი ხელმისაწვდომია რამდენიმე ენაზე მოხერხებულობისთვის. დავის ან ორაზროვნების შემთხვევაში, უპირატესობა ენიჭება ქართულ ვერსიას.',
     backLink: '← მთავარ გვერდზე დაბრუნება',
+    footerPrivacy: 'კონფიდენციალურობა',
   },
   en: {
     navHome: 'Home',
@@ -144,6 +145,7 @@ const CONTENT = {
     disclaimer:
       'This page is available in several languages for convenience. In case of any dispute or ambiguity, the Georgian version shall prevail.',
     backLink: '← Back to homepage',
+    footerPrivacy: 'Privacy Policy',
   },
   ru: {
     navHome: 'Главная',
@@ -215,6 +217,7 @@ const CONTENT = {
     disclaimer:
       'Эта страница доступна на нескольких языках для удобства. В случае спора или неоднозначности приоритет имеет грузинская версия.',
     backLink: '← Вернуться на главную',
+    footerPrivacy: 'Конфиденциальность',
   },
   hy: {
     navHome: 'Գլխավոր',
@@ -286,6 +289,7 @@ const CONTENT = {
     disclaimer:
       'Այս էջը հասանելի է մի քանի լեզուներով՝ հարմարության համար։ Վեճի կամ երկիմաստության դեպքում առաջնահերթությունը տրվում է վրացերեն տարբերակին։',
     backLink: '← Վերադառնալ գլխավոր էջ',
+    footerPrivacy: 'Գաղտնիության քաղաքականություն',
   },
 };
 
@@ -367,7 +371,7 @@ export default function TermsContent() {
       <footer className="wrap footer">
         <div className="footer-logo">Buknari Villa</div>
         <a href="mailto:info@buknarivilla.ge" className="footer-email">info@buknarivilla.ge</a>
-        <a href="/privacy" className="footer-email">{lang === 'ka' ? 'კონფიდენციალურობა' : 'Privacy'}</a>
+        <a href="/privacy" className="footer-email">{c.footerPrivacy}</a>
         <div className="footer-meta">© 2026 buknarivilla.ge</div>
       </footer>
     </div>
