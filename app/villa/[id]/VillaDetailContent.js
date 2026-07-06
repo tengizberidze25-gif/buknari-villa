@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Gallery from './Gallery';
 import BookingCalendar from './BookingCalendar';
 import VillaLocationMap from './VillaLocationMap';
@@ -31,6 +32,38 @@ export default function VillaDetailContent({ villa, reviews, avgRating, photos, 
 
   const title = localized(villa, 'title', lang);
   const description = localized(villa, 'description', lang);
+
+  const [shareMenuOpen, setShareMenuOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const villaUrl = `https://www.buknarivilla.ge/villa/${villa.id}`;
+
+  async function handleShareClick() {
+    if (typeof navigator !== 'undefined' && navigator.share) {
+      try {
+        await navigator.share({ title, text: title, url: villaUrl });
+      } catch (e) {
+        // user cancelled or share failed silently — no fallback needed
+      }
+    } else {
+      setShareMenuOpen((open) => !open);
+    }
+  }
+
+  async function copyLink() {
+    try {
+      await navigator.clipboard.writeText(villaUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (e) {
+      // ignore
+    }
+  }
+
+  const shareLinks = {
+    whatsapp: `https://wa.me/?text=${encodeURIComponent(`${title} — ${villaUrl}`)}`,
+    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(villaUrl)}`,
+    telegram: `https://t.me/share/url?url=${encodeURIComponent(villaUrl)}&text=${encodeURIComponent(title)}`,
+  };
 
   return (
     <>
@@ -129,8 +162,36 @@ export default function VillaDetailContent({ villa, reviews, avgRating, photos, 
 
           <aside className="villa-detail-sidebar">
             <div className="villa-detail-price-box">
-              <div className="villa-detail-price">
-                <span>₾{villa.price_per_night || '—'}</span> {tt('perNight')}
+              <div className="villa-detail-price-row">
+                <div className="villa-detail-price">
+                  <span>₾{villa.price_per_night || '—'}</span> {tt('perNight')}
+                </div>
+                <div className="villa-share-wrap">
+                  <button
+                    type="button"
+                    className="villa-share-btn"
+                    onClick={handleShareClick}
+                    aria-label={tt('vdShare')}
+                  >
+                    ↗ {tt('vdShare')}
+                  </button>
+                  {shareMenuOpen && (
+                    <div className="villa-share-menu">
+                      <a href={shareLinks.whatsapp} target="_blank" rel="noopener noreferrer">
+                        WhatsApp
+                      </a>
+                      <a href={shareLinks.facebook} target="_blank" rel="noopener noreferrer">
+                        Facebook
+                      </a>
+                      <a href={shareLinks.telegram} target="_blank" rel="noopener noreferrer">
+                        Telegram
+                      </a>
+                      <button type="button" onClick={copyLink}>
+                        {copied ? tt('vdLinkCopied') : tt('vdCopyLink')}
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
               {whatsapp ? (
                 <a href={whatsapp} target="_blank" rel="noopener noreferrer" className="villa-detail-whatsapp">
