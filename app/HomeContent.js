@@ -262,8 +262,8 @@ export default function HomeContent({ villas }) {
       <footer className="wrap footer" id="contact">
         <div className="footer-logo">Buknari Villa</div>
         <a href="mailto:info@buknarivilla.ge" className="footer-email">info@buknarivilla.ge</a>
-        <a href="/privacy" className="footer-email">კონფიდენციალურობა</a>
-        <a href="/terms" className="footer-email">წესები</a>
+        <a href="/privacy" className="footer-email">{tt('footerPrivacy')}</a>
+        <a href="/terms" className="footer-email">{tt('footerTerms')}</a>
         <div className="footer-meta">{tt('footerMeta')}</div>
       </footer>
     </>
