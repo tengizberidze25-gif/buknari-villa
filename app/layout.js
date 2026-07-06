@@ -1,26 +1,29 @@
+import Script from 'next/script';
 import './globals.css';
 import { LanguageProvider } from './LanguageContext';
 
 export const metadata = {
   metadataBase: new URL('https://www.buknarivilla.ge'),
-  title: 'BUKNARI / ბუკნარი — ვილების და სახლების გაქირავება ბუკნარში',
+  title: 'Buknari Villa — ვილების და სახლების გაქირავება ბუკნარში',
   description: 'ზღვისპირა ვილები და სახლები ბუკნარში. დაათვალიერე, დაუკავშირდი მფლობელს WhatsApp-ით, დაჯავშნე შენი დასვენება.',
   openGraph: {
-    title: 'BUKNARI / ბუკნარი — ვილების და სახლების გაქირავება ბუკნარში',
+    title: 'Buknari Villa — ვილების და სახლების გაქირავება ბუკნარში',
     description: 'ზღვისპირა ვილები და სახლები ბუკნარში. დაათვალიერე, დაუკავშირდი მფლობელს WhatsApp-ით, დაჯავშნე შენი დასვენება.',
     url: 'https://www.buknarivilla.ge',
-    siteName: 'BUKNARI',
+    siteName: 'Buknari Villa',
     locale: 'ka_GE',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'BUKNARI / ბუკნარი — ვილების და სახლების გაქირავება ბუკნარში',
+    title: 'Buknari Villa — ვილების და სახლების გაქირავება ბუკნარში',
     description: 'ზღვისპირა ვილები და სახლები ბუკნარში. დაათვალიერე, დაუკავშირდი მფლობელს WhatsApp-ით, დაჯავშნე შენი დასვენება.',
   },
 };
 
 export default function RootLayout({ children }) {
+  const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
+
   return (
     <html lang="ka">
       <head>
@@ -32,6 +35,19 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body>
+        {gaId && (
+          <>
+            <Script src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`} strategy="afterInteractive" />
+            <Script id="ga-init" strategy="afterInteractive">
+              {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${gaId}');
+              `}
+            </Script>
+          </>
+        )}
         <LanguageProvider>{children}</LanguageProvider>
       </body>
     </html>
