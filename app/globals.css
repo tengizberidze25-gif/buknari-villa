@@ -1271,6 +1271,71 @@ a {
   color: var(--sea-bright);
 }
 
+.villa-detail-price-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.villa-share-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.villa-share-btn {
+  background: none;
+  border: 1px solid var(--glass-border);
+  color: var(--sand);
+  font-family: var(--sans);
+  font-size: 13px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.villa-share-btn:hover {
+  border-color: var(--sea-bright);
+  color: var(--sea-bright);
+}
+
+.villa-share-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: var(--bg-panel);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  z-index: 20;
+  min-width: 160px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.villa-share-menu a,
+.villa-share-menu button {
+  background: none;
+  border: none;
+  color: var(--foam);
+  font-family: var(--sans);
+  font-size: 14px;
+  text-decoration: none;
+  text-align: left;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.villa-share-menu a:hover,
+.villa-share-menu button:hover {
+  background: var(--glass-border);
+}
+
 .villa-detail-whatsapp {
   background: #25d366;
   color: #0f1210;
