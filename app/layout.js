@@ -1,6 +1,7 @@
-import Script from 'next/script';
 import './globals.css';
 import { LanguageProvider } from './LanguageContext';
+import Analytics from './Analytics';
+import CookieConsent from './CookieConsent';
 
 export const metadata = {
   metadataBase: new URL('https://www.buknarivilla.ge'),
@@ -35,20 +36,11 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body>
-        {gaId && (
-          <>
-            <Script src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`} strategy="afterInteractive" />
-            <Script id="ga-init" strategy="afterInteractive">
-              {`
-                window.dataLayer = window.dataLayer || [];
-                function gtag(){dataLayer.push(arguments);}
-                gtag('js', new Date());
-                gtag('config', '${gaId}');
-              `}
-            </Script>
-          </>
-        )}
-        <LanguageProvider>{children}</LanguageProvider>
+        <LanguageProvider>
+          {children}
+          <CookieConsent />
+        </LanguageProvider>
+        <Analytics gaId={gaId} />
       </body>
     </html>
   );
