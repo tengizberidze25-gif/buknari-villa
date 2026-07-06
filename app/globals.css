@@ -2240,3 +2240,12 @@ a {
 .legal-back {
   margin-top: 40px;
 }
+
+.legal-disclaimer {
+  font-size: 13px;
+  color: var(--sand-dim);
+  font-style: italic;
+  margin-top: 32px;
+  padding-top: 20px;
+  border-top: 1px solid var(--glass-border);
+}
