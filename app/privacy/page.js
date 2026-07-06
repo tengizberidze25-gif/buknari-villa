@@ -91,6 +91,7 @@ export default function PrivacyPage() {
       <footer className="wrap footer">
         <div className="footer-logo">Buknari Villa</div>
         <a href="mailto:info@buknarivilla.ge" className="footer-email">info@buknarivilla.ge</a>
+        <a href="/terms" className="footer-email">წესები და პირობები</a>
         <div className="footer-meta">© 2026 buknarivilla.ge</div>
       </footer>
     </div>
