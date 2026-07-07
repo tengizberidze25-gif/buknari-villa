@@ -136,9 +136,9 @@ export default function HomeContent({ villas }) {
             <br />
             {tt('heroTitleLine3')}
           </h1>
+          <p className="hero-sub">{tt('heroSub')}</p>
 
           <div className="search-panel">
-            <div className="search-field">
               <label>{tt('searchLocationLabel')}</label>
               <select value={locationFilter} onChange={(e) => setLocationFilter(e.target.value)}>
                 <option value="all">{ALL_LABEL[lang] || 'ყველა'}</option>
@@ -198,10 +198,7 @@ export default function HomeContent({ villas }) {
               <div className="section-eyebrow">{tt('sectionEyebrow')}</div>
               <h2>{tt('sectionTitle')}</h2>
             </div>
-            <div>
-              <p>{tt('sectionSub')}</p>
-              <p className="trust-note">{tt('heroSub')}</p>
-            </div>
+            <p>{tt('sectionSub')}</p>
           </div>
 
           {filteredVillas.length === 0 ? (
