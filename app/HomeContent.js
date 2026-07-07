@@ -132,7 +132,7 @@ export default function HomeContent({ villas }) {
             <div className="search-field">
               <label>{tt('searchLocationLabel')}</label>
               <select value={locationFilter} onChange={(e) => setLocationFilter(e.target.value)}>
-                <option value="all">{tt('searchLocationAll')}</option>
+                <option value="all">ყველა</option>
                 {villages.map((v) => (
                   <option key={v.id} value={v.name}>{v.name}</option>
                 ))}
