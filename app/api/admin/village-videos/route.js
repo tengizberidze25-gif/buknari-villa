@@ -45,8 +45,17 @@ export async function POST(request) {
       if (!village || !filename) {
         return Response.json({ ok: false, message: 'არასრული მოთხოვნა' }, { status: 400 });
       }
-      const safeVillage = village.replace(/[^a-zA-Zა-ჰ0-9_-]/g, '_');
-      const path = `${safeVillage}/${Date.now()}-${filename.replace(/[^a-zA-Z0-9.\-_]/g, '_')}`;
+
+      const VILLAGE_SLUGS = {
+        'ბუკნარი': 'buknari',
+        'ჩაქვი': 'chakvi',
+        'ციხისძირი': 'tsikhisdziri',
+      };
+      const safeVillage = VILLAGE_SLUGS[village] || village.replace(/[^a-zA-Z0-9_-]/g, '') || 'location';
+
+      const extMatch = filename.match(/\.([a-zA-Z0-9]+)$/);
+      const ext = extMatch ? extMatch[1] : 'mp4';
+      const path = `${safeVillage}/${Date.now()}.${ext}`;
 
       const { data, error } = await supabaseAdmin.storage
         .from('village-videos')
