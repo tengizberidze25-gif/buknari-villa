@@ -433,7 +433,7 @@ export default function AdminPage() {
 
           {!loadingVideos && villageVideos.length > 0 && (
             <div style={{ marginTop: '12px', display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
-              {villageVideos.map((v) => (
+              {villageVideos.map((v, idx) => (
                 <div key={v.id} style={{ position: 'relative' }}>
                   <video src={v.url} controls style={{ width: '200px', borderRadius: 'var(--radius-md)' }} />
                   <button
@@ -446,11 +446,30 @@ export default function AdminPage() {
                   >
                     ✕
                   </button>
+                  <div style={{ display: 'flex', justifyContent: 'center', gap: '6px', marginTop: '6px' }}>
+                    <button
+                      type="button"
+                      className="guest-logout-link"
+                      disabled={idx === 0}
+                      onClick={() => moveVideo(v, 'up')}
+                      style={{ padding: '4px 10px', fontSize: '13px' }}
+                    >
+                      ↑
+                    </button>
+                    <button
+                      type="button"
+                      className="guest-logout-link"
+                      disabled={idx === villageVideos.length - 1}
+                      onClick={() => moveVideo(v, 'down')}
+                      style={{ padding: '4px 10px', fontSize: '13px' }}
+                    >
+                      ↓
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
           )}
-        </div>
 
         <div className="admin-phone-change-box">
           <h3 className="villa-amenities-title">მფლობელის ტელეფონის შეცვლა</h3>
