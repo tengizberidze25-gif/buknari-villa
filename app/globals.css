@@ -2423,3 +2423,40 @@ a {
     align-items: stretch;
   }
 }
+
+.form-row select,
+.village-select {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--glass-border);
+  background: var(--bg-panel, #191b15);
+  color: var(--sand, #cbbfa4);
+  font-family: inherit;
+  font-size: 15px;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23cbbfa4' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 18px;
+  cursor: pointer;
+}
+
+.form-row select:disabled,
+.village-select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.form-row select:focus,
+.village-select:focus {
+  outline: none;
+  border-color: var(--accent, #a83352);
+}
+
+.form-row select option,
+.village-select option {
+  background: var(--bg-panel, #191b15);
+  color: var(--sand, #cbbfa4);
+}
