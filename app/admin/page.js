@@ -626,6 +626,13 @@ export default function AdminPage() {
                   უარყოფა
                 </button>
               )}
+<a
+href={`/admin/edit-villa/${villa.id}`}
+                className="guest-logout-link"
+                style={{ padding: '6px 14px', textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}
+              >
+                ✎ რედაქტირება
+              </a>
               <button
                 type="button"
                 className="guest-logout-link"
