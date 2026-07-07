@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
+import LocationPicker from '../LocationPicker';
 import { AMENITIES } from '../amenities';
 
 export default function AddVillaPage() {
@@ -202,20 +203,7 @@ export default function AddVillaPage() {
             </div>
           </div>
 
-          <div className="form-row">
-            <label>ვილის ადგილმდებარეობა რუკაზე (არასავალდებულო)</label>
-            <p className="form-hint">
-              გახსენი{' '}
-              <a href="https://www.google.com/maps" target="_blank" rel="noopener noreferrer">
-                Google Maps
-              </a>
-              , იპოვე შენი ვილის ადგილი, დააჭირე მარჯვენა ღილაკს ზუსტ წერტილზე და დააკოპირე გამოსული კოორდინატები (მაგ. 41.7180, 41.7550) — ჩააკოპირე ორივე ველში.
-            </p>
-            <div className="form-grid-2">
-              <input name="lat" type="number" step="any" placeholder="Latitude, მაგ. 41.7180" />
-              <input name="lng" type="number" step="any" placeholder="Longitude, მაგ. 41.7550" />
-            </div>
-          </div>
+          <LocationPicker />
 
           <div className="form-grid-3">
             <div className="form-row">
