@@ -10,6 +10,7 @@ async function getVillas() {
     .select('*, villa_photos(url, sort_order)')
     .eq('status', 'approved')
     .eq('is_available', true)
+    .order('sort_order', { ascending: true })
     .order('created_at', { ascending: false });
 
   if (error) {
