@@ -136,7 +136,7 @@ export default function HomeContent({ villas }) {
             <br />
             {tt('heroTitleLine3')}
           </h1>
-                
+
           <div className="search-panel">
             <div className="search-field">
               <label>{tt('searchLocationLabel')}</label>
@@ -203,6 +203,11 @@ export default function HomeContent({ villas }) {
               <p className="trust-note">{tt('heroSub')}</p>
             </div>
           </div>
+
+          {filteredVillas.length === 0 ? (
+            <div className="empty-state">
+              <p>{villas.length === 0 ? tt('emptyState') : tt('noResults')}</p>
+            </div>
           ) : (
             <div className="villa-grid">
               {filteredVillas.map((villa) => {
