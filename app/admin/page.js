@@ -292,6 +292,38 @@ export default function AdminPage() {
     setDeletingVideoId(null);
   }
 
+  async function moveVideo(video, direction) {
+    const idx = villageVideos.findIndex((v) => v.id === video.id);
+    const swapIdx = direction === 'up' ? idx - 1 : idx + 1;
+    if (swapIdx < 0 || swapIdx >= villageVideos.length) return;
+
+    const other = villageVideos[swapIdx];
+    const myOrder = video.sort_order;
+    const otherOrder = other.sort_order;
+
+    // Optimistic UI update
+    const newList = [...villageVideos];
+    newList[idx] = { ...other, sort_order: myOrder };
+    newList[swapIdx] = { ...video, sort_order: otherOrder };
+    setVillageVideos(newList);
+
+    try {
+      await fetch('/api/admin/village-videos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token, action: 'reorder', id: video.id, sort_order: otherOrder }),
+      });
+      await fetch('/api/admin/village-videos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token, action: 'reorder', id: other.id, sort_order: myOrder }),
+      });
+    } catch (e) {
+      // On failure, reload from server to stay consistent
+      loadVillageVideos(videoVillage, token);
+    }
+  }
+
   if (!token) {
     return (
       <div className="auth-page">
