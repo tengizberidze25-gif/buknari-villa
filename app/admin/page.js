@@ -22,6 +22,8 @@ export default function AdminPage() {
   const [backfilling, setBackfilling] = useState(false);
   const [reminding, setReminding] = useState(false);
   const [remindMsg, setRemindMsg] = useState('');
+  const [backfillingVillage, setBackfillingVillage] = useState(false);
+  const [backfillVillageMsg, setBackfillVillageMsg] = useState('');
   const [backfillMsg, setBackfillMsg] = useState('');
   const [oldPhone, setOldPhone] = useState('');
   const [newPhone, setNewPhone] = useState('');
@@ -162,6 +164,27 @@ export default function AdminPage() {
       setBackfillMsg('კავშირის შეცდომა');
     }
     setBackfilling(false);
+  }
+
+  async function backfillVillage() {
+    setBackfillingVillage(true);
+    setBackfillVillageMsg('');
+    try {
+      const res = await fetch('/api/admin/backfill-village', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        setBackfillVillageMsg(`${data.updated} ვილას მიენიჭა "ბუკნარი" ✓`);
+      } else {
+        setBackfillVillageMsg(data.message || 'დაფიქსირდა შეცდომა');
+      }
+    } catch (e) {
+      setBackfillVillageMsg('კავშირის შეცდომა');
+    }
+    setBackfillingVillage(false);
   }
 
   async function remindOwnersLocation() {
