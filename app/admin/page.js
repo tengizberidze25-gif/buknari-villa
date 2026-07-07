@@ -29,6 +29,7 @@ export default function AdminPage() {
   const [newPhone, setNewPhone] = useState('');
   const [changingPhone, setChangingPhone] = useState(false);
   const [phoneChangeMsg, setPhoneChangeMsg] = useState('');
+  const [reorderingId, setReorderingId] = useState(null);
 
   // --- Village videos state ---
   const [villages, setVillages] = useState([]);
@@ -345,6 +346,43 @@ export default function AdminPage() {
     }
   }
 
+  async function moveVilla(villa, direction, list) {
+    const idx = list.findIndex((v) => v.id === villa.id);
+    const swapIdx = direction === 'up' ? idx - 1 : idx + 1;
+    if (swapIdx < 0 || swapIdx >= list.length) return;
+
+    const other = list[swapIdx];
+    const myOrder = villa.sort_order || 0;
+    const otherOrder = other.sort_order || 0;
+
+    setReorderingId(villa.id);
+
+    // Optimistic UI update
+    setVillas((all) =>
+      all.map((v) => {
+        if (v.id === villa.id) return { ...v, sort_order: otherOrder };
+        if (v.id === other.id) return { ...v, sort_order: myOrder };
+        return v;
+      })
+    );
+
+    try {
+      await fetch('/api/admin/villas/reorder', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token, id: villa.id, sort_order: otherOrder }),
+      });
+      await fetch('/api/admin/villas/reorder', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token, id: other.id, sort_order: myOrder }),
+      });
+    } catch (e) {
+      load();
+    }
+    setReorderingId(null);
+  }
+
   if (!token) {
     return (
       <div className="auth-page">
@@ -369,7 +407,9 @@ export default function AdminPage() {
     );
   }
 
-  const filtered = villas.filter((v) => (filter === 'all' ? true : v.status === filter));
+  const filtered = villas
+    .filter((v) => (filter === 'all' ? true : v.status === filter))
+    .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
 
   return (
     <div className="dashboard-page">
@@ -550,7 +590,7 @@ export default function AdminPage() {
           </div>
         )}
 
-        {filtered.map((villa) => (
+        {filtered.map((villa, idx) => (
           <div key={villa.id} className="dashboard-villa-section">
             <div className="admin-villa-header">
               <div>
@@ -567,25 +607,44 @@ export default function AdminPage() {
               </span>
             </div>
 
-            {villa.status !== 'approved' && (
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+              {villa.status !== 'approved' && (
+                <button
+                  disabled={actingId === villa.id}
+                  className="btn-confirm"
+                  onClick={() => respond(villa.id, 'approve')}
+                >
+                  დამტკიცება
+                </button>
+              )}
+              {villa.status !== 'declined' && (
+                <button
+                  disabled={actingId === villa.id}
+                  className="btn-decline"
+                  onClick={() => respond(villa.id, 'decline')}
+                >
+                  უარყოფა
+                </button>
+              )}
               <button
-                disabled={actingId === villa.id}
-                className="btn-confirm"
-                onClick={() => respond(villa.id, 'approve')}
-                style={{ marginRight: 8 }}
+                type="button"
+                className="guest-logout-link"
+                disabled={idx === 0 || reorderingId === villa.id}
+                onClick={() => moveVilla(villa, 'up', filtered)}
+                style={{ padding: '6px 14px' }}
               >
-                დამტკიცება
+                ↑ წინ
               </button>
-            )}
-            {villa.status !== 'declined' && (
               <button
-                disabled={actingId === villa.id}
-                className="btn-decline"
-                onClick={() => respond(villa.id, 'decline')}
+                type="button"
+                className="guest-logout-link"
+                disabled={idx === filtered.length - 1 || reorderingId === villa.id}
+                onClick={() => moveVilla(villa, 'down', filtered)}
+                style={{ padding: '6px 14px' }}
               >
-                უარყოფა
+                ↓ უკან
               </button>
-            )}
+            </div>
           </div>
         ))}
       </main>
