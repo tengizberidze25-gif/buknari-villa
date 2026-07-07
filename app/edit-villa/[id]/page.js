@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '../../../lib/supabase';
+import LocationPicker from '../../LocationPicker';
 import { AMENITIES } from '../../amenities';
 
 export default function EditVillaPage({ params }) {
@@ -277,13 +278,7 @@ export default function EditVillaPage({ params }) {
             </div>
           </div>
 
-          <div className="form-row">
-            <label>ვილის ადგილმდებარეობა რუკაზე (არასავალდებულო)</label>
-            <div className="form-grid-2">
-              <input name="lat" type="number" step="any" defaultValue={villa.lat || ''} placeholder="Latitude" />
-              <input name="lng" type="number" step="any" defaultValue={villa.lng || ''} placeholder="Longitude" />
-            </div>
-          </div>
+          <LocationPicker initialLat={villa.lat} initialLng={villa.lng} />
 
           <div className="form-grid-3">
             <div className="form-row">
