@@ -139,6 +139,7 @@ export default function HomeContent({ villas }) {
           <p className="hero-sub">{tt('heroSub')}</p>
 
           <div className="search-panel">
+            <div className="search-field">
               <label>{tt('searchLocationLabel')}</label>
               <select value={locationFilter} onChange={(e) => setLocationFilter(e.target.value)}>
                 <option value="all">{ALL_LABEL[lang] || 'ყველა'}</option>
