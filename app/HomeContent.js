@@ -31,10 +31,7 @@ function villaLocation(villa, lang) {
 
 function matchesLocation(villa, filter) {
   if (filter === 'all') return true;
-  const loc = (villa.location_name || '').toLowerCase();
-  if (filter === 'firstline') return loc.includes('პირველი') || loc.includes('ზღვასთან') || loc.includes('ზღვის');
-  if (filter === 'center') return loc.includes('ცენტრ');
-  return true;
+  return villa.village === filter;
 }
 
 export default function HomeContent({ villas }) {
@@ -46,12 +43,22 @@ export default function HomeContent({ villas }) {
   const [checkInDate, setCheckInDate] = useState('');
   const [checkOutDate, setCheckOutDate] = useState('');
   const [availabilityMap, setAvailabilityMap] = useState({});
+  const [villages, setVillages] = useState([]);
 
   useEffect(() => {
     fetch('/api/villas-availability')
       .then((res) => res.json())
       .then((data) => {
         if (data.ok) setAvailabilityMap(data.availability);
+      })
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    fetch('/api/villages')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.ok) setVillages(data.villages);
       })
       .catch(() => {});
   }, []);
@@ -126,8 +133,9 @@ export default function HomeContent({ villas }) {
               <label>{tt('searchLocationLabel')}</label>
               <select value={locationFilter} onChange={(e) => setLocationFilter(e.target.value)}>
                 <option value="all">{tt('searchLocationAll')}</option>
-                <option value="firstline">{tt('searchLocationFirstline')}</option>
-                <option value="center">{tt('searchLocationCenter')}</option>
+                {villages.map((v) => (
+                  <option key={v.id} value={v.name}>{v.name}</option>
+                ))}
               </select>
             </div>
             <div className="search-field">
