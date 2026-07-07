@@ -1,22 +1,8 @@
 'use client';
 
-import { MapContainer, TileLayer, Marker, Popup, LayersControl } from 'react-leaflet';
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
+import { useEffect, useRef, useState } from 'react';
 
-// Leaflet's default marker icons don't resolve correctly with Next.js bundling —
-// point them at the CDN copies instead.
-const markerIcon = new L.Icon({
-  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41],
-});
-
-const BUKNARI_CENTER = [41.718, 41.755];
+const BUKNARI_CENTER = { lat: 41.718, lng: 41.755 };
 
 function coverPhoto(villa) {
   if (!villa.villa_photos || villa.villa_photos.length === 0) return null;
@@ -24,56 +10,116 @@ function coverPhoto(villa) {
   return sorted[0].url;
 }
 
+let googleMapsLoadingPromise = null;
+
+function loadGoogleMaps(apiKey) {
+  if (typeof window !== 'undefined' && window.google?.maps) {
+    return Promise.resolve(window.google);
+  }
+  if (googleMapsLoadingPromise) return googleMapsLoadingPromise;
+
+  googleMapsLoadingPromise = new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}`;
+    script.async = true;
+    script.onload = () => resolve(window.google);
+    script.onerror = reject;
+    document.head.appendChild(script);
+  });
+
+  return googleMapsLoadingPromise;
+}
+
 export default function VillaMap({ villas, villaTitle, lang }) {
+  const mapRef = useRef(null);
+  const mapInstance = useRef(null);
+  const markersRef = useRef([]);
+  const [loadError, setLoadError] = useState(false);
+
   const withCoords = villas.filter((v) => v.lat && v.lng);
 
-  if (withCoords.length === 0) {
-    return null;
-  }
+  useEffect(() => {
+    const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+    if (!apiKey || withCoords.length === 0) return;
 
-  const center =
-    withCoords.length > 0
-      ? [
-          withCoords.reduce((s, v) => s + Number(v.lat), 0) / withCoords.length,
-          withCoords.reduce((s, v) => s + Number(v.lng), 0) / withCoords.length,
-        ]
-      : BUKNARI_CENTER;
+    let cancelled = false;
+
+    loadGoogleMaps(apiKey)
+      .then((google) => {
+        if (cancelled || !mapRef.current) return;
+
+        const center =
+          withCoords.length > 0
+            ? {
+                lat: withCoords.reduce((s, v) => s + Number(v.lat), 0) / withCoords.length,
+                lng: withCoords.reduce((s, v) => s + Number(v.lng), 0) / withCoords.length,
+              }
+            : BUKNARI_CENTER;
+
+        if (!mapInstance.current) {
+          mapInstance.current = new google.maps.Map(mapRef.current, {
+            center,
+            zoom: 13,
+            mapTypeId: 'satellite',
+            mapTypeControl: true,
+            streetViewControl: false,
+            fullscreenControl: false,
+          });
+        } else {
+          mapInstance.current.setCenter(center);
+        }
+
+        // Clear previous markers before re-adding (villas list can change with filters)
+        markersRef.current.forEach((m) => m.setMap(null));
+        markersRef.current = [];
+
+        const infoWindow = new google.maps.InfoWindow();
+
+        withCoords.forEach((villa) => {
+          const marker = new google.maps.Marker({
+            position: { lat: Number(villa.lat), lng: Number(villa.lng) },
+            map: mapInstance.current,
+            title: villaTitle ? villaTitle(villa, lang) : villa.title,
+          });
+
+          marker.addListener('click', () => {
+            const photo = coverPhoto(villa);
+            const title = villaTitle ? villaTitle(villa, lang) : villa.title;
+            infoWindow.setContent(`
+              <div class="villa-map-popup">
+                ${photo ? `<img src="${photo}" alt="" class="villa-map-popup-photo" />` : ''}
+                <strong>${title}</strong>
+                <div>${villa.location_name || ''}</div>
+                <div class="villa-map-popup-price">₾${villa.price_per_night} / ღამე</div>
+                <a href="/villa/${villa.id}">ნახვა →</a>
+              </div>
+            `);
+            infoWindow.open(mapInstance.current, marker);
+          });
+
+          markersRef.current.push(marker);
+        });
+      })
+      .catch(() => setLoadError(true));
+
+    return () => {
+      cancelled = true;
+    };
+  }, [villas, lang]);
+
+  if (withCoords.length === 0) return null;
+
+  if (loadError) {
+    return (
+      <div className="villa-map-wrap">
+        <p className="dashboard-empty-hint">რუკის ჩატვირთვა ვერ მოხერხდა.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="villa-map-wrap">
-      <MapContainer center={center} zoom={13} scrollWheelZoom={false} style={{ height: '480px', width: '100%' }}>
-        <LayersControl position="topright">
-          <LayersControl.BaseLayer checked name="სატელიტი">
-            <TileLayer
-              attribution='Imagery &copy; Esri'
-              url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-              maxZoom={19}
-            />
-          </LayersControl.BaseLayer>
-          <LayersControl.BaseLayer name="რუკა">
-            <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-          </LayersControl.BaseLayer>
-        </LayersControl>
-        {withCoords.map((villa) => {
-          const photo = coverPhoto(villa);
-          return (
-            <Marker key={villa.id} position={[Number(villa.lat), Number(villa.lng)]} icon={markerIcon}>
-              <Popup>
-                <div className="villa-map-popup">
-                  {photo && <img src={photo} alt="" className="villa-map-popup-photo" />}
-                  <strong>{villaTitle ? villaTitle(villa, lang) : villa.title}</strong>
-                  <div>{villa.location_name}</div>
-                  <div className="villa-map-popup-price">₾{villa.price_per_night} / ღამე</div>
-                  <a href={`/villa/${villa.id}`}>ნახვა →</a>
-                </div>
-              </Popup>
-            </Marker>
-          );
-        })}
-      </MapContainer>
+      <div ref={mapRef} style={{ height: '480px', width: '100%' }} />
     </div>
   );
 }
