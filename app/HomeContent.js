@@ -236,6 +236,7 @@ export default function HomeContent({ villas }) {
               <h2>{tt('mapTitle')}</h2>
             </div>
           </div>
+          {console.log('🗺️ MAP SECTION: filteredVillas =', filteredVillas.length, filteredVillas)}
           <VillaMap villas={filteredVillas} villaTitle={villaTitle} lang={lang} />
         </section>
 
