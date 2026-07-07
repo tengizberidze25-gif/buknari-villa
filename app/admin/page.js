@@ -362,19 +362,31 @@ export default function AdminPage() {
           <p className="dashboard-empty-hint">
             აირჩიეთ სოფელი/დაბა და ატვირთეთ ვიდეო (მაქს. 50MB) — მომხმარებელი ამ ვიდეოს დაინახავს, როცა ამ ლოკაციას აირჩევს.
           </p>
-          <div className="dashboard-block-form">
-            <select value={videoVillage} onChange={(e) => setVideoVillage(e.target.value)}>
-              {villages.map((v) => (
-                <option key={v.id} value={v.name}>{v.name}</option>
-              ))}
-            </select>
-            <input
-              type="file"
-              accept="video/*"
-              onChange={(e) => setVideoFile(e.target.files?.[0] || null)}
-            />
-            <button disabled={uploadingVideo} onClick={handleUploadVideo}>
-              {uploadingVideo ? 'იტვირთება...' : 'ვიდეოს ატვირთვა'}
+          <div className="video-upload-form">
+            <div className="video-upload-field">
+              <label>სოფელი / დაბა</label>
+              <select value={videoVillage} onChange={(e) => setVideoVillage(e.target.value)}>
+                {villages.map((v) => (
+                  <option key={v.id} value={v.name}>{v.name}</option>
+                ))}
+              </select>
+            </div>
+            <div className="video-upload-field">
+              <label>ვიდეო ფაილი</label>
+              <input
+                type="file"
+                accept="video/*"
+                onChange={(e) => setVideoFile(e.target.files?.[0] || null)}
+              />
+              {videoFile && <span className="video-upload-filename">{videoFile.name}</span>}
+            </div>
+            <button
+              type="button"
+              className="video-upload-btn"
+              disabled={uploadingVideo || !videoFile}
+              onClick={handleUploadVideo}
+            >
+              {uploadingVideo ? 'იტვირთება...' : '+ ვიდეოს ატვირთვა'}
             </button>
           </div>
           {videoMsg && <p className="dashboard-empty-hint" style={{ marginTop: '8px' }}>{videoMsg}</p>}
