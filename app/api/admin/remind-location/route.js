@@ -86,7 +86,10 @@ export async function POST(request) {
       if (!normalized || seenPhones.has(normalized)) continue;
       seenPhones.add(normalized);
 
-      const text = `ბუკნარი ვილა: გთხოვთ შეხვიდეთ თქვენს კაბინეტში (buknarivilla.ge) და მონიშნეთ თქვენი ვილის ზუსტი ადგილმდებარეობა რუკაზე — ეს დაეხმარება სტუმრებს იპოვონ თქვენი ვილა.`;
+      const ownerName = (villa.owners?.full_name || '').trim();
+      const greeting = ownerName ? `გამარჯობა, ${ownerName}! ` : '';
+
+      const text = `${greeting}ბუკნარი ვილა: გთხოვთ შეხვიდეთ თქვენს კაბინეტში (buknarivilla.ge) და მონიშნეთ თქვენი ვილის ზუსტი ადგილმდებარეობა რუკაზე — ეს დაეხმარება სტუმრებს იპოვონ თქვენი ვილა.`;
 
       const ok = await sendSms(normalized, text);
       if (ok) sent++;
