@@ -22,6 +22,15 @@ function villaTitle(villa, lang) {
   return villa.title;
 }
 
+function villageLabel(village, lang) {
+  if (lang === 'en' && village.name_en) return village.name_en;
+  if (lang === 'ru' && village.name_ru) return village.name_ru;
+  if (lang === 'hy' && village.name_hy) return village.name_hy;
+  return village.name;
+}
+
+const ALL_LABEL = { ge: 'ყველა', en: 'All', ru: 'Все', hy: 'Բոլորը' };
+
 function villaLocation(villa, lang) {
   if (lang === 'en' && villa.location_name_en) return villa.location_name_en;
   if (lang === 'ru' && villa.location_name_ru) return villa.location_name_ru;
