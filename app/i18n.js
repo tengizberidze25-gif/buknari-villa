@@ -12,7 +12,7 @@ export const dict = {
     heroSub:
       'თანამედროვე ვილები და კოტეჯები ბუკნარის სანაპიროზე, პანორამული ზღვის ხედებით. დაჯავშნე პირდაპირ მფლობელისგან, შუამავლების გარეშე.',
     searchLocationLabel: 'ლოკაცია',
-    searchLocationAll: 'მთელი ბუკნარი',
+    searchLocationAll: 'ბუკნარი',
     searchLocationFirstline: 'პირველი ხაზი',
     searchLocationCenter: 'ცენტრი',
     searchGuestsLabel: 'სტუმრები',
