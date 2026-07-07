@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { supabase } from '../../lib/supabase';
 
 const STATUS_LABELS = {
   pending: 'მოლოდინში',
@@ -27,13 +28,26 @@ export default function AdminPage() {
   const [changingPhone, setChangingPhone] = useState(false);
   const [phoneChangeMsg, setPhoneChangeMsg] = useState('');
 
+  // --- Village videos state ---
+  const [villages, setVillages] = useState([]);
+  const [videoVillage, setVideoVillage] = useState('');
+  const [videoFile, setVideoFile] = useState(null);
+  const [uploadingVideo, setUploadingVideo] = useState(false);
+  const [videoMsg, setVideoMsg] = useState('');
+  const [villageVideos, setVillageVideos] = useState([]);
+  const [loadingVideos, setLoadingVideos] = useState(false);
+  const [deletingVideoId, setDeletingVideoId] = useState(null);
+
   useEffect(() => {
     const stored = localStorage.getItem('buknari_admin_token');
     if (stored) setToken(stored);
   }, []);
 
   useEffect(() => {
-    if (token) load();
+    if (token) {
+      load();
+      loadVillages();
+    }
   }, [token]);
 
   async function handleLogin(e) {
@@ -77,6 +91,42 @@ export default function AdminPage() {
       .finally(() => setLoading(false));
   }
 
+  function loadVillages() {
+    fetch('/api/villages')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.ok) {
+          setVillages(data.villages);
+          if (data.villages.length > 0 && !videoVillage) {
+            setVideoVillage(data.villages[0].name);
+          }
+        }
+      })
+      .catch(() => {});
+  }
+
+  function loadVillageVideos(villageName, currentToken) {
+    if (!villageName) return;
+    setLoadingVideos(true);
+    fetch('/api/admin/village-videos', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: currentToken || token, action: 'list' }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.ok) {
+          setVillageVideos(data.videos.filter((v) => v.village === villageName));
+        }
+      })
+      .catch(() => {})
+      .finally(() => setLoadingVideos(false));
+  }
+
+  useEffect(() => {
+    if (token && videoVillage) loadVillageVideos(videoVillage, token);
+  }, [videoVillage, token]);
+
   async function respond(villaId, action) {
     setActingId(villaId);
     try {
@@ -115,25 +165,25 @@ export default function AdminPage() {
   }
 
   async function remindOwnersLocation() {
-  setReminding(true);
-  setRemindMsg('');
-  try {
-    const res = await fetch('/api/admin/remind-location', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token }),
-    });
-    const data = await res.json();
-    if (data.ok) {
-      setRemindMsg(`გაეგზავნა ${data.sent} SMS (სულ ${data.totalMissing} ვილას აკლია ლოკაცია).`);
-    } else {
-      setRemindMsg(data.message || 'დაფიქსირდა შეცდომა');
+    setReminding(true);
+    setRemindMsg('');
+    try {
+      const res = await fetch('/api/admin/remind-location', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        setRemindMsg(`გაეგზავნა ${data.sent} SMS (სულ ${data.totalMissing} ვილას აკლია ლოკაცია).`);
+      } else {
+        setRemindMsg(data.message || 'დაფიქსირდა შეცდომა');
+      }
+    } catch (e) {
+      setRemindMsg('კავშირის შეცდომა');
     }
-  } catch (e) {
-    setRemindMsg('კავშირის შეცდომა');
+    setReminding(false);
   }
-  setReminding(false);
-}
 
   async function changeOwnerPhone() {
     if (!oldPhone.trim() || !newPhone.trim()) {
@@ -160,6 +210,86 @@ export default function AdminPage() {
       setPhoneChangeMsg('კავშირის შეცდომა');
     }
     setChangingPhone(false);
+  }
+
+  async function handleUploadVideo() {
+    if (!videoVillage || !videoFile) {
+      setVideoMsg('აირჩიეთ სოფელი/დაბა და ვიდეო ფაილი');
+      return;
+    }
+    setUploadingVideo(true);
+    setVideoMsg('');
+    try {
+      const urlRes = await fetch('/api/admin/village-videos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          token,
+          action: 'get-upload-url',
+          village: videoVillage,
+          filename: videoFile.name,
+        }),
+      });
+      const urlData = await urlRes.json();
+      if (!urlData.ok) {
+        setVideoMsg(urlData.message || 'ატვირთვის მომზადება ვერ მოხერხდა');
+        setUploadingVideo(false);
+        return;
+      }
+
+      const { error: uploadError } = await supabase.storage
+        .from('village-videos')
+        .uploadToSignedUrl(urlData.path, urlData.token, videoFile);
+
+      if (uploadError) {
+        setVideoMsg('ატვირთვა ვერ მოხერხდა: ' + uploadError.message);
+        setUploadingVideo(false);
+        return;
+      }
+
+      const confirmRes = await fetch('/api/admin/village-videos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          token,
+          action: 'confirm',
+          village: videoVillage,
+          path: urlData.path,
+        }),
+      });
+      const confirmData = await confirmRes.json();
+      if (!confirmData.ok) {
+        setVideoMsg(confirmData.message || 'ვიდეოს დამატება ვერ მოხერხდა');
+        setUploadingVideo(false);
+        return;
+      }
+
+      setVideoMsg('ვიდეო წარმატებით აიტვირთა ✓');
+      setVideoFile(null);
+      loadVillageVideos(videoVillage, token);
+    } catch (e) {
+      setVideoMsg('კავშირის შეცდომა');
+    }
+    setUploadingVideo(false);
+  }
+
+  async function deleteVideo(videoId) {
+    if (!confirm('წავშალო ეს ვიდეო?')) return;
+    setDeletingVideoId(videoId);
+    try {
+      const res = await fetch('/api/admin/village-videos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token, action: 'delete', id: videoId }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        setVillageVideos((list) => list.filter((v) => v.id !== videoId));
+      }
+    } catch (e) {
+      // ignore
+    }
+    setDeletingVideoId(null);
   }
 
   if (!token) {
@@ -215,7 +345,7 @@ export default function AdminPage() {
           {backfillMsg && <p className="dashboard-empty-hint" style={{ marginTop: '8px' }}>{backfillMsg}</p>}
         </div>
 
-            <div style={{ marginBottom: '24px' }}>
+        <div style={{ marginBottom: '24px' }}>
           <button
             type="button"
             className="guest-logout-link"
@@ -225,6 +355,57 @@ export default function AdminPage() {
             {reminding ? 'იგზავნება...' : 'SMS შეხსენება — ვილის ადგილმდებარეობის მონიშვნა'}
           </button>
           {remindMsg && <p className="dashboard-empty-hint" style={{ marginTop: '8px' }}>{remindMsg}</p>}
+        </div>
+
+        <div className="admin-phone-change-box">
+          <h3 className="villa-amenities-title">სოფლების/დაბების ვიდეოები</h3>
+          <p className="dashboard-empty-hint">
+            აირჩიეთ სოფელი/დაბა და ატვირთეთ ვიდეო (მაქს. 50MB) — მომხმარებელი ამ ვიდეოს დაინახავს, როცა ამ ლოკაციას აირჩევს.
+          </p>
+          <div className="dashboard-block-form">
+            <select value={videoVillage} onChange={(e) => setVideoVillage(e.target.value)}>
+              {villages.map((v) => (
+                <option key={v.id} value={v.name}>{v.name}</option>
+              ))}
+            </select>
+            <input
+              type="file"
+              accept="video/*"
+              onChange={(e) => setVideoFile(e.target.files?.[0] || null)}
+            />
+            <button disabled={uploadingVideo} onClick={handleUploadVideo}>
+              {uploadingVideo ? 'იტვირთება...' : 'ვიდეოს ატვირთვა'}
+            </button>
+          </div>
+          {videoMsg && <p className="dashboard-empty-hint" style={{ marginTop: '8px' }}>{videoMsg}</p>}
+
+          {loadingVideos && <p className="dashboard-empty-hint" style={{ marginTop: '12px' }}>იტვირთება...</p>}
+
+          {!loadingVideos && villageVideos.length === 0 && (
+            <p className="dashboard-empty-hint" style={{ marginTop: '12px' }}>
+              {videoVillage}-ს ჯერ არ აქვს ვიდეო.
+            </p>
+          )}
+
+          {!loadingVideos && villageVideos.length > 0 && (
+            <div style={{ marginTop: '12px', display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
+              {villageVideos.map((v) => (
+                <div key={v.id} style={{ position: 'relative' }}>
+                  <video src={v.url} controls style={{ width: '200px', borderRadius: 'var(--radius-md)' }} />
+                  <button
+                    type="button"
+                    className="existing-photo-remove"
+                    disabled={deletingVideoId === v.id}
+                    onClick={() => deleteVideo(v.id)}
+                    style={{ position: 'absolute', top: '6px', right: '6px' }}
+                    aria-label="ვიდეოს წაშლა"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="admin-phone-change-box">
