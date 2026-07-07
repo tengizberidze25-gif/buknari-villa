@@ -402,6 +402,18 @@ export default function AdminPage() {
           <button
             type="button"
             className="guest-logout-link"
+            disabled={backfillingVillage}
+            onClick={backfillVillage}
+          >
+            {backfillingVillage ? 'მიმდინარეობს...' : 'ყველა ვილას "ბუკნარი" მინიჭება (ერთჯერადი)'}
+          </button>
+          {backfillVillageMsg && <p className="dashboard-empty-hint" style={{ marginTop: '8px' }}>{backfillVillageMsg}</p>}
+        </div>
+
+        <div style={{ marginBottom: '24px' }}>
+          <button
+            type="button"
+            className="guest-logout-link"
             disabled={reminding}
             onClick={remindOwnersLocation}
           >
