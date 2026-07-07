@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../../../lib/supabase';
 import LocationPicker from '../../LocationPicker';
 import VillageSelect from '../../VillageSelect';
+import SubLocationSelect from '../../SubLocationSelect';
 import { AMENITIES } from '../../amenities';
 
 export default function EditVillaPage({ params }) {
@@ -21,6 +22,7 @@ export default function EditVillaPage({ params }) {
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState('');
   const [saved, setSaved] = useState(false);
+  const [selectedVillage, setSelectedVillage] = useState('');
 
   useEffect(() => {
     const storedOwnerId = localStorage.getItem('buknari_owner_id');
@@ -44,6 +46,7 @@ export default function EditVillaPage({ params }) {
         } else {
           setVilla(data.villa);
           setExistingPhotos(data.villa.villa_photos || []);
+          setSelectedVillage(data.villa.village || '');
         }
       })
       .catch(() => setError('კავშირის შეცდომა'))
@@ -182,7 +185,6 @@ export default function EditVillaPage({ params }) {
         return;
       }
 
-      // Upload any newly added photos
       const startSortOrder = existingPhotos.length;
       for (let i = 0; i < newPhotos.length; i++) {
         const file = newPhotos[i];
@@ -215,211 +217,3 @@ export default function EditVillaPage({ params }) {
       }
 
       setSaved(true);
-      setNewPhotos([]);
-      setTimeout(() => setSaved(false), 4000);
-    } catch (err) {
-      setError('კავშირის შეცდომა, სცადეთ თავიდან');
-    }
-    setSaving(false);
-  }
-
-  async function handleDelete() {
-    if (!confirm('დარწმუნებული ხართ, რომ გსურთ ამ ვილის სამუდამოდ წაშლა? ეს მოქმედება ვერ გაუქმდება.')) return;
-    setDeleting(true);
-    setError('');
-    try {
-      const res = await fetch('/api/owner/villa/delete', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ownerId, token, villaId }),
-      });
-      const data = await res.json();
-      if (data.ok) {
-        window.location.href = '/dashboard';
-      } else {
-        setError(data.message || 'წაშლა ვერ მოხერხდა');
-        setDeleting(false);
-      }
-    } catch (e) {
-      setError('კავშირის შეცდომა');
-      setDeleting(false);
-    }
-  }
-
-  if (loading) {
-    return (
-      <div className="auth-page">
-        <div className="auth-texture" />
-        <div className="auth-card">
-          <p className="booking-loading">იტვირთება...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!villa) {
-    return (
-      <div className="auth-page">
-        <div className="auth-texture" />
-        <div className="auth-card">
-          <a href="/" className="auth-logo">
-            <img src="/logo-nav.png" alt="Buknari Villa" style={{ height: '34px', width: 'auto' }} />
-          </a>
-          <div className="auth-error">{error || 'ვილა ვერ მოიძებნა'}</div>
-          <a href="/dashboard" className="auth-cta">
-            დაშბორდზე დაბრუნება →
-          </a>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="form-page">
-      <div className="auth-texture" />
-      <div className="form-card">
-        <a href="/" className="auth-logo">
-          <img src="/logo-nav.png" alt="Buknari Villa" style={{ height: '34px', width: 'auto' }} />
-        </a>
-        <h1>ვილის რედაქტირება</h1>
-        <p className="auth-sub">ცვლილებები დაუყოვნებლივ აისახება საიტზე. სათაური/აღწერა/ლოკაცია ავტომატურად ხელახლა ითარგმნება.</p>
-
-        <form onSubmit={handleSubmit}>
-          <div className="form-row">
-            <label>სათაური *</label>
-            <input name="title" type="text" defaultValue={villa.title} required />
-          </div>
-
-          <div className="form-row">
-            <label>აღწერა</label>
-            <textarea name="description" rows={4} defaultValue={villa.description || ''} />
-          </div>
-
-          <VillageSelect initialValue={villa.village} />
-
-          <div className="form-grid-2">
-            <div className="form-row">
-              <label>ლოკაცია</label>
-              <input name="location_name" type="text" defaultValue={villa.location_name || ''} />
-            </div>
-            <div className="form-row">
-              <label>ფასი ღამეში (₾) *</label>
-              <input name="price_per_night" type="number" min="1" defaultValue={villa.price_per_night || ''} required />
-            </div>
-          </div>
-
-          <LocationPicker initialLat={villa.lat} initialLng={villa.lng} />
-
-          <div className="form-grid-3">
-            <div className="form-row">
-              <label>სტუმრები</label>
-              <input name="max_guests" type="number" min="1" defaultValue={villa.max_guests || ''} />
-            </div>
-            <div className="form-row">
-              <label>საძინებელი</label>
-              <input name="bedrooms" type="number" min="0" defaultValue={villa.bedrooms || ''} />
-            </div>
-            <div className="form-row">
-              <label>სააბაზანო</label>
-              <input name="bathrooms" type="number" min="0" defaultValue={villa.bathrooms || ''} />
-            </div>
-          </div>
-
-          <div className="form-row">
-            <label>კეთილმოწყობა</label>
-            <div className="amenities-grid">
-              {AMENITIES.map((a) => (
-                <label key={a.key} className="amenity-checkbox">
-                  <input
-                    type="checkbox"
-                    name="amenities"
-                    value={a.key}
-                    defaultChecked={(villa.amenities || []).includes(a.key)}
-                  />
-                  <span>{a.icon} {a.label}</span>
-                </label>
-              ))}
-            </div>
-          </div>
-
-          <div className="form-grid-2">
-            <div className="form-row">
-              <label>საკონტაქტო ტელეფონი</label>
-              <input name="contact_phone" type="tel" defaultValue={villa.contact_phone || ''} />
-            </div>
-            <div className="form-row">
-              <label>WhatsApp ნომერი</label>
-              <input name="contact_whatsapp" type="tel" defaultValue={villa.contact_whatsapp || ''} />
-            </div>
-          </div>
-
-          <div className="form-row">
-            <label>არსებული ფოტოები</label>
-            {existingPhotos.length === 0 && <p className="form-hint">ფოტო ჯერ არ არის დამატებული.</p>}
-            {existingPhotos.length > 0 && (
-              <div className="existing-photo-grid">
-                {existingPhotos.map((p, idx) => (
-                  <div key={p.id} className="existing-photo-item">
-                    <img src={p.url} alt="" />
-                    {idx === 0 && <span className="existing-photo-cover-badge">მთავარი</span>}
-                    {idx !== 0 && (
-                      <button
-                        type="button"
-                        className="existing-photo-set-cover"
-                        disabled={settingCoverId === p.id}
-                        onClick={() => setCoverPhoto(p.id)}
-                        aria-label="მთავარ ფოტოდ დაყენება"
-                        title="მთავარ ფოტოდ დაყენება"
-                      >
-                        ★
-                      </button>
-                    )}
-                    <button
-                      type="button"
-                      className="existing-photo-remove"
-                      disabled={removingPhotoId === p.id}
-                      onClick={() => removeExistingPhoto(p.id)}
-                      aria-label="ფოტოს წაშლა"
-                    >
-                      ✕
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          <div className="form-row">
-            <label>ახალი ფოტოების დამატება (მაქს. 20)</label>
-            <input type="file" accept="image/*" multiple onChange={handlePhotoChange} />
-            {newPhotos.length > 0 && (
-              <div className="photo-preview-list">
-                {newPhotos.map((file, i) => (
-                  <div className="photo-preview" key={i}>{file.name}</div>
-                ))}
-              </div>
-            )}
-            {convertingPhotos && (
-              <p className="dashboard-empty-hint" style={{ marginTop: '8px' }}>
-                HEIC ფოტოები მუშავდება, გთხოვთ დაელოდოთ...
-              </p>
-            )}
-          </div>
-
-          {error && <div className="auth-error">{error}</div>}
-          {saved && <p className="dashboard-empty-hint">ცვლილებები შენახულია ✓</p>}
-
-          <button type="submit" disabled={saving || convertingPhotos}>
-            {saving ? 'ინახება...' : 'ცვლილებების შენახვა'}
-          </button>
-        </form>
-
-        <div className="danger-zone">
-          <button type="button" className="btn-delete-villa" onClick={handleDelete} disabled={deleting}>
-            {deleting ? 'იშლება...' : 'ვილის სამუდამოდ წაშლა'}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
