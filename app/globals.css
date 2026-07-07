@@ -2492,3 +2492,13 @@ a {
     height: 360px;
   }
 }
+
+.cta-secondary-link {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  color: var(--sea-bright, #2f7fb5);
+  font-weight: 500;
+}
+.cta-secondary-link:hover {
+  color: var(--accent-bright, #c74a3f);
+}
