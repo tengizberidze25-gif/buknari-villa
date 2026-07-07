@@ -19,6 +19,8 @@ export default function AdminPage() {
   const [actingId, setActingId] = useState(null);
   const [filter, setFilter] = useState('pending');
   const [backfilling, setBackfilling] = useState(false);
+  const [reminding, setReminding] = useState(false);
+  const [remindMsg, setRemindMsg] = useState('');
   const [backfillMsg, setBackfillMsg] = useState('');
   const [oldPhone, setOldPhone] = useState('');
   const [newPhone, setNewPhone] = useState('');
@@ -111,6 +113,27 @@ export default function AdminPage() {
     }
     setBackfilling(false);
   }
+
+  async function remindOwnersLocation() {
+  setReminding(true);
+  setRemindMsg('');
+  try {
+    const res = await fetch('/api/admin/remind-location', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token }),
+    });
+    const data = await res.json();
+    if (data.ok) {
+      setRemindMsg(`გაეგზავნა ${data.sent} SMS (სულ ${data.totalMissing} ვილას აკლია ლოკაცია).`);
+    } else {
+      setRemindMsg(data.message || 'დაფიქსირდა შეცდომა');
+    }
+  } catch (e) {
+    setRemindMsg('კავშირის შეცდომა');
+  }
+  setReminding(false);
+}
 
   async function changeOwnerPhone() {
     if (!oldPhone.trim() || !newPhone.trim()) {
