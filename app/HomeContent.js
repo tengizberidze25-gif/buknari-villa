@@ -6,6 +6,7 @@ import { useLanguage } from './LanguageContext';
 import { t } from './i18n';
 import LangSwitch from './LangSwitch';
 import { ratingLabel } from './ratingLabel';
+import VillageVideoGallery from './VillageVideoGallery';
 
 const VillaMap = dynamic(() => import('./VillaMap'), { ssr: false });
 
@@ -77,7 +78,7 @@ export default function HomeContent({ villas }) {
     const ranges = availabilityMap[villaId] || [];
     const start = new Date(checkInDate);
     const end = new Date(checkOutDate);
-    if (!(start < end)) return true; // ignore an invalid/incomplete range rather than hiding everything
+    if (!(start < end)) return true;
     return !ranges.some((r) => {
       const rStart = new Date(r.check_in);
       const rEnd = new Date(r.check_out);
@@ -93,8 +94,6 @@ export default function HomeContent({ villas }) {
       return locOk && guestsOk;
     });
 
-    // Don't hide villas booked on the selected dates — show them, but sink them
-    // below available ones and mark them, so the guest can still view/adjust dates.
     return [...matching].sort((a, b) => {
       const aAvail = isVillaAvailable(a.id) ? 0 : 1;
       const bAvail = isVillaAvailable(b.id) ? 0 : 1;
@@ -107,6 +106,8 @@ export default function HomeContent({ villas }) {
     e.preventDefault();
     document.getElementById('listings')?.scrollIntoView({ behavior: 'smooth' });
   }
+
+  const effectiveVillageForVideo = locationFilter === 'all' ? 'ბუკნარი' : locationFilter;
 
   return (
     <>
@@ -189,6 +190,8 @@ export default function HomeContent({ villas }) {
         </div>
       </header>
 
+      <VillageVideoGallery village={effectiveVillageForVideo} />
+
       <main className="wrap">
         <section className="section" id="listings">
           <div className="section-head">
@@ -253,7 +256,6 @@ export default function HomeContent({ villas }) {
               <h2>{tt('mapTitle')}</h2>
             </div>
           </div>
-          {console.log('🗺️ MAP SECTION: filteredVillas =', filteredVillas.length, filteredVillas)}
           <VillaMap villas={filteredVillas} villaTitle={villaTitle} lang={lang} />
         </section>
 
