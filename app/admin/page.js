@@ -215,6 +215,18 @@ export default function AdminPage() {
           {backfillMsg && <p className="dashboard-empty-hint" style={{ marginTop: '8px' }}>{backfillMsg}</p>}
         </div>
 
+            <div style={{ marginBottom: '24px' }}>
+          <button
+            type="button"
+            className="guest-logout-link"
+            disabled={reminding}
+            onClick={remindOwnersLocation}
+          >
+            {reminding ? 'იგზავნება...' : 'SMS შეხსენება — ვილის ადგილმდებარეობის მონიშვნა'}
+          </button>
+          {remindMsg && <p className="dashboard-empty-hint" style={{ marginTop: '8px' }}>{remindMsg}</p>}
+        </div>
+
         <div className="admin-phone-change-box">
           <h3 className="villa-amenities-title">მფლობელის ტელეფონის შეცვლა</h3>
           <p className="dashboard-empty-hint">
