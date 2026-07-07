@@ -1,7 +1,21 @@
 import { supabaseAdmin } from '../../../../lib/supabaseAdmin';
+import crypto from 'crypto';
 
 function verifyAdminToken(token) {
-  return token === process.env.ADMIN_PASSWORD_HASH || !!token; // matches existing admin token check below
+  try {
+    const decoded = Buffer.from(token, 'base64').toString('utf-8');
+    const parts = decoded.split('.');
+    const signature = parts.pop();
+    const payload = parts.join('.');
+    const [role, expiresAt] = payload.split('.');
+    if (role !== 'admin') return false;
+    if (Date.now() > Number(expiresAt)) return false;
+    const secret = process.env.SESSION_SECRET;
+    const expectedSig = crypto.createHmac('sha256', secret).update(payload).digest('hex');
+    return signature === expectedSig;
+  } catch (e) {
+    return false;
+  }
 }
 
 function normalizeSmsPhone(phone) {
@@ -48,11 +62,10 @@ async function sendSms(phone, text) {
 export async function POST(request) {
   try {
     const { token } = await request.json();
-    if (!token) {
+    if (!token || !verifyAdminToken(token)) {
       return Response.json({ ok: false, message: 'ავტორიზაცია საჭიროა' }, { status: 401 });
     }
 
-    // Approved villas missing lat/lng
     const { data: villas, error } = await supabaseAdmin
       .from('villas')
       .select('id, title, owner_id, owners(phone, full_name)')
@@ -63,7 +76,6 @@ export async function POST(request) {
       return Response.json({ ok: false, message: 'მონაცემების წამოღება ვერ მოხერხდა' }, { status: 500 });
     }
 
-    // Dedupe by owner phone — one SMS per owner even if they have multiple villas
     const seenPhones = new Set();
     let sent = 0;
 
