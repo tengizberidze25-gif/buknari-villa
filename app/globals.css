@@ -2329,3 +2329,33 @@ a {
     justify-content: center;
   }
 }
+
+.existing-photo-item {
+  position: relative;
+}
+.existing-photo-cover-badge {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  background: var(--accent, #a83352);
+  color: #fff;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+.existing-photo-set-cover {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  background: rgba(0,0,0,0.6);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  cursor: pointer;
+  font-size: 14px;
+}
+.existing-photo-set-cover:hover {
+  background: var(--accent, #a83352);
+}
