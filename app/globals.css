@@ -2460,3 +2460,35 @@ a {
   background: var(--bg-panel, #191b15);
   color: var(--sand, #cbbfa4);
 }
+
+.village-video-scroll {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  scroll-snap-type: x mandatory;
+}
+.village-video-item {
+  flex: 0 0 auto;
+  width: 280px;
+  height: 500px;
+  object-fit: cover;
+  border-radius: var(--radius-lg, 22px);
+  border: 1px solid var(--glass-border);
+  background: #000;
+  scroll-snap-align: start;
+}
+.village-video-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+.village-video-scroll::-webkit-scrollbar-thumb {
+  background: var(--glass-border);
+  border-radius: 999px;
+}
+
+@media (max-width: 640px) {
+  .village-video-item {
+    width: 200px;
+    height: 360px;
+  }
+}
