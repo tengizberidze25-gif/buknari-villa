@@ -94,6 +94,8 @@ export default function EditVillaPage({ params }) {
     setError(rejected.length > 0 ? `არ აიტვირთა: ${rejected.join(', ')}` : '');
   }
 
+  const [settingCoverId, setSettingCoverId] = useState(null);
+
   async function removeExistingPhoto(photoId) {
     if (!confirm('წავშალო ეს ფოტო?')) return;
     setRemovingPhotoId(photoId);
@@ -113,6 +115,30 @@ export default function EditVillaPage({ params }) {
       setError('კავშირის შეცდომა');
     }
     setRemovingPhotoId(null);
+  }
+
+  async function setCoverPhoto(photoId) {
+    setSettingCoverId(photoId);
+    try {
+      const res = await fetch('/api/owner/villa/set-cover-photo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ownerId, token, villaId, photoId }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        setExistingPhotos((list) => {
+          const target = list.find((p) => p.id === photoId);
+          const others = list.filter((p) => p.id !== photoId);
+          return [target, ...others];
+        });
+      } else {
+        setError(data.message || 'მთავარი ფოტოს დაყენება ვერ მოხერხდა');
+      }
+    } catch (e) {
+      setError('კავშირის შეცდომა');
+    }
+    setSettingCoverId(null);
   }
 
   async function handleSubmit(e) {
@@ -328,9 +354,22 @@ export default function EditVillaPage({ params }) {
             {existingPhotos.length === 0 && <p className="form-hint">ფოტო ჯერ არ არის დამატებული.</p>}
             {existingPhotos.length > 0 && (
               <div className="existing-photo-grid">
-                {existingPhotos.map((p) => (
+                {existingPhotos.map((p, idx) => (
                   <div key={p.id} className="existing-photo-item">
                     <img src={p.url} alt="" />
+                    {idx === 0 && <span className="existing-photo-cover-badge">მთავარი</span>}
+                    {idx !== 0 && (
+                      <button
+                        type="button"
+                        className="existing-photo-set-cover"
+                        disabled={settingCoverId === p.id}
+                        onClick={() => setCoverPhoto(p.id)}
+                        aria-label="მთავარ ფოტოდ დაყენება"
+                        title="მთავარ ფოტოდ დაყენება"
+                      >
+                        ★
+                      </button>
+                    )}
                     <button
                       type="button"
                       className="existing-photo-remove"
