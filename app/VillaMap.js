@@ -37,9 +37,9 @@ export default function VillaMap({ villas, villaTitle, lang }) {
   const [loadError, setLoadError] = useState(false);
 
   const withCoords = villas.filter((v) => v.lat && v.lng);
+  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
   useEffect(() => {
-    const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
     if (!apiKey || withCoords.length === 0) return;
 
     let cancelled = false;
@@ -105,14 +105,32 @@ export default function VillaMap({ villas, villaTitle, lang }) {
     return () => {
       cancelled = true;
     };
-  }, [villas, lang]);
+  }, [villas, lang, apiKey]);
 
-  if (withCoords.length === 0) return null;
+  if (!apiKey) {
+    return (
+      <div className="villa-map-wrap">
+        <p className="dashboard-empty-hint">
+          [დებაგ-შეტყობინება] NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ვერ მოიძებნა — environment variable არ არის ხელმისაწვდომი ამ build-ში.
+        </p>
+      </div>
+    );
+  }
+
+  if (withCoords.length === 0) {
+    return (
+      <div className="villa-map-wrap">
+        <p className="dashboard-empty-hint">
+          [დებაგ-შეტყობინება] API key არსებობს, მაგრამ არცერთ ვილას არ აქვს lat/lng კოორდინატები შევსებული.
+        </p>
+      </div>
+    );
+  }
 
   if (loadError) {
     return (
       <div className="villa-map-wrap">
-        <p className="dashboard-empty-hint">რუკის ჩატვირთვა ვერ მოხერხდა.</p>
+        <p className="dashboard-empty-hint">რუკის ჩატვირთვა ვერ მოხერხდა — Google Maps-ის API-მ შეცდომა დააბრუნა (სავარაუდოდ key/restriction საკითხი).</p>
       </div>
     );
   }
