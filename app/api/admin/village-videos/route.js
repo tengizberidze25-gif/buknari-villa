@@ -95,6 +95,22 @@ export async function POST(request) {
       return Response.json({ ok: true });
     }
 
+    if (action === 'reorder') {
+      const { id, sort_order } = body;
+      if (!id || sort_order === undefined) {
+        return Response.json({ ok: false, message: 'არასრული მოთხოვნა' }, { status: 400 });
+      }
+      const { error } = await supabaseAdmin
+        .from('village_videos')
+        .update({ sort_order })
+        .eq('id', id);
+
+      if (error) {
+        return Response.json({ ok: false, message: 'დალაგება ვერ მოხერხდა' }, { status: 500 });
+      }
+      return Response.json({ ok: true });
+    }
+
     if (action === 'delete') {
       const { id } = body;
       if (!id) {
