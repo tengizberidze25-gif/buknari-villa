@@ -301,7 +301,6 @@ export default function AdminPage() {
     const myOrder = video.sort_order;
     const otherOrder = other.sort_order;
 
-    // Optimistic UI update
     const newList = [...villageVideos];
     newList[idx] = { ...other, sort_order: myOrder };
     newList[swapIdx] = { ...video, sort_order: otherOrder };
@@ -319,7 +318,6 @@ export default function AdminPage() {
         body: JSON.stringify({ token, action: 'reorder', id: other.id, sort_order: myOrder }),
       });
     } catch (e) {
-      // On failure, reload from server to stay consistent
       loadVillageVideos(videoVillage, token);
     }
   }
@@ -470,6 +468,7 @@ export default function AdminPage() {
               ))}
             </div>
           )}
+        </div>
 
         <div className="admin-phone-change-box">
           <h3 className="villa-amenities-title">მფლობელის ტელეფონის შეცვლა</h3>
