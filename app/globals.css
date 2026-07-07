@@ -2359,3 +2359,67 @@ a {
 .existing-photo-set-cover:hover {
   background: var(--accent, #a83352);
 }
+
+.video-upload-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 16px;
+  margin-top: 12px;
+  padding: 16px;
+  background: var(--bg-panel, #191b15);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+}
+.video-upload-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 180px;
+}
+.video-upload-field label {
+  font-size: 12px;
+  color: var(--sand-dim, #8f8672);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.video-upload-field select {
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--glass-border);
+  background: var(--bg, #12130f);
+  color: var(--sand, #cbbfa4);
+}
+.video-upload-field input[type="file"] {
+  font-size: 13px;
+  color: var(--sand-dim, #8f8672);
+}
+.video-upload-filename {
+  font-size: 12px;
+  color: var(--accent-bright, #c74a3f);
+  margin-top: 2px;
+}
+.video-upload-btn {
+  padding: 10px 20px;
+  border-radius: var(--radius-md);
+  border: none;
+  background: var(--accent, #a83352);
+  color: #fff;
+  cursor: pointer;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.video-upload-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.video-upload-btn:hover:not(:disabled) {
+  background: var(--accent-bright, #c74a3f);
+}
+
+@media (max-width: 640px) {
+  .video-upload-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
