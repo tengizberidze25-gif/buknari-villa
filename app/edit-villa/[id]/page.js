@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../../../lib/supabase';
 import LocationPicker from '../../LocationPicker';
+import VillageSelect from '../../VillageSelect';
 import { AMENITIES } from '../../amenities';
 
 export default function EditVillaPage({ params }) {
@@ -160,6 +161,7 @@ export default function EditVillaPage({ params }) {
           token,
           villaId,
           title: form.title.value,
+          village: form.village.value,
           description: form.description.value,
           location_name: form.location_name.value,
           price_per_night: form.price_per_night.value,
@@ -292,6 +294,8 @@ export default function EditVillaPage({ params }) {
             <label>აღწერა</label>
             <textarea name="description" rows={4} defaultValue={villa.description || ''} />
           </div>
+
+          <VillageSelect initialValue={villa.village} />
 
           <div className="form-grid-2">
             <div className="form-row">
