@@ -1,5 +1,6 @@
 'use client';
 
+import VillageSelect from '../VillageSelect';
 import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
 import LocationPicker from '../LocationPicker';
@@ -84,25 +85,26 @@ export default function AddVillaPage() {
       // 1) Create the villa row (small JSON payload — no photo bytes here,
       // this avoids Vercel's ~4.5MB function body limit / 413 errors)
       const createRes = await fetch('/api/add-villa', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ownerId,
-          token,
-          title: form.title.value,
-          description: form.description.value,
-          location_name: form.location_name.value,
-          price_per_night: form.price_per_night.value,
-          lat: form.lat.value,
-          lng: form.lng.value,
-          max_guests: form.max_guests.value,
-          bedrooms: form.bedrooms.value,
-          bathrooms: form.bathrooms.value,
-          amenities: selectedAmenities,
-          contact_phone: form.contact_phone.value,
-          contact_whatsapp: form.contact_whatsapp.value,
-        }),
-      });
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ownerId,
+            token,
+            title: form.title.value,
+            village: form.village.value,
+            description: form.description.value,
+            location_name: form.location_name.value,
+            price_per_night: form.price_per_night.value,
+            lat: form.lat.value,
+            lng: form.lng.value,
+            max_guests: form.max_guests.value,
+            bedrooms: form.bedrooms.value,
+            bathrooms: form.bathrooms.value,
+            amenities: selectedAmenities,
+            contact_phone: form.contact_phone.value,
+            contact_whatsapp: form.contact_whatsapp.value,
+          }),
+        });
       const createData = await createRes.json();
       if (!createData.ok) {
         setError(createData.message || 'დაფიქსირდა შეცდომა');
@@ -181,11 +183,12 @@ export default function AddVillaPage() {
         <h1>ვილის დამატება</h1>
         <p className="auth-sub">შეავსეთ ინფორმაცია ქართულად — ტექსტი ავტომატურად ითარგმნება ინგლისურად და რუსულად.</p>
 
-        <form onSubmit={handleSubmit}>
-          <div className="form-row">
-            <label>სათაური *</label>
-            <input name="title" type="text" placeholder="ზღვის ხედის ვილა, მეზონინით" required />
-          </div>
+        <div className="form-row">
+  <label>სათაური *</label>
+  <input name="title" type="text" placeholder="ზღვის ხედის ვილა, მეზონინით" required />
+</div>
+
+<VillageSelect />
 
           <div className="form-row">
             <label>აღწერა</label>
