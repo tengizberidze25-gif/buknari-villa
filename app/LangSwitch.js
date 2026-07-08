@@ -1,6 +1,6 @@
 'use client';
 
-import { useRouter, usePathname } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 
 const LANG_LABELS = {
   ka: '🇬🇪 ქარ',
@@ -12,7 +12,6 @@ const LANG_LABELS = {
 const LOCALES = ['en', 'ru', 'hy'];
 
 export default function LangSwitch() {
-  const router = useRouter();
   const pathname = usePathname();
 
   const segments = pathname.split('/');
@@ -25,7 +24,7 @@ export default function LangSwitch() {
     const cleanPath = pathWithoutLocale === '' ? '/' : pathWithoutLocale;
     const newPath =
       newLocale === 'ka' ? cleanPath : `/${newLocale}${cleanPath === '/' ? '' : cleanPath}`;
-    router.push(newPath);
+    window.location.href = newPath;
   }
 
   return (
