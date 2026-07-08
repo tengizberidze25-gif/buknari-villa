@@ -105,6 +105,9 @@ export default function VillaDetailContent({ villa, reviews, avgRating, photos, 
               {villa.display_id ? <span className="villa-detail-id">#{villa.display_id}</span> : null}
             </div>
             <h1 className="villa-detail-title">{title}</h1>
+            {villa.owner_verified ? (
+              <div className="verified-owner-badge">✓ {tt('verifiedOwnerLabel')}</div>
+            ) : null}
 
             {avgRating ? (
               <div className="villa-rating-badge">
