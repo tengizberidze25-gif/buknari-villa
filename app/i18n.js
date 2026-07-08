@@ -52,6 +52,8 @@ export const dict = {
     testimonialsTitle: 'რას ამბობენ ჩვენი სტუმრები',
     datesBookedBadge: 'ამ თარიღებში დაკავებულია',
     popularBadge: 'პოპულარული',
+    favoritesOnlyLabel: 'ფავორიტები',
+    noFavorites: 'ჯერ არცერთი ვილა არ დაგიმატებია ფავორიტებში — დააჭირეთ 🤍-ს ბარათზე.',
 
     loadingGeneric: 'იტვირთება...',
     connectionError: 'კავშირის შეცდომა',
@@ -193,6 +195,8 @@ export const dict = {
     testimonialsTitle: 'What our guests say',
     datesBookedBadge: 'Booked for these dates',
     popularBadge: 'Popular',
+    favoritesOnlyLabel: 'Favorites',
+    noFavorites: "You haven't added any villas to favorites yet — tap 🤍 on a card.",
 
     loadingGeneric: 'Loading...',
     connectionError: 'Connection error',
@@ -335,6 +339,8 @@ export const dict = {
     testimonialsTitle: 'Что говорят наши гости',
     datesBookedBadge: 'Занято на эти даты',
     popularBadge: 'Популярно',
+    favoritesOnlyLabel: 'Избранное',
+    noFavorites: 'Вы пока не добавили виллы в избранное — нажмите 🤍 на карточке.',
 
     loadingGeneric: 'Загрузка...',
     connectionError: 'Ошибка соединения',
@@ -477,6 +483,8 @@ export const dict = {
     testimonialsTitle: 'Ինչ են ասում մեր հյուրերը',
     datesBookedBadge: 'Զբաղված է այս ամսաթվերին',
     popularBadge: 'Հանրաճանաչ',
+    favoritesOnlyLabel: 'Ընտրյալներ',
+    noFavorites: 'Դուք դեռ չեք ավելացրել վիլլաներ ընտրյալների մեջ — սեղմեք 🤍 քարտի վրա։',
 
     loadingGeneric: 'Բեռնվում է...',
     connectionError: 'Կապի սխալ',
