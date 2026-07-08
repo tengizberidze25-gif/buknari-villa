@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Gallery from './Gallery';
 import BookingCalendar from './BookingCalendar';
 import VillaLocationMap from './VillaLocationMap';
@@ -39,6 +39,17 @@ export default function VillaDetailContent({ villa, reviews, avgRating, photos, 
   const [shareMenuOpen, setShareMenuOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const villaUrl = `https://www.buknarivilla.ge/villa/${villa.id}`;
+
+  useEffect(() => {
+    const key = `buknari_viewed_${villa.id}`;
+    if (sessionStorage.getItem(key)) return;
+    sessionStorage.setItem(key, '1');
+    fetch('/api/villa-view', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ villaId: villa.id }),
+    }).catch(() => {});
+  }, [villa.id]);
 
   async function handleShareClick() {
     if (typeof navigator !== 'undefined' && navigator.share) {
