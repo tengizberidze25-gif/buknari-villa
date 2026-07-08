@@ -30,7 +30,7 @@ export async function POST(request) {
 
     const { data: villas } = await supabaseAdmin
       .from('villas')
-      .select('id, title')
+      .select('id, title, views_count')
       .eq('owner_id', ownerId);
 
     const villaIds = (villas || []).map((v) => v.id);
