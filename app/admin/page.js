@@ -667,6 +667,10 @@ export default function AdminPage() {
                 <div className="dashboard-empty-hint">
                   მფლობელი: {villa.owners?.full_name || '—'} · {villa.owners?.phone || '—'}
                 </div>
+                <div className="owner-villa-stats">
+                  <span>👁 {villa.views_count || 0} ნახვა</span>
+                  <span>📩 {villa.request_count || 0} მოთხოვნა</span>
+                </div>
               </div>
               <span className={`admin-status-badge admin-status-${villa.status}`}>
                 {STATUS_LABELS[villa.status] || villa.status}
