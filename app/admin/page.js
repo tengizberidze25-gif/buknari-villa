@@ -633,7 +633,9 @@ export default function AdminPage() {
           <div key={villa.id} className="dashboard-villa-section">
             <div className="admin-villa-header">
               <div>
-                <h2 className="dashboard-villa-title">{villa.title}</h2>
+                <h2 className="dashboard-villa-title">
+                  {villa.display_id ? <span className="admin-villa-id">#{villa.display_id}</span> : null} {villa.title}
+                </h2>
                 <div className="booking-request-dates">
                   {villa.location_name} · ₾{villa.price_per_night}/ღამე
                 </div>
