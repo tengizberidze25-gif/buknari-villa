@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useLanguage } from './LanguageContext';
+import { localizedHref } from './localizedHref';
 
 const TEXT = {
   ka: {
@@ -54,7 +55,7 @@ export default function CookieConsent() {
   return (
     <div className="cookie-banner">
       <p>
-        {t.message} <a href="/privacy">{t.learnMore}</a>
+        {t.message} <a href={localizedHref('/privacy', lang)}>{t.learnMore}</a>
       </p>
       <div className="cookie-banner-actions">
         <button type="button" className="cookie-decline" onClick={() => choose('declined')}>
