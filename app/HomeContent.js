@@ -46,7 +46,7 @@ function matchesLocation(villa, filter) {
   return villa.village === filter;
 }
 
-export default function HomeContent({ villas }) {
+export default function HomeContent({ villas, testimonials }) {
   const { lang } = useLanguage();
   const tt = (key) => t(lang, key);
 
@@ -195,6 +195,35 @@ export default function HomeContent({ villas }) {
       <VillageVideoGallery village={effectiveVillageForVideo} />
 
       <main className="wrap">
+        <section className="section" id="how-it-works">
+          <div className="section-head">
+            <div>
+              <div className="section-eyebrow">{tt('howItWorksEyebrow')}</div>
+              <h2>{tt('howItWorksTitle')}</h2>
+            </div>
+          </div>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+              gap: '32px',
+              marginTop: '8px',
+            }}
+          >
+            {[1, 2, 3].map((step) => (
+              <div key={step}>
+                <div style={{ fontSize: '2rem', fontWeight: 700, opacity: 0.35, marginBottom: '8px' }}>
+                  {String(step).padStart(2, '0')}
+                </div>
+                <h3 style={{ marginBottom: '6px' }}>{tt(`howItWorksStep${step}Title`)}</h3>
+                <p style={{ opacity: 0.8 }}>{tt(`howItWorksStep${step}Desc`)}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <div className="section-divider" />
+
         <section className="section" id="listings">
           <div className="section-head">
             <div>
@@ -260,6 +289,48 @@ export default function HomeContent({ villas }) {
           </div>
           <VillaMap villas={filteredVillas} villaTitle={villaTitle} lang={lang} />
         </section>
+
+        {testimonials && testimonials.length > 0 && (
+          <>
+            <div className="section-divider" />
+            <section className="section" id="testimonials">
+              <div className="section-head">
+                <div>
+                  <div className="section-eyebrow">{tt('testimonialsEyebrow')}</div>
+                  <h2>{tt('testimonialsTitle')}</h2>
+                </div>
+              </div>
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+                  gap: '20px',
+                  marginTop: '8px',
+                }}
+              >
+                {testimonials.map((tItem, i) => (
+                  <div
+                    key={i}
+                    style={{
+                      border: '1px solid rgba(255,255,255,0.12)',
+                      borderRadius: '12px',
+                      padding: '20px',
+                    }}
+                  >
+                    <div style={{ marginBottom: '10px', fontWeight: 700 }}>
+                      {tItem.rating}/10
+                    </div>
+                    <p style={{ opacity: 0.9, marginBottom: '14px' }}>&ldquo;{tItem.comment}&rdquo;</p>
+                    <div style={{ fontSize: '0.85rem', opacity: 0.65 }}>
+                      {tItem.guest_name || ''}
+                      {tItem.villas ? ` · ${villaTitle(tItem.villas, lang)}` : ''}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </>
+        )}
 
         <div className="section-divider" />
 
