@@ -22,6 +22,8 @@ export default function AdminPage() {
   const [backfilling, setBackfilling] = useState(false);
   const [reminding, setReminding] = useState(false);
   const [remindMsg, setRemindMsg] = useState('');
+  const [remindingPhotos, setRemindingPhotos] = useState(false);
+  const [remindPhotosMsg, setRemindPhotosMsg] = useState('');
   const [backfillingVillage, setBackfillingVillage] = useState(false);
   const [backfillVillageMsg, setBackfillVillageMsg] = useState('');
   const [backfillMsg, setBackfillMsg] = useState('');
@@ -139,7 +141,11 @@ export default function AdminPage() {
         body: JSON.stringify({ token, villaId, action }),
       });
       const data = await res.json();
-      if (data.ok) load();
+      if (data.ok) {
+        load();
+      } else {
+        alert(data.message || 'ქმედება ვერ შესრულდა');
+      }
     } catch (e) {
       // ignore
     }
@@ -207,6 +213,27 @@ export default function AdminPage() {
       setRemindMsg('კავშირის შეცდომა');
     }
     setReminding(false);
+  }
+
+  async function remindOwnersPhotos() {
+    setRemindingPhotos(true);
+    setRemindPhotosMsg('');
+    try {
+      const res = await fetch('/api/admin/remind-photos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        setRemindPhotosMsg(`გაეგზავნა ${data.sent} SMS (სულ ${data.totalMissing} ვილას აკლია ფოტო).`);
+      } else {
+        setRemindPhotosMsg(data.message || 'დაფიქსირდა შეცდომა');
+      }
+    } catch (e) {
+      setRemindPhotosMsg('კავშირის შეცდომა');
+    }
+    setRemindingPhotos(false);
   }
 
   async function changeOwnerPhone() {
@@ -460,6 +487,18 @@ export default function AdminPage() {
             {reminding ? 'იგზავნება...' : 'SMS შეხსენება — ვილის ადგილმდებარეობის მონიშვნა'}
           </button>
           {remindMsg && <p className="dashboard-empty-hint" style={{ marginTop: '8px' }}>{remindMsg}</p>}
+        </div>
+
+        <div style={{ marginBottom: '24px' }}>
+          <button
+            type="button"
+            className="guest-logout-link"
+            disabled={remindingPhotos}
+            onClick={remindOwnersPhotos}
+          >
+            {remindingPhotos ? 'იგზავნება...' : 'SMS შეხსენება — ფოტოს ატვირთვა'}
+          </button>
+          {remindPhotosMsg && <p className="dashboard-empty-hint" style={{ marginTop: '8px' }}>{remindPhotosMsg}</p>}
         </div>
 
         <div className="admin-phone-change-box">
