@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import { useLanguage } from './LanguageContext';
 import { t } from './i18n';
@@ -53,6 +53,16 @@ export default function HomeContent({ villas, testimonials }) {
   const [locationFilter, setLocationFilter] = useState('all');
   const [guestsFilter, setGuestsFilter] = useState(2);
   const [guestsOpen, setGuestsOpen] = useState(false);
+  const guestBtnRef = useRef(null);
+  const [guestPopoverPos, setGuestPopoverPos] = useState({ top: 0, left: 0 });
+
+  function toggleGuestsPopover() {
+    if (!guestsOpen && guestBtnRef.current) {
+      const rect = guestBtnRef.current.getBoundingClientRect();
+      setGuestPopoverPos({ top: rect.bottom + 10, left: rect.left });
+    }
+    setGuestsOpen((o) => !o);
+  }
   const [checkInDate, setCheckInDate] = useState('');
   const [checkOutDate, setCheckOutDate] = useState('');
   const [availabilityMap, setAvailabilityMap] = useState({});
@@ -155,8 +165,9 @@ export default function HomeContent({ villas, testimonials }) {
               <label>{tt('searchGuestsLabel')}</label>
               <button
                 type="button"
+                ref={guestBtnRef}
                 className="guest-stepper-trigger"
-                onClick={() => setGuestsOpen((o) => !o)}
+                onClick={toggleGuestsPopover}
               >
                 {guestsFilter} {countLabel(guestsFilter, lang, 'guest')}
               </button>
@@ -164,7 +175,10 @@ export default function HomeContent({ villas, testimonials }) {
               {guestsOpen && (
                 <>
                   <div className="guest-stepper-backdrop" onClick={() => setGuestsOpen(false)} />
-                  <div className="guest-stepper-popover">
+                  <div
+                    className="guest-stepper-popover"
+                    style={{ position: 'fixed', top: guestPopoverPos.top, left: guestPopoverPos.left }}
+                  >
                     <span>{countLabel(guestsFilter, lang, 'guest')}</span>
                     <div className="guest-stepper-controls">
                       <button
