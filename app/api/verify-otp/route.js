@@ -68,7 +68,7 @@ export async function POST(request) {
     if (!owner) {
       const { data: created, error: createError } = await supabaseAdmin
         .from('owners')
-        .insert({ phone: normalized })
+        .insert({ phone: normalized, phone_verified: true })
         .select()
         .single();
 
@@ -76,6 +76,13 @@ export async function POST(request) {
         return Response.json({ ok: false, message: 'მფლობელის შექმნა ვერ მოხერხდა' }, { status: 500 });
       }
       owner = created;
+    } else if (!owner.phone_verified) {
+      // Owner row already existed (e.g. created via admin concierge tool without OTP proof) —
+      // now that they've completed real OTP verification themselves, upgrade the flag,
+      // and retroactively mark any villas already listed under this owner as verified too.
+      await supabaseAdmin.from('owners').update({ phone_verified: true }).eq('id', owner.id);
+      await supabaseAdmin.from('villas').update({ owner_verified: true }).eq('owner_id', owner.id);
+      owner.phone_verified = true;
     }
 
     // Issue a simple signed session token (HMAC), valid 30 days
