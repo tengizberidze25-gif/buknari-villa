@@ -2,6 +2,7 @@
 
 import { useLanguage } from '../LanguageContext';
 import LangSwitch from '../LangSwitch';
+import { localizedHref } from '../localizedHref';
 
 const CONTENT = {
   ka: {
@@ -300,11 +301,11 @@ export default function TermsContent() {
   return (
     <div className="legal-page">
       <nav className="nav">
-        <a href="/" className="nav-logo">
+        <a href={localizedHref('/', lang)} className="nav-logo">
           <img src="/logo-nav.png" alt="Buknari Villa" style={{ height: '56px', width: 'auto' }} />
         </a>
         <div className="nav-links">
-          <a href="/">{c.navHome}</a>
+          <a href={localizedHref('/', lang)}>{c.navHome}</a>
         </div>
         <LangSwitch />
       </nav>
@@ -334,7 +335,7 @@ export default function TermsContent() {
         <h2>{c.cancellationHeading}</h2>
         <p>
           {c.cancellationPre}
-          <a href="/my-bookings">{c.cancellationLinkText}</a>
+          <a href={localizedHref('/my-bookings', lang)}>{c.cancellationLinkText}</a>
           {c.cancellationPost}
         </p>
         <p>{c.cancellationExtra}</p>
@@ -364,14 +365,14 @@ export default function TermsContent() {
         <p className="legal-disclaimer">{c.disclaimer}</p>
 
         <p className="legal-back">
-          <a href="/">{c.backLink}</a>
+          <a href={localizedHref('/', lang)}>{c.backLink}</a>
         </p>
       </main>
 
       <footer className="wrap footer">
         <div className="footer-logo">Buknari Villa</div>
         <a href="mailto:info@buknarivilla.ge" className="footer-email">info@buknarivilla.ge</a>
-        <a href="/privacy" className="footer-email">{c.footerPrivacy}</a>
+        <a href={localizedHref('/privacy', lang)} className="footer-email">{c.footerPrivacy}</a>
         <div className="footer-meta">© 2026 buknarivilla.ge</div>
       </footer>
     </div>
