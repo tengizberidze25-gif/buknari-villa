@@ -1836,6 +1836,18 @@ a {
     gap: 14px;
     text-align: center;
   }
+  .search-dates-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .search-dates-row input[type='date'] {
+    width: 100%;
+    font-size: 16px;
+  }
+  .search-dates-arrow {
+    display: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
