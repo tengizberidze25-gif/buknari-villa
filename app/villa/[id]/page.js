@@ -28,6 +28,32 @@ async function getReviews(villaId) {
   return data || [];
 }
 
+async function getSimilarVillas(villa) {
+  const cols =
+    'id, title, title_en, title_ru, title_hy, price_per_night, location_name, location_name_en, location_name_ru, location_name_hy, villa_photos(url, sort_order)';
+
+  if (villa.village) {
+    const { data } = await supabase
+      .from('villas')
+      .select(cols)
+      .eq('status', 'approved')
+      .eq('is_available', true)
+      .eq('village', villa.village)
+      .neq('id', villa.id)
+      .limit(3);
+    if (data && data.length > 0) return data;
+  }
+
+  const { data: fallback } = await supabase
+    .from('villas')
+    .select(cols)
+    .eq('status', 'approved')
+    .eq('is_available', true)
+    .neq('id', villa.id)
+    .limit(3);
+  return fallback || [];
+}
+
 export async function generateMetadata({ params }) {
   const villa = await getVilla(params.id);
   if (!villa) return {};
@@ -70,6 +96,7 @@ export default async function VillaDetailPage({ params }) {
 
   const reviews = await getReviews(villa.id);
   const avgRating = averageRating(reviews);
+  const similarVillas = await getSimilarVillas(villa);
 
   const photos = (villa.villa_photos || [])
     .sort((a, b) => a.sort_order - b.sort_order)
@@ -119,6 +146,7 @@ export default async function VillaDetailPage({ params }) {
         photos={photos}
         whatsapp={whatsapp}
         phone={phone}
+        similarVillas={similarVillas}
       />
     </>
   );
