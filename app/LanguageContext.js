@@ -1,29 +1,20 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState } from 'react';
 
 const LanguageContext = createContext({
   lang: 'ka',
   setLang: () => {},
 });
 
-export function LanguageProvider({ children }) {
-  const [lang, setLangState] = useState('ka');
-
-  useEffect(() => {
-    const stored = localStorage.getItem('buknari_lang');
-    if (stored === 'ka' || stored === 'en' || stored === 'ru' || stored === 'hy') {
-      setLangState(stored);
-    }
-  }, []);
-
-  function setLang(newLang) {
-    setLangState(newLang);
-    localStorage.setItem('buknari_lang', newLang);
-  }
+// URL-ია ენის ჭეშმარიტი წყარო (middleware.js წყვეტს locale-ს URL-იდან).
+// ეს Provider უბრალოდ გადასცემს სერვერზე უკვე გამოთვლილ locale-ს კომპონენტებს.
+// ენის რეალურად შეცვლა ხდება LangSwitch.js-ში router.push-ით — არა აქ.
+export function LanguageProvider({ children, initialLocale }) {
+  const [lang] = useState(initialLocale || 'ka');
 
   return (
-    <LanguageContext.Provider value={{ lang, setLang }}>
+    <LanguageContext.Provider value={{ lang, setLang: () => {} }}>
       {children}
     </LanguageContext.Provider>
   );
