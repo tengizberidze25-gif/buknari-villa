@@ -7,6 +7,7 @@ import { t } from './i18n';
 import LangSwitch from './LangSwitch';
 import { ratingLabel } from './ratingLabel';
 import VillageVideoGallery from './VillageVideoGallery';
+import { localizedHref } from './localizedHref';
 
 const VillaMap = dynamic(() => import('./VillaMap'), { ssr: false });
 
@@ -112,13 +113,13 @@ export default function HomeContent({ villas }) {
   return (
     <>
       <nav className="nav">
-        <a href="/" className="nav-logo">
+        <a href={localizedHref('/', lang)} className="nav-logo">
           <img src="/logo-nav.png" alt="Buknari Villa" style={{ height: '56px', width: 'auto' }} />
         </a>
         <div className="nav-links">
           <a href="#listings">{tt('navListings')}</a>
           <a href="#owner">{tt('navOwners')}</a>
-          <a href="/my-bookings">{tt('navBookings')}</a>
+          <a href={localizedHref('/my-bookings', lang)}>{tt('navBookings')}</a>
           <a href="#contact">{tt('navContact')}</a>
         </div>
         <LangSwitch />
@@ -214,7 +215,7 @@ export default function HomeContent({ villas }) {
                 const available = isVillaAvailable(villa.id);
                 const showBadge = checkInDate && checkOutDate && !available;
                 return (
-                  <a href={`/villa/${villa.id}`}
+                  <a href={localizedHref(`/villa/${villa.id}`, lang)}
                     className={`villa-card${showBadge ? ' villa-card-unavailable' : ''}`}
                     key={villa.id}
                   >
@@ -282,8 +283,8 @@ export default function HomeContent({ villas }) {
       <footer className="wrap footer" id="contact">
         <div className="footer-logo">Buknari Villa</div>
         <a href="mailto:info@buknarivilla.ge" className="footer-email">info@buknarivilla.ge</a>
-        <a href="/privacy" className="footer-email">{tt('footerPrivacy')}</a>
-        <a href="/terms" className="footer-email">{tt('footerTerms')}</a>
+        <a href={localizedHref('/privacy', lang)} className="footer-email">{tt('footerPrivacy')}</a>
+        <a href={localizedHref('/terms', lang)} className="footer-email">{tt('footerTerms')}</a>
         <div className="footer-meta">{tt('footerMeta')}</div>
       </footer>
     </>
