@@ -235,11 +235,7 @@ export default function HomeContent({ villas, testimonials }) {
                     onChange={(e) => setCheckOutDate(e.target.value)}
                     disabled={!checkInDate}
                   />
-                </div>
-              </div>
-            </div>
-
-        <div className="scroll-hint">
+                
           <div className="scroll-hint-line" />
           {tt('scrollHint')}
         </div>
