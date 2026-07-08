@@ -576,6 +576,20 @@ a {
   color: var(--sea-bright);
 }
 
+.admin-villa-id {
+  display: inline-block;
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--sand-dim);
+  background: var(--glass-bg-strong);
+  border: 1px solid var(--glass-border);
+  border-radius: 6px;
+  padding: 2px 8px;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
 .dashboard-group {
   margin-bottom: 22px;
 }
