@@ -8,6 +8,7 @@ import LangSwitch from './LangSwitch';
 import { ratingLabel } from './ratingLabel';
 import VillageVideoGallery from './VillageVideoGallery';
 import { localizedHref } from './localizedHref';
+import { countLabel } from './pluralLabel';
 
 const VillaMap = dynamic(() => import('./VillaMap'), { ssr: false });
 
@@ -152,9 +153,9 @@ export default function HomeContent({ villas }) {
             <div className="search-field">
               <label>{tt('searchGuestsLabel')}</label>
               <select value={guestsFilter} onChange={(e) => setGuestsFilter(e.target.value)}>
-                <option value="2">2 {tt('guestsLabel')}</option>
-                <option value="4">4 {tt('guestsLabel')}</option>
-                <option value="6">6+ {tt('guestsLabel')}</option>
+                <option value="2">2 {countLabel(2, lang, 'guest')}</option>
+                <option value="4">4 {countLabel(4, lang, 'guest')}</option>
+                <option value="6">6+ {countLabel(6, lang, 'guest')}</option>
               </select>
             </div>
             <div className="search-field search-field-dates">
@@ -237,8 +238,8 @@ export default function HomeContent({ villas }) {
                       </div>
                       <h3 className="villa-title">{title}</h3>
                       <div className="villa-meta">
-                        {villa.max_guests ? <span>👤 {villa.max_guests} {tt('guestsLabel')}</span> : null}
-                        {villa.bedrooms ? <span>🛏 {villa.bedrooms} {tt('bedroomsLabel')}</span> : null}
+                        {villa.max_guests ? <span>👤 {villa.max_guests} {countLabel(villa.max_guests, lang, 'guest')}</span> : null}
+                        {villa.bedrooms ? <span>🛏 {villa.bedrooms} {countLabel(villa.bedrooms, lang, 'bedroom')}</span> : null}
                       </div>
                     </div>
                   </a>
