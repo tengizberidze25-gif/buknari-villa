@@ -1,8 +1,17 @@
+import { headers } from 'next/headers';
 import { supabase } from '../lib/supabase';
 import HomeContent from './HomeContent';
 import { averageRating } from './ratingLabel';
+import { buildAlternates } from './hreflang';
 
 export const revalidate = 30; // 30 წამში ერთხელ ახლდება (ISR)
+
+export async function generateMetadata() {
+  const locale = headers().get('x-locale') || 'ka';
+  return {
+    alternates: buildAlternates('/', locale),
+  };
+}
 
 async function getVillas() {
   const { data, error } = await supabase
