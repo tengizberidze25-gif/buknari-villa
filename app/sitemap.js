@@ -1,14 +1,40 @@
 import { supabase } from '../lib/supabase';
 
-export default async function sitemap() {
-  const baseUrl = 'https://www.buknarivilla.ge';
+const baseUrl = 'https://www.buknarivilla.ge';
 
+function langAlternates(path) {
+  const clean = path === '/' ? '' : path;
+  return {
+    languages: {
+      en: `${baseUrl}/en${clean}`,
+      ru: `${baseUrl}/ru${clean}`,
+      hy: `${baseUrl}/hy${clean}`,
+    },
+  };
+}
+
+export default async function sitemap() {
   const staticEntries = [
     {
       url: baseUrl,
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 1,
+      alternates: langAlternates('/'),
+    },
+    {
+      url: `${baseUrl}/terms`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.3,
+      alternates: langAlternates('/terms'),
+    },
+    {
+      url: `${baseUrl}/privacy`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.3,
+      alternates: langAlternates('/privacy'),
     },
   ];
 
@@ -25,6 +51,7 @@ export default async function sitemap() {
       lastModified: new Date(villa.created_at || Date.now()),
       changeFrequency: 'weekly',
       priority: 0.8,
+      alternates: langAlternates(`/villa/${villa.id}`),
     }));
   } catch (e) {
     // If the DB call fails, still return the static entries rather than crashing the sitemap
