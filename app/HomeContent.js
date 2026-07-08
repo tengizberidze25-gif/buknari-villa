@@ -213,30 +213,31 @@ export default function HomeContent({ villas, testimonials }) {
             <div className="search-field search-field-dates">
               <label>{tt('searchDateLabel')}</label>
               <div className="search-dates-row">
-                <input
-                  type="date"
-                  min={new Date().toISOString().slice(0, 10)}
-                  value={checkInDate}
-                  onChange={(e) => {
-                    setCheckInDate(e.target.value);
-                    if (checkOutDate && e.target.value >= checkOutDate) setCheckOutDate('');
-                  }}
-                />
+                <div className="search-date-col">
+                  <span className="search-date-sublabel">{tt('checkInLabel')}</span>
+                  <input
+                    type="date"
+                    min={new Date().toISOString().slice(0, 10)}
+                    value={checkInDate}
+                    onChange={(e) => {
+                      setCheckInDate(e.target.value);
+                      if (checkOutDate && e.target.value >= checkOutDate) setCheckOutDate('');
+                    }}
+                  />
+                </div>
                 <span className="search-dates-arrow">→</span>
-                <input
-                  type="date"
-                  min={checkInDate || new Date().toISOString().slice(0, 10)}
-                  value={checkOutDate}
-                  onChange={(e) => setCheckOutDate(e.target.value)}
-                  disabled={!checkInDate}
-                />
+                <div className="search-date-col">
+                  <span className="search-date-sublabel">{tt('checkOutLabel')}</span>
+                  <input
+                    type="date"
+                    min={checkInDate || new Date().toISOString().slice(0, 10)}
+                    value={checkOutDate}
+                    onChange={(e) => setCheckOutDate(e.target.value)}
+                    disabled={!checkInDate}
+                  />
+                </div>
               </div>
             </div>
-            <button className="search-btn" onClick={scrollToListings}>
-              {tt('searchBtn')}
-            </button>
-          </div>
-        </div>
 
         <div className="scroll-hint">
           <div className="scroll-hint-line" />
