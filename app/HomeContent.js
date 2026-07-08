@@ -215,26 +215,32 @@ export default function HomeContent({ villas, testimonials }) {
               <div className="search-dates-row">
                 <div className="search-date-col">
                   <span className="search-date-sublabel">{tt('checkInLabel')}</span>
-                  <input
-                    type="date"
-                    min={new Date().toISOString().slice(0, 10)}
-                    value={checkInDate}
-                    onChange={(e) => {
-                      setCheckInDate(e.target.value);
-                      if (checkOutDate && e.target.value >= checkOutDate) setCheckOutDate('');
-                    }}
-                  />
+                  <div className="search-date-input-wrap">
+                    <input
+                      type="date"
+                      min={new Date().toISOString().slice(0, 10)}
+                      value={checkInDate}
+                      onChange={(e) => {
+                        setCheckInDate(e.target.value);
+                        if (checkOutDate && e.target.value >= checkOutDate) setCheckOutDate('');
+                      }}
+                    />
+                    <span className="search-date-icon">📅</span>
+                  </div>
                 </div>
                 <span className="search-dates-arrow">→</span>
                 <div className="search-date-col">
                   <span className="search-date-sublabel">{tt('checkOutLabel')}</span>
-                  <input
-                    type="date"
-                    min={checkInDate || new Date().toISOString().slice(0, 10)}
-                    value={checkOutDate}
-                    onChange={(e) => setCheckOutDate(e.target.value)}
-                    disabled={!checkInDate}
-                  />
+                  <div className="search-date-input-wrap">
+                    <input
+                      type="date"
+                      min={checkInDate || new Date().toISOString().slice(0, 10)}
+                      value={checkOutDate}
+                      onChange={(e) => setCheckOutDate(e.target.value)}
+                      disabled={!checkInDate}
+                    />
+                    <span className="search-date-icon">📅</span>
+                  </div>
                 </div>
               </div>
             </div>
