@@ -150,6 +150,7 @@ export default function DashboardPage() {
           const pending = villaBookings.filter((b) => b.status === 'pending');
           const confirmed = villaBookings.filter((b) => b.status === 'confirmed');
           const ownerBlocks = villaBookings.filter((b) => b.status === 'owner_block');
+          const guestRequests = villaBookings.filter((b) => b.status !== 'owner_block');
           const form = blockForm[villa.id] || { checkIn: '', checkOut: '' };
 
           return (
@@ -159,6 +160,11 @@ export default function DashboardPage() {
                 <a href={`/edit-villa/${villa.id}`} className="guest-logout-link">
                   რედაქტირება
                 </a>
+              </div>
+
+              <div className="owner-villa-stats">
+                <span>👁 {villa.views_count || 0} ნახვა</span>
+                <span>📩 {guestRequests.length} მოთხოვნა</span>
               </div>
 
               {pending.length > 0 && (
