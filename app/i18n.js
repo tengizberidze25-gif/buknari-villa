@@ -53,6 +53,7 @@ export const dict = {
     datesBookedBadge: 'ამ თარიღებში დაკავებულია',
     popularBadge: 'პოპულარული',
     favoritesOnlyLabel: 'ფავორიტები',
+    verifiedOwnerLabel: 'ვერიფიცირებული მფლობელი',
     noFavorites: 'ჯერ არცერთი ვილა არ დაგიმატებია ფავორიტებში — დააჭირეთ 🤍-ს ბარათზე.',
 
     loadingGeneric: 'იტვირთება...',
@@ -196,6 +197,7 @@ export const dict = {
     datesBookedBadge: 'Booked for these dates',
     popularBadge: 'Popular',
     favoritesOnlyLabel: 'Favorites',
+    verifiedOwnerLabel: 'Verified owner',
     noFavorites: "You haven't added any villas to favorites yet — tap 🤍 on a card.",
 
     loadingGeneric: 'Loading...',
@@ -340,6 +342,7 @@ export const dict = {
     datesBookedBadge: 'Занято на эти даты',
     popularBadge: 'Популярно',
     favoritesOnlyLabel: 'Избранное',
+    verifiedOwnerLabel: 'Проверенный владелец',
     noFavorites: 'Вы пока не добавили виллы в избранное — нажмите 🤍 на карточке.',
 
     loadingGeneric: 'Загрузка...',
@@ -484,6 +487,7 @@ export const dict = {
     datesBookedBadge: 'Զբաղված է այս ամսաթվերին',
     popularBadge: 'Հանրաճանաչ',
     favoritesOnlyLabel: 'Ընտրյալներ',
+    verifiedOwnerLabel: 'Ստուգված սեփականատեր',
     noFavorites: 'Դուք դեռ չեք ավելացրել վիլլաներ ընտրյալների մեջ — սեղմեք 🤍 քարտի վրա։',
 
     loadingGeneric: 'Բեռնվում է...',
