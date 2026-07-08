@@ -590,6 +590,14 @@ a {
   vertical-align: middle;
 }
 
+.owner-villa-stats {
+  display: flex;
+  gap: 16px;
+  margin: -8px 0 20px;
+  font-size: 13px;
+  color: var(--sand-dim);
+}
+
 .dashboard-group {
   margin-bottom: 22px;
 }
