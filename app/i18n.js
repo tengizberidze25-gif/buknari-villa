@@ -37,6 +37,7 @@ export const dict = {
     footerTerms: 'წესები',
     mapEyebrow: 'ყველა ვილა რუკაზე',
     mapTitle: 'სად მდებარეობს ეს ვილები',
+    similarVillasTitle: 'მსგავსი ვილები',
     datesBookedBadge: 'ამ თარიღებში დაკავებულია',
 
     loadingGeneric: 'იტვირთება...',
@@ -164,6 +165,7 @@ export const dict = {
     footerTerms: 'Terms',
     mapEyebrow: 'All villas on the map',
     mapTitle: 'Where these villas are located',
+    similarVillasTitle: 'Similar villas',
     datesBookedBadge: 'Booked for these dates',
 
     loadingGeneric: 'Loading...',
@@ -291,6 +293,7 @@ export const dict = {
     footerTerms: 'Условия',
     mapEyebrow: 'Все виллы на карте',
     mapTitle: 'Где находятся эти виллы',
+    similarVillasTitle: 'Похожие виллы',
     datesBookedBadge: 'Занято на эти даты',
 
     loadingGeneric: 'Загрузка...',
@@ -418,6 +421,7 @@ export const dict = {
     footerTerms: 'Կանոններ',
     mapEyebrow: 'Բոլոր վիլլաները քարտեզի վրա',
     mapTitle: 'Որտեղ են գտնվում այս վիլլաները',
+    similarVillasTitle: 'Նմանատիպ վիլլաներ',
     datesBookedBadge: 'Զբաղված է այս ամսաթվերին',
 
     loadingGeneric: 'Բեռնվում է...',
