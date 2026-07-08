@@ -51,6 +51,7 @@ export const dict = {
     testimonialsEyebrow: 'სტუმრების შეფასებები',
     testimonialsTitle: 'რას ამბობენ ჩვენი სტუმრები',
     datesBookedBadge: 'ამ თარიღებში დაკავებულია',
+    popularBadge: 'პოპულარული',
 
     loadingGeneric: 'იტვირთება...',
     connectionError: 'კავშირის შეცდომა',
@@ -191,6 +192,7 @@ export const dict = {
     testimonialsEyebrow: 'Guest reviews',
     testimonialsTitle: 'What our guests say',
     datesBookedBadge: 'Booked for these dates',
+    popularBadge: 'Popular',
 
     loadingGeneric: 'Loading...',
     connectionError: 'Connection error',
@@ -332,6 +334,7 @@ export const dict = {
     testimonialsEyebrow: 'Отзывы гостей',
     testimonialsTitle: 'Что говорят наши гости',
     datesBookedBadge: 'Занято на эти даты',
+    popularBadge: 'Популярно',
 
     loadingGeneric: 'Загрузка...',
     connectionError: 'Ошибка соединения',
@@ -473,6 +476,7 @@ export const dict = {
     testimonialsEyebrow: 'Հյուրերի կարծիքներ',
     testimonialsTitle: 'Ինչ են ասում մեր հյուրերը',
     datesBookedBadge: 'Զբաղված է այս ամսաթվերին',
+    popularBadge: 'Հանրաճանաչ',
 
     loadingGeneric: 'Բեռնվում է...',
     connectionError: 'Կապի սխալ',
