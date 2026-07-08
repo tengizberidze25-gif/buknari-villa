@@ -9,6 +9,7 @@ import { ratingLabel } from '../../ratingLabel';
 import { useLanguage } from '../../LanguageContext';
 import { t } from '../../i18n';
 import LangSwitch from '../../LangSwitch';
+import { localizedHref } from '../../localizedHref';
 
 function localized(villa, field, lang) {
   if (lang === 'en' && villa[`${field}_en`]) return villa[`${field}_en`];
@@ -68,19 +69,19 @@ export default function VillaDetailContent({ villa, reviews, avgRating, photos, 
   return (
     <>
       <nav className="nav">
-        <a href="/" className="nav-logo">
+        <a href={localizedHref('/', lang)} className="nav-logo">
           <img src="/logo-nav.png" alt="Buknari Villa" style={{ height: '56px', width: 'auto' }} />
         </a>
         <div className="nav-links">
-          <a href="/#listings">{tt('navListings')}</a>
-          <a href="/#owner">{tt('navOwners')}</a>
-          <a href="/#contact">{tt('navContact')}</a>
+          <a href={localizedHref('/#listings', lang)}>{tt('navListings')}</a>
+          <a href={localizedHref('/#owner', lang)}>{tt('navOwners')}</a>
+          <a href={localizedHref('/#contact', lang)}>{tt('navContact')}</a>
         </div>
         <LangSwitch />
       </nav>
 
       <main className="wrap villa-detail">
-        <a href="/" className="back-link">{tt('backLink')}</a>
+        <a href={localizedHref('/', lang)} className="back-link">{tt('backLink')}</a>
 
         <Gallery photos={photos} title={title} />
 
