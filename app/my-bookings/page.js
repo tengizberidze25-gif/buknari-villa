@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useLanguage } from '../LanguageContext';
 import { t } from '../i18n';
 import LangSwitch from '../LangSwitch';
+import { localizedHref } from '../localizedHref';
 
 function fmt(dateStr) {
   return dateStr;
@@ -177,7 +178,7 @@ export default function MyBookingsPage() {
       <div className="auth-page">
         <div className="auth-texture" />
         <div className="auth-card">
-          <a href="/" className="auth-logo">
+          <a href={localizedHref('/', lang)} className="auth-logo">
             <img src="/logo-nav.png" alt="Buknari Villa" style={{ height: '56px', width: 'auto' }} />
           </a>
 
@@ -247,11 +248,11 @@ export default function MyBookingsPage() {
   return (
     <div className="dashboard-page">
       <nav className="nav">
-        <a href="/" className="nav-logo">
+        <a href={localizedHref('/', lang)} className="nav-logo">
           <img src="/logo-nav.png" alt="Buknari Villa" style={{ height: '56px', width: 'auto' }} />
         </a>
         <div className="nav-links">
-          <a href="/#listings">{tt('navListings')}</a>
+          <a href={localizedHref('/#listings', lang)}>{tt('navListings')}</a>
           <button type="button" className="guest-logout-link" onClick={handleLogout}>
             {tt('mbLogout')}
           </button>
@@ -276,7 +277,7 @@ export default function MyBookingsPage() {
           bookings.map((b) => (
             <div key={b.id} className="guest-booking-card">
               <div className="guest-booking-main">
-                <a href={`/villa/${b.villa_id}`} className="guest-booking-title">
+                <a href={localizedHref(`/villa/${b.villa_id}`, lang)} className="guest-booking-title">
                   {localizedVillaTitle(b.villas, lang) || 'Villa'}
                 </a>
                 {b.villas?.location_name && (
