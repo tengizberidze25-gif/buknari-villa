@@ -51,7 +51,8 @@ export default function HomeContent({ villas, testimonials }) {
   const tt = (key) => t(lang, key);
 
   const [locationFilter, setLocationFilter] = useState('all');
-  const [guestsFilter, setGuestsFilter] = useState('2');
+  const [guestsFilter, setGuestsFilter] = useState(2);
+  const [guestsOpen, setGuestsOpen] = useState(false);
   const [checkInDate, setCheckInDate] = useState('');
   const [checkOutDate, setCheckOutDate] = useState('');
   const [availabilityMap, setAvailabilityMap] = useState({});
@@ -89,7 +90,7 @@ export default function HomeContent({ villas, testimonials }) {
   }
 
   const filteredVillas = useMemo(() => {
-    const minGuests = Number(guestsFilter.replace('+', ''));
+    const minGuests = guestsFilter;
     const matching = villas.filter((villa) => {
       const locOk = matchesLocation(villa, locationFilter);
       const guestsOk = !villa.max_guests || villa.max_guests >= minGuests;
@@ -150,13 +151,43 @@ export default function HomeContent({ villas, testimonials }) {
                 ))}
               </select>
             </div>
-            <div className="search-field">
+            <div className="search-field" style={{ position: 'relative' }}>
               <label>{tt('searchGuestsLabel')}</label>
-              <select value={guestsFilter} onChange={(e) => setGuestsFilter(e.target.value)}>
-                <option value="2">2 {countLabel(2, lang, 'guest')}</option>
-                <option value="4">4 {countLabel(4, lang, 'guest')}</option>
-                <option value="6">6+ {countLabel(6, lang, 'guest')}</option>
-              </select>
+              <button
+                type="button"
+                className="guest-stepper-trigger"
+                onClick={() => setGuestsOpen((o) => !o)}
+              >
+                {guestsFilter} {countLabel(guestsFilter, lang, 'guest')}
+              </button>
+
+              {guestsOpen && (
+                <>
+                  <div className="guest-stepper-backdrop" onClick={() => setGuestsOpen(false)} />
+                  <div className="guest-stepper-popover">
+                    <span>{countLabel(guestsFilter, lang, 'guest')}</span>
+                    <div className="guest-stepper-controls">
+                      <button
+                        type="button"
+                        className="guest-stepper-btn"
+                        disabled={guestsFilter <= 1}
+                        onClick={() => setGuestsFilter((n) => Math.max(1, n - 1))}
+                      >
+                        −
+                      </button>
+                      <span className="guest-stepper-count">{guestsFilter}</span>
+                      <button
+                        type="button"
+                        className="guest-stepper-btn"
+                        disabled={guestsFilter >= 20}
+                        onClick={() => setGuestsFilter((n) => Math.min(20, n + 1))}
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
             <div className="search-field search-field-dates">
               <label>{tt('searchDateLabel')}</label>
