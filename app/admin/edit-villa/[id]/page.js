@@ -253,7 +253,9 @@ export default function AdminEditVillaPage({ params }) {
         <a href="/admin" className="auth-logo">
           <img src="/logo-nav.png" alt="Buknari Villa" style={{ height: '34px', width: 'auto' }} />
         </a>
-        <h1>ვილის რედაქტირება (ადმინი)</h1>
+        <h1>
+          ვილის რედაქტირება (ადმინი){villa.display_id ? ` · #${villa.display_id}` : ''}
+        </h1>
         <p className="auth-sub">ცვლილებები დაუყოვნებლივ აისახება საიტზე.</p>
 
         <form onSubmit={handleSubmit}>
