@@ -76,6 +76,12 @@ export default function AddVillaPage() {
   async function handleSubmit(e) {
     e.preventDefault();
     setError('');
+
+    if (photos.length === 0) {
+      setError('გთხოვთ ატვირთოთ მინიმუმ 1 ფოტო — ფოტოს გარეშე ვილა ვერ გამოქვეყნდება.');
+      return;
+    }
+
     setLoading(true);
 
     const form = e.target;
