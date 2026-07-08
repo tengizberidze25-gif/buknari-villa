@@ -1,4 +1,5 @@
 import './globals.css';
+import { headers } from 'next/headers';
 import { LanguageProvider } from './LanguageContext';
 import Analytics from './Analytics';
 import CookieConsent from './CookieConsent';
@@ -25,9 +26,11 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
+  const headersList = headers();
+  const locale = headersList.get('x-locale') || 'ka';
 
   return (
-    <html lang="ka">
+    <html lang={locale}>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
@@ -37,7 +40,7 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body>
-        <LanguageProvider>
+        <LanguageProvider initialLocale={locale}>
           {children}
           <CookieConsent />
         </LanguageProvider>
