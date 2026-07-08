@@ -97,7 +97,7 @@ export default function VillaDetailContent({ villa, reviews, avgRating, photos, 
                 <span>
                   <strong>{ratingLabel(avgRating, lang)}</strong>
                   <br />
-                  {reviews.length} {tt('reviewsLabel')}
+                  {reviews.length} {countLabel(reviews.length, lang, 'review')}
                 </span>
               </div>
             ) : null}
