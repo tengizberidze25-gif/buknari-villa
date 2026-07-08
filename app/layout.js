@@ -5,11 +5,12 @@ import CookieConsent from './CookieConsent';
 
 export const metadata = {
   metadataBase: new URL('https://www.buknarivilla.ge'),
-  title: 'Buknari Villa — ვილების და სახლების გაქირავება ბუკნარში',
-  description: 'ზღვისპირა ვილები და სახლები ბუკნარში. დაათვალიერე, დაუკავშირდი მფლობელს WhatsApp-ით, დაჯავშნე შენი დასვენება.',
+  title: 'Buknari Villa — ვილები და სახლები ბუკნარში, ჩაქვში, ციხისძირში',
+  description: 'ზღვისპირა ვილები და სახლები ბუკნარში, ჩაქვში და ციხისძირში. დაათვალიერე, დაუკავშირდი მფლობელს WhatsApp-ით, დაჯავშნე შენი დასვენება პირდაპირ, შუამავლების გარეშე.',
+  keywords: ['ვილა ბუკნარში', 'სახლი ჩაქვში', 'ვილა ციხისძირში', 'ზღვისპირა დასვენება', 'Buknari villa', 'Chakvi villa', 'Georgia sea house'],
   openGraph: {
-    title: 'Buknari Villa — ვილების და სახლების გაქირავება ბუკნარში',
-    description: 'ზღვისპირა ვილები და სახლები ბუკნარში. დაათვალიერე, დაუკავშირდი მფლობელს WhatsApp-ით, დაჯავშნე შენი დასვენება.',
+    title: 'Buknari Villa — ვილები და სახლები ზღვისპირა სოფლებში',
+    description: 'ზღვისპირა ვილები და სახლები ბუკნარში, ჩაქვში და ციხისძირში. დაუკავშირდი მფლობელს პირდაპირ.',
     url: 'https://www.buknarivilla.ge',
     siteName: 'Buknari Villa',
     locale: 'ka_GE',
@@ -17,8 +18,8 @@ export const metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Buknari Villa — ვილების და სახლების გაქირავება ბუკნარში',
-    description: 'ზღვისპირა ვილები და სახლები ბუკნარში. დაათვალიერე, დაუკავშირდი მფლობელს WhatsApp-ით, დაჯავშნე შენი დასვენება.',
+    title: 'Buknari Villa — ვილები და სახლები ზღვისპირა სოფლებში',
+    description: 'ზღვისპირა ვილები და სახლები ბუკნარში, ჩაქვში და ციხისძირში.',
   },
 };
 
