@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { localizedHref } from './localizedHref';
 
 const BUKNARI_CENTER = { lat: 41.718, lng: 41.755 };
 
@@ -91,7 +92,7 @@ export default function VillaMap({ villas, villaTitle, lang }) {
                 <strong>${title}</strong>
                 <div>${villa.location_name || ''}</div>
                 <div class="villa-map-popup-price">₾${villa.price_per_night} / ღამე</div>
-                <a href="/villa/${villa.id}">ნახვა →</a>
+                <a href="${localizedHref(`/villa/${villa.id}`, lang)}">ნახვა →</a>
               </div>
             `);
             infoWindow.open(mapInstance.current, marker);
