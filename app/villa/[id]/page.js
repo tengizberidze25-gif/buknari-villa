@@ -1,7 +1,9 @@
 import { notFound } from 'next/navigation';
+import { headers } from 'next/headers';
 import { supabase } from '../../../lib/supabase';
 import { averageRating } from '../../ratingLabel';
 import VillaDetailContent from './VillaDetailContent';
+import { buildAlternates, OG_LOCALE_MAP } from '../../hreflang';
 
 export const revalidate = 30;
 
@@ -30,6 +32,9 @@ export async function generateMetadata({ params }) {
   const villa = await getVilla(params.id);
   if (!villa) return {};
 
+  const locale = headers().get('x-locale') || 'ka';
+  const { canonical, languages } = buildAlternates(`/villa/${villa.id}`, locale);
+
   const photos = (villa.villa_photos || []).sort((a, b) => a.sort_order - b.sort_order);
   const coverPhoto = photos[0]?.url;
   const title = `${villa.title} — Buknari Villa`;
@@ -40,12 +45,13 @@ export async function generateMetadata({ params }) {
   return {
     title,
     description,
+    alternates: { canonical, languages },
     openGraph: {
       title,
       description,
-      url: `https://www.buknarivilla.ge/villa/${villa.id}`,
+      url: canonical,
       siteName: 'Buknari Villa',
-      locale: 'ka_GE',
+      locale: OG_LOCALE_MAP[locale] || 'ka_GE',
       type: 'website',
       images: coverPhoto ? [{ url: coverPhoto, width: 1200, height: 630 }] : undefined,
     },
