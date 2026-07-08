@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import dynamic from 'next/dynamic';
 import { useLanguage } from './LanguageContext';
 import { t } from './i18n';
@@ -55,9 +56,13 @@ export default function HomeContent({ villas, testimonials }) {
   const [guestsOpen, setGuestsOpen] = useState(false);
   const guestBtnRef = useRef(null);
   const [guestPopoverPos, setGuestPopoverPos] = useState({ top: 0, left: 0 });
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   function toggleGuestsPopover() {
-    console.log('GUEST BUTTON CLICKED', guestBtnRef.current);
     if (!guestsOpen && guestBtnRef.current) {
       const rect = guestBtnRef.current.getBoundingClientRect();
       setGuestPopoverPos({ top: rect.bottom + 10, left: rect.left });
@@ -173,7 +178,7 @@ export default function HomeContent({ villas, testimonials }) {
                 {guestsFilter} {countLabel(guestsFilter, lang, 'guest')}
               </button>
 
-              {guestsOpen && (
+              {guestsOpen && mounted && createPortal(
                 <>
                   <div className="guest-stepper-backdrop" onClick={() => setGuestsOpen(false)} />
                   <div
@@ -201,7 +206,8 @@ export default function HomeContent({ villas, testimonials }) {
                       </button>
                     </div>
                   </div>
-                </>
+                </>,
+                document.body
               )}
             </div>
             <div className="search-field search-field-dates">
