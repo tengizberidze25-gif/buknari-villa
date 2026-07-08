@@ -11,6 +11,7 @@ import { t } from '../../i18n';
 import LangSwitch from '../../LangSwitch';
 import { localizedHref } from '../../localizedHref';
 import { countLabel } from '../../pluralLabel';
+import { approxPrice } from '../../currency';
 
 function localized(villa, field, lang) {
   if (lang === 'en' && villa[`${field}_en`]) return villa[`${field}_en`];
@@ -167,6 +168,11 @@ export default function VillaDetailContent({ villa, reviews, avgRating, photos, 
               <div className="villa-detail-price-row">
                 <div className="villa-detail-price">
                   <span>₾{villa.price_per_night || '—'}</span> {tt('perNight')}
+                  {approxPrice(villa.price_per_night, lang) && (
+                    <div style={{ fontSize: '0.8rem', opacity: 0.65, fontWeight: 400 }}>
+                      {approxPrice(villa.price_per_night, lang)}
+                    </div>
+                  )}
                 </div>
                 <div className="villa-share-wrap">
                   <button
