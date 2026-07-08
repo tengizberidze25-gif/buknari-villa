@@ -29,7 +29,7 @@ function amenityLabel(a, lang) {
 
 const LOCALE_MAP = { ka: 'ka-GE', en: 'en-US', ru: 'ru-RU', hy: 'hy-AM' };
 
-export default function VillaDetailContent({ villa, reviews, avgRating, photos, whatsapp, phone }) {
+export default function VillaDetailContent({ villa, reviews, avgRating, photos, whatsapp, phone, similarVillas }) {
   const { lang } = useLanguage();
   const tt = (key) => t(lang, key);
 
@@ -219,6 +219,34 @@ export default function VillaDetailContent({ villa, reviews, avgRating, photos, 
             <BookingCalendar villaId={villa.id} />
           </aside>
         </div>
+
+        {similarVillas && similarVillas.length > 0 && (
+          <div className="section" style={{ marginTop: '48px' }}>
+            <h2 style={{ marginBottom: '20px' }}>{tt('similarVillasTitle')}</h2>
+            <div className="villa-grid">
+              {similarVillas.map((sv) => {
+                const svPhotos = (sv.villa_photos || []).sort((a, b) => a.sort_order - b.sort_order);
+                const svCover = svPhotos[0]?.url;
+                const svTitle = localized(sv, 'title', lang);
+                const svLocation = localized(sv, 'location_name', lang);
+                return (
+                  <a href={localizedHref(`/villa/${sv.id}`, lang)} className="villa-card" key={sv.id}>
+                    <div className="villa-photo">
+                      <img src={svCover || '/placeholder-villa.jpg'} alt={svTitle} />
+                      <div className="villa-price-tag">
+                        <span>₾{sv.price_per_night || '—'}</span> {tt('perNight')}
+                      </div>
+                    </div>
+                    <div className="villa-body">
+                      <div className="villa-location">{svLocation}</div>
+                      <h3 className="villa-title">{svTitle}</h3>
+                    </div>
+                  </a>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </main>
 
       <footer className="wrap footer">
