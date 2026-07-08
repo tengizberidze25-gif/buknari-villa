@@ -226,20 +226,26 @@ export default function DashboardPage() {
                 ))}
 
                 <div className="dashboard-block-form">
-                  <input
-                    type="date"
-                    value={form.checkIn}
-                    onChange={(e) =>
-                      setBlockForm((s) => ({ ...s, [villa.id]: { ...form, checkIn: e.target.value } }))
-                    }
-                  />
-                  <input
-                    type="date"
-                    value={form.checkOut}
-                    onChange={(e) =>
-                      setBlockForm((s) => ({ ...s, [villa.id]: { ...form, checkOut: e.target.value } }))
-                    }
-                  />
+                  <div className="search-date-input-wrap">
+                    <input
+                      type="date"
+                      value={form.checkIn}
+                      onChange={(e) =>
+                        setBlockForm((s) => ({ ...s, [villa.id]: { ...form, checkIn: e.target.value } }))
+                      }
+                    />
+                    <span className="search-date-icon">📅</span>
+                  </div>
+                  <div className="search-date-input-wrap">
+                    <input
+                      type="date"
+                      value={form.checkOut}
+                      onChange={(e) =>
+                        setBlockForm((s) => ({ ...s, [villa.id]: { ...form, checkOut: e.target.value } }))
+                      }
+                    />
+                    <span className="search-date-icon">📅</span>
+                  </div>
                   <button disabled={blockSubmitting === villa.id} onClick={() => submitBlock(villa.id)}>
                     დაბლოკვა
                   </button>
