@@ -2563,6 +2563,8 @@ a {
   overflow-x: auto;
   padding-bottom: 8px;
   scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x;
 }
 .village-video-item {
   flex: 0 0 auto;
@@ -2573,6 +2575,7 @@ a {
   border: 1px solid var(--glass-border);
   background: #000;
   scroll-snap-align: start;
+  touch-action: pan-x;
 }
 .village-video-scroll::-webkit-scrollbar {
   height: 6px;
