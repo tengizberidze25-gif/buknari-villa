@@ -152,6 +152,31 @@ export default function AdminPage() {
     setActingId(null);
   }
 
+  async function deleteVilla(villaId, villaTitle) {
+    const confirmed = window.confirm(
+      `ნამდვილად გინდა "${villaTitle}" წაშლა? ეს ქმედება შეუქცევადია — წაიშლება ფოტოები, ჯავშნები და შეფასებებიც.`
+    );
+    if (!confirmed) return;
+
+    setActingId(villaId);
+    try {
+      const res = await fetch('/api/admin/villas/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token, villaId }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        setVillas((all) => all.filter((v) => v.id !== villaId));
+      } else {
+        alert(data.message || 'წაშლა ვერ მოხერხდა');
+      }
+    } catch (e) {
+      alert('კავშირის შეცდომა');
+    }
+    setActingId(null);
+  }
+
   async function backfillLocations() {
     setBackfilling(true);
     setBackfillMsg('');
@@ -691,6 +716,15 @@ href={`/admin/edit-villa/${villa.id}`}
                 style={{ padding: '6px 14px' }}
               >
                 ↓ უკან
+              </button>
+              <button
+                type="button"
+                className="btn-decline"
+                disabled={actingId === villa.id}
+                onClick={() => deleteVilla(villa.id, villa.title)}
+                style={{ padding: '6px 14px' }}
+              >
+                🗑 წაშლა
               </button>
             </div>
           </div>
