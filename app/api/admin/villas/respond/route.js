@@ -81,6 +81,20 @@ export async function POST(request) {
       return Response.json({ ok: false, message: 'ვილა ვერ მოიძებნა' }, { status: 404 });
     }
 
+    if (action === 'approve') {
+      const { count } = await supabaseAdmin
+        .from('villa_photos')
+        .select('id', { count: 'exact', head: true })
+        .eq('villa_id', villaId);
+
+      if (!count || count === 0) {
+        return Response.json(
+          { ok: false, message: 'ამ ვილას არცერთი ფოტო არ აქვს — ფოტოს გარეშე დამტკიცება შეუძლებელია' },
+          { status: 400 }
+        );
+      }
+    }
+
     const newStatus = action === 'approve' ? 'approved' : 'declined';
 
     const { error } = await supabaseAdmin
