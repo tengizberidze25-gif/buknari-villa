@@ -73,6 +73,29 @@ export default function HomeContent({ villas, testimonials }) {
   const [checkOutDate, setCheckOutDate] = useState('');
   const [availabilityMap, setAvailabilityMap] = useState({});
   const [villages, setVillages] = useState([]);
+  const [favorites, setFavorites] = useState(new Set());
+  const [favoritesOnly, setFavoritesOnly] = useState(false);
+
+  useEffect(() => {
+    try {
+      const stored = JSON.parse(localStorage.getItem('buknari_favorites') || '[]');
+      setFavorites(new Set(stored));
+    } catch (e) {
+      // ignore malformed storage
+    }
+  }, []);
+
+  function toggleFavorite(villaId, e) {
+    e.preventDefault();
+    e.stopPropagation();
+    setFavorites((prev) => {
+      const next = new Set(prev);
+      if (next.has(villaId)) next.delete(villaId);
+      else next.add(villaId);
+      localStorage.setItem('buknari_favorites', JSON.stringify([...next]));
+      return next;
+    });
+  }
 
   useEffect(() => {
     fetch('/api/villas-availability')
@@ -110,7 +133,8 @@ export default function HomeContent({ villas, testimonials }) {
     const matching = villas.filter((villa) => {
       const locOk = matchesLocation(villa, locationFilter);
       const guestsOk = !villa.max_guests || villa.max_guests >= minGuests;
-      return locOk && guestsOk;
+      const favOk = !favoritesOnly || favorites.has(villa.id);
+      return locOk && guestsOk && favOk;
     });
 
     return [...matching].sort((a, b) => {
@@ -119,7 +143,7 @@ export default function HomeContent({ villas, testimonials }) {
       return aAvail - bAvail;
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [villas, locationFilter, guestsFilter, checkInDate, checkOutDate, availabilityMap]);
+  }, [villas, locationFilter, guestsFilter, checkInDate, checkOutDate, availabilityMap, favoritesOnly, favorites]);
 
   const popularVillaIds = useMemo(() => {
     const withViews = villas.filter((v) => (v.views_count || 0) >= 5);
@@ -300,12 +324,23 @@ export default function HomeContent({ villas, testimonials }) {
               <div className="section-eyebrow">{tt('sectionEyebrow')}</div>
               <h2>{tt('sectionTitle')}</h2>
             </div>
-            <p>{tt('sectionSub')}</p>
+            <div className="section-head-right">
+              <p>{tt('sectionSub')}</p>
+              {favorites.size > 0 && (
+                <button
+                  type="button"
+                  className={`favorites-toggle${favoritesOnly ? ' active' : ''}`}
+                  onClick={() => setFavoritesOnly((v) => !v)}
+                >
+                  ❤️ {tt('favoritesOnlyLabel')} ({favorites.size})
+                </button>
+              )}
+            </div>
           </div>
 
           {filteredVillas.length === 0 ? (
             <div className="empty-state">
-              <p>{villas.length === 0 ? tt('emptyState') : tt('noResults')}</p>
+              <p>{favoritesOnly ? tt('noFavorites') : villas.length === 0 ? tt('emptyState') : tt('noResults')}</p>
             </div>
           ) : (
             <div className="villa-grid">
@@ -321,6 +356,14 @@ export default function HomeContent({ villas, testimonials }) {
                   >
                     <div className="villa-photo">
                       <img src={photo || '/placeholder-villa.jpg'} alt={title} />
+                      <button
+                        type="button"
+                        className={`villa-favorite-btn${favorites.has(villa.id) ? ' active' : ''}`}
+                        onClick={(e) => toggleFavorite(villa.id, e)}
+                        aria-label={tt('favoritesOnlyLabel')}
+                      >
+                        {favorites.has(villa.id) ? '❤️' : '🤍'}
+                      </button>
                       <div className="villa-price-tag">
                         <span>₾{villa.price_per_night || '—'}</span> {tt('perNight')}
                       </div>
