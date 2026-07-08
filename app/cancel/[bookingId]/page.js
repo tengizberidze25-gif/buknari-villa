@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useLanguage } from '../../LanguageContext';
 import { t } from '../../i18n';
 import LangSwitch from '../../LangSwitch';
+import { localizedHref } from '../../localizedHref';
 
 export default function CancelBookingPage({ params, searchParams }) {
   const { lang } = useLanguage();
@@ -63,7 +64,7 @@ export default function CancelBookingPage({ params, searchParams }) {
     <div className="auth-page">
       <div className="auth-texture" />
       <div className="auth-card">
-        <a href="/" className="auth-logo">
+        <a href={localizedHref('/', lang)} className="auth-logo">
           <img src="/logo-nav.png" alt="Buknari Villa" style={{ height: '56px', width: 'auto' }} />
         </a>
 
@@ -98,7 +99,7 @@ export default function CancelBookingPage({ params, searchParams }) {
           <>
             <h1>{tt('cbDoneTitle')}</h1>
             <p className="auth-sub">{tt('cbDoneMessage')}</p>
-            <a href="/" className="auth-cta">{tt('backHome')}</a>
+            <a href={localizedHref('/', lang)} className="auth-cta">{tt('backHome')}</a>
           </>
         )}
       </div>
