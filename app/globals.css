@@ -380,20 +380,25 @@ a {
   gap: 8px;
 }
 
+.search-date-col {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.search-date-sublabel {
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--sand-dim);
+}
+
 .search-dates-row input[type='date'] {
   min-width: 0;
-  flex: 1;
+  width: 100%;
   font-size: 13px;
-}
-
-.search-dates-arrow {
-  color: var(--sand-dim);
-  flex-shrink: 0;
-}
-
-.search-dates-row input[type='date']:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
 }
 
 .search-btn {
