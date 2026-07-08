@@ -57,6 +57,7 @@ export default function HomeContent({ villas, testimonials }) {
   const [guestPopoverPos, setGuestPopoverPos] = useState({ top: 0, left: 0 });
 
   function toggleGuestsPopover() {
+    console.log('GUEST BUTTON CLICKED', guestBtnRef.current);
     if (!guestsOpen && guestBtnRef.current) {
       const rect = guestBtnRef.current.getBoundingClientRect();
       setGuestPopoverPos({ top: rect.bottom + 10, left: rect.left });
