@@ -141,6 +141,7 @@ export async function POST(request) {
         status: 'pending',
         translation_status: 'pending',
         is_available: true,
+        owner_verified: true,
       })
       .select()
       .single();
