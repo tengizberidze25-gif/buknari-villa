@@ -19,6 +19,12 @@ const FORMS = {
     ru: { one: 'санузел', few: 'санузла', many: 'санузлов' },
     hy: { one: 'սանհանգույց', other: 'սանհանգույց' },
   },
+  review: {
+    ka: { one: 'შეფასება', other: 'შეფასება' },
+    en: { one: 'review', other: 'reviews' },
+    ru: { one: 'отзыв', few: 'отзыва', many: 'отзывов' },
+    hy: { one: 'կարծիք', other: 'կարծիք' },
+  },
 };
 
 function russianForm(n) {
