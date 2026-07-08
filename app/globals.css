@@ -1189,6 +1189,12 @@ a {
   margin-bottom: 8px;
 }
 
+.villa-detail-id {
+  color: var(--sand-dim);
+  font-size: 13px;
+  margin-left: 8px;
+}
+
 .villa-detail-title {
   font-family: var(--serif);
   font-size: 32px;
