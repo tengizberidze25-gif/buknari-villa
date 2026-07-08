@@ -10,6 +10,7 @@ import { useLanguage } from '../../LanguageContext';
 import { t } from '../../i18n';
 import LangSwitch from '../../LangSwitch';
 import { localizedHref } from '../../localizedHref';
+import { countLabel } from '../../pluralLabel';
 
 function localized(villa, field, lang) {
   if (lang === 'en' && villa[`${field}_en`]) return villa[`${field}_en`];
@@ -102,9 +103,9 @@ export default function VillaDetailContent({ villa, reviews, avgRating, photos, 
             ) : null}
 
             <div className="villa-detail-meta">
-              {villa.max_guests ? <span>👤 {villa.max_guests} {tt('guestsLabel')}</span> : null}
-              {villa.bedrooms ? <span>🛏 {villa.bedrooms} {tt('bedroomsLabel')}</span> : null}
-              {villa.bathrooms ? <span>🛁 {villa.bathrooms} {tt('bathroomsLabel')}</span> : null}
+              {villa.max_guests ? <span>👤 {villa.max_guests} {countLabel(villa.max_guests, lang, 'guest')}</span> : null}
+              {villa.bedrooms ? <span>🛏 {villa.bedrooms} {countLabel(villa.bedrooms, lang, 'bedroom')}</span> : null}
+              {villa.bathrooms ? <span>🛁 {villa.bathrooms} {countLabel(villa.bathrooms, lang, 'bathroom')}</span> : null}
             </div>
 
             {description ? (
