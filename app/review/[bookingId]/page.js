@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useLanguage } from '../../LanguageContext';
 import { t } from '../../i18n';
 import LangSwitch from '../../LangSwitch';
+import { localizedHref } from '../../localizedHref';
 
 export default function ReviewPage({ params, searchParams }) {
   const { lang } = useLanguage();
@@ -65,7 +66,7 @@ export default function ReviewPage({ params, searchParams }) {
     <div className="auth-page">
       <div className="auth-texture" />
       <div className="auth-card">
-        <a href="/" className="auth-logo">
+        <a href={localizedHref('/', lang)} className="auth-logo">
           <img src="/logo-nav.png" alt="Buknari Villa" style={{ height: '56px', width: 'auto' }} />
         </a>
 
@@ -124,7 +125,7 @@ export default function ReviewPage({ params, searchParams }) {
           <>
             <h1>{tt('rvDoneTitle')}</h1>
             <p className="auth-sub">{tt('rvDoneMessage')}</p>
-            <a href="/" className="auth-cta">{tt('backHome')}</a>
+            <a href={localizedHref('/', lang)} className="auth-cta">{tt('backHome')}</a>
           </>
         )}
       </div>
