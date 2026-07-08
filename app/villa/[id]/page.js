@@ -80,10 +80,11 @@ export default async function VillaDetailPage({ params }) {
     name: villa.title,
     description: villa.description || undefined,
     image: photos.length > 0 ? photos : undefined,
-    address: villa.location_name
+    address: villa.village || villa.location_name
       ? {
           '@type': 'PostalAddress',
-          addressLocality: villa.location_name,
+          addressLocality: villa.village || villa.location_name,
+          addressRegion: 'Adjara',
           addressCountry: 'GE',
         }
       : undefined,
