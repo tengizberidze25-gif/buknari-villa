@@ -43,7 +43,20 @@ async function getVillas() {
   }));
 }
 
+async function getTestimonials() {
+  const { data } = await supabase
+    .from('villa_reviews')
+    .select('guest_name, rating, comment, created_at, villas(title, title_en, title_ru, title_hy)')
+    .not('comment', 'is', null)
+    .neq('comment', '')
+    .gte('rating', 8)
+    .order('created_at', { ascending: false })
+    .limit(6);
+  return data || [];
+}
+
 export default async function HomePage() {
   const villas = await getVillas();
-  return <HomeContent villas={villas} />;
+  const testimonials = await getTestimonials();
+  return <HomeContent villas={villas} testimonials={testimonials} />;
 }
