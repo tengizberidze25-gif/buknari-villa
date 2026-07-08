@@ -121,6 +121,12 @@ export default function HomeContent({ villas, testimonials }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [villas, locationFilter, guestsFilter, checkInDate, checkOutDate, availabilityMap]);
 
+  const popularVillaIds = useMemo(() => {
+    const withViews = villas.filter((v) => (v.views_count || 0) >= 5);
+    const sorted = [...withViews].sort((a, b) => (b.views_count || 0) - (a.views_count || 0));
+    return new Set(sorted.slice(0, 3).map((v) => v.id));
+  }, [villas]);
+
   function scrollToListings(e) {
     e.preventDefault();
     document.getElementById('listings')?.scrollIntoView({ behavior: 'smooth' });
@@ -319,6 +325,9 @@ export default function HomeContent({ villas, testimonials }) {
                         <span>₾{villa.price_per_night || '—'}</span> {tt('perNight')}
                       </div>
                       {showBadge && <div className="villa-unavailable-badge">{tt('datesBookedBadge')}</div>}
+                      {!showBadge && popularVillaIds.has(villa.id) && (
+                        <div className="villa-popular-badge">🔥 {tt('popularBadge')}</div>
+                      )}
                     </div>
                     <div className="villa-body">
                       <div className="villa-location-row">
