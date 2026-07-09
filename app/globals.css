@@ -1389,6 +1389,15 @@ a {
   white-space: pre-wrap;
 }
 
+.villa-detail-video {
+  width: 100%;
+  max-width: 420px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--glass-border);
+  background: #000;
+  display: block;
+}
+
 .villa-amenities-title {
   font-family: var(--serif);
   font-size: 18px;
