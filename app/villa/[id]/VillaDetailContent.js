@@ -133,6 +133,18 @@ export default function VillaDetailContent({ villa, reviews, avgRating, photos, 
               </>
             ) : null}
 
+            {villa.video_url ? (
+              <>
+                <div className="section-divider" />
+                <video
+                  src={villa.video_url}
+                  controls
+                  playsInline
+                  className="villa-detail-video"
+                />
+              </>
+            ) : null}
+
             {villa.amenities && villa.amenities.length > 0 ? (
               <>
                 <div className="section-divider" />
