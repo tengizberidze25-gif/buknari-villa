@@ -23,6 +23,11 @@ export default function EditVillaPage({ params }) {
   const [error, setError] = useState('');
   const [saved, setSaved] = useState(false);
   const [selectedVillage, setSelectedVillage] = useState('');
+  const [videoFile, setVideoFile] = useState(null);
+  const [uploadingVideo, setUploadingVideo] = useState(false);
+  const [videoMsg, setVideoMsg] = useState('');
+  const [currentVideoUrl, setCurrentVideoUrl] = useState('');
+  const [removingVideo, setRemovingVideo] = useState(false);
 
   useEffect(() => {
     const storedOwnerId = localStorage.getItem('buknari_owner_id');
@@ -47,6 +52,7 @@ export default function EditVillaPage({ params }) {
           setVilla(data.villa);
           setExistingPhotos(data.villa.villa_photos || []);
           setSelectedVillage(data.villa.village || '');
+          setCurrentVideoUrl(data.villa.video_url || '');
         }
       })
       .catch(() => setError('კავშირის შეცდომა'))
@@ -143,6 +149,83 @@ export default function EditVillaPage({ params }) {
       setError('კავშირის შეცდომა');
     }
     setSettingCoverId(null);
+  }
+
+  async function handleUploadVideo() {
+    if (!videoFile) {
+      setVideoMsg('აირჩიეთ ვიდეო ფაილი');
+      return;
+    }
+    setUploadingVideo(true);
+    setVideoMsg('');
+    try {
+      const urlRes = await fetch('/api/owner/villa/video', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ownerId,
+          token,
+          villaId,
+          action: 'get-upload-url',
+          filename: videoFile.name,
+        }),
+      });
+      const urlData = await urlRes.json();
+      if (!urlData.ok) {
+        setVideoMsg(urlData.message || 'ატვირთვის მომზადება ვერ მოხერხდა');
+        setUploadingVideo(false);
+        return;
+      }
+
+      const { error: uploadError } = await supabase.storage
+        .from('villa-videos')
+        .uploadToSignedUrl(urlData.path, urlData.token, videoFile);
+
+      if (uploadError) {
+        setVideoMsg('ატვირთვა ვერ მოხერხდა: ' + uploadError.message);
+        setUploadingVideo(false);
+        return;
+      }
+
+      const confirmRes = await fetch('/api/owner/villa/video', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ownerId, token, villaId, action: 'confirm', path: urlData.path }),
+      });
+      const confirmData = await confirmRes.json();
+      if (confirmData.ok) {
+        setCurrentVideoUrl(confirmData.url);
+        setVideoFile(null);
+        setVideoMsg('ვიდეო წარმატებით აიტვირთა ✓');
+      } else {
+        setVideoMsg(confirmData.message || 'ვიდეოს შენახვა ვერ მოხერხდა');
+      }
+    } catch (e) {
+      setVideoMsg('კავშირის შეცდომა');
+    }
+    setUploadingVideo(false);
+  }
+
+  async function handleRemoveVideo() {
+    if (!confirm('წავშალო ვილის ვიდეო?')) return;
+    setRemovingVideo(true);
+    try {
+      const res = await fetch('/api/owner/villa/video', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ownerId, token, villaId, action: 'delete' }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        setCurrentVideoUrl('');
+        setVideoMsg('');
+      } else {
+        setVideoMsg(data.message || 'წაშლა ვერ მოხერხდა');
+      }
+    } catch (e) {
+      setVideoMsg('კავშირის შეცდომა');
+    }
+    setRemovingVideo(false);
   }
 
   async function handleSubmit(e) {
@@ -403,6 +486,41 @@ export default function EditVillaPage({ params }) {
                 HEIC ფოტოები მუშავდება, გთხოვთ დაელოდოთ...
               </p>
             )}
+          </div>
+
+          <div className="form-row">
+            <label>ვილის ვიდეო (15-20 წამი)</label>
+            {currentVideoUrl && (
+              <div style={{ marginBottom: '12px' }}>
+                <video src={currentVideoUrl} controls style={{ width: '100%', maxWidth: '320px', borderRadius: 'var(--radius-md)' }} />
+                <div style={{ marginTop: '8px' }}>
+                  <button
+                    type="button"
+                    className="existing-photo-remove"
+                    style={{ position: 'static', width: 'auto', height: 'auto', padding: '6px 14px', borderRadius: '999px' }}
+                    disabled={removingVideo}
+                    onClick={handleRemoveVideo}
+                  >
+                    {removingVideo ? 'იშლება...' : '✕ ვიდეოს წაშლა'}
+                  </button>
+                </div>
+              </div>
+            )}
+            <div className="video-upload-form">
+              <div className="video-upload-field">
+                <input type="file" accept="video/*" onChange={(e) => setVideoFile(e.target.files[0] || null)} />
+                {videoFile && <span className="video-upload-filename">{videoFile.name}</span>}
+              </div>
+              <button
+                type="button"
+                className="video-upload-btn"
+                disabled={uploadingVideo || !videoFile}
+                onClick={handleUploadVideo}
+              >
+                {uploadingVideo ? 'იტვირთება...' : currentVideoUrl ? 'ვიდეოს შეცვლა' : 'ვიდეოს ატვირთვა'}
+              </button>
+            </div>
+            {videoMsg && <p className="dashboard-empty-hint">{videoMsg}</p>}
           </div>
 
           {error && <div className="auth-error">{error}</div>}
