@@ -21,7 +21,7 @@ function isSameDay(a, b) {
   return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
 }
 
-export default function BookingCalendar({ villaId, pricePerNight }) {
+export default function BookingCalendar({ villaId, pricePerNight, minNights }) {
   const { lang } = useLanguage();
   const tt = (key) => t(lang, key);
   const MONTH_NAMES = t(lang, 'monthNames');
@@ -89,6 +89,12 @@ export default function BookingCalendar({ villaId, pricePerNight }) {
     }
     if (hasBlockedBetween(checkIn, date)) {
       setError(tt('bcErrorRangeBlocked'));
+      return;
+    }
+    const nightsSelected = Math.round((date - checkIn) / (1000 * 60 * 60 * 24));
+    const requiredMinNights = minNights || 1;
+    if (nightsSelected < requiredMinNights) {
+      setError(tt('bcErrorMinNights').replace('{min}', requiredMinNights));
       return;
     }
     setError('');
@@ -166,6 +172,7 @@ export default function BookingCalendar({ villaId, pricePerNight }) {
   return (
     <div className="booking-box">
       <h3 className="booking-title">{tt('bcSelectDates')}</h3>
+      {minNights > 1 && <p className="booking-min-nights-hint">{tt('bcMinNightsHint').replace('{min}', minNights)}</p>}
 
       <div className="booking-cal-nav">
         <button type="button" onClick={() => setViewMonth(new Date(year, month - 1, 1))} aria-label={tt('bcPrevMonth')}>‹</button>
