@@ -413,24 +413,26 @@ export default function EditVillaPage({ params }) {
 
           <div className="form-grid-2">
             <div className="form-row">
-              <label>მანძილი ცენტრამდე (მეტრი)</label>
+              <label>მანძილი ცენტრამდე (მეტრი) — არასავალდებულო</label>
               <input
                 name="distance_center_m"
                 type="number"
                 min="0"
-                placeholder="მაგ. 500"
+                placeholder="ავტომატურად ითვლება რუკაზე მონიშნული წერტილიდან"
                 defaultValue={villa.distance_center_m || ''}
               />
+              <p className="form-hint">ცარიელი დატოვე, თუ გინდა ავტომატური გამოთვლა რუკაზე მონიშნული ლოკაციის მიხედვით. შეავსე მხოლოდ თუ ავტომატური მნიშვნელობა არასწორია.</p>
             </div>
             <div className="form-row">
-              <label>მანძილი ზღვამდე (მეტრი)</label>
+              <label>მანძილი ზღვამდე (მეტრი) — არასავალდებულო</label>
               <input
                 name="distance_sea_m"
                 type="number"
                 min="0"
-                placeholder="მაგ. 150"
+                placeholder="ავტომატურად ითვლება რუკაზე მონიშნული წერტილიდან"
                 defaultValue={villa.distance_sea_m || ''}
               />
+              <p className="form-hint">ცარიელი დატოვე, თუ გინდა ავტომატური გამოთვლა.</p>
             </div>
           </div>
 
