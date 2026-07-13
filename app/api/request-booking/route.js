@@ -86,12 +86,21 @@ export async function POST(request) {
     // Confirm the villa exists and is approved
     const { data: villa } = await supabaseAdmin
       .from('villas')
-      .select('id, title, status, owner_id')
+      .select('id, title, status, owner_id, min_nights')
       .eq('id', villaId)
       .single();
 
     if (!villa || villa.status !== 'approved') {
       return Response.json({ ok: false, message: 'ვილა ვერ მოიძებნა' }, { status: 404 });
+    }
+
+    const nightsRequested = Math.round((new Date(checkOut) - new Date(checkIn)) / (1000 * 60 * 60 * 24));
+    const requiredMinNights = villa.min_nights || 1;
+    if (nightsRequested < requiredMinNights) {
+      return Response.json(
+        { ok: false, message: `მინიმალური ჯავშნის ვადაა ${requiredMinNights} ღამე` },
+        { status: 400 }
+      );
     }
 
     // Check for overlap with existing pending/confirmed/owner_block bookings
