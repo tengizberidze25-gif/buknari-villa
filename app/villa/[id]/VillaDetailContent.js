@@ -29,6 +29,20 @@ function amenityLabel(a, lang) {
 
 const LOCALE_MAP = { ka: 'ka-GE', en: 'en-US', ru: 'ru-RU', hy: 'hy-AM' };
 
+const DISTANCE_UNITS = {
+  ka: { m: 'მ', km: 'კმ' },
+  en: { m: 'm', km: 'km' },
+  ru: { m: 'м', km: 'км' },
+  hy: { m: 'մ', km: 'կմ' },
+};
+
+function formatDistance(meters, lang) {
+  if (!meters) return null;
+  const units = DISTANCE_UNITS[lang] || DISTANCE_UNITS.ka;
+  if (meters < 1000) return `${meters} ${units.m}`;
+  return `${(meters / 1000).toFixed(1)} ${units.km}`;
+}
+
 export default function VillaDetailContent({ villa, reviews, avgRating, photos, whatsapp, phone, similarVillas }) {
   const { lang } = useLanguage();
   const tt = (key) => t(lang, key);
@@ -124,6 +138,12 @@ export default function VillaDetailContent({ villa, reviews, avgRating, photos, 
               {villa.max_guests ? <span>👤 {villa.max_guests} {countLabel(villa.max_guests, lang, 'guest')}</span> : null}
               {villa.bedrooms ? <span>🛏 {villa.bedrooms} {countLabel(villa.bedrooms, lang, 'bedroom')}</span> : null}
               {villa.bathrooms ? <span>🛁 {villa.bathrooms} {countLabel(villa.bathrooms, lang, 'bathroom')}</span> : null}
+              {villa.distance_center_m ? (
+                <span>🚶 {formatDistance(villa.distance_center_m, lang)} {tt('vdDistanceCenterLabel')}</span>
+              ) : null}
+              {villa.distance_sea_m ? (
+                <span>🌊 {formatDistance(villa.distance_sea_m, lang)} {tt('vdDistanceSeaLabel')}</span>
+              ) : null}
             </div>
 
             {description ? (
@@ -164,6 +184,22 @@ export default function VillaDetailContent({ villa, reviews, avgRating, photos, 
                 <div className="section-divider" />
                 <h3 className="villa-amenities-title">{tt('vdLocationTitle')}</h3>
                 <VillaLocationMap villa={villa} />
+              </>
+            ) : null}
+
+            {villa.nearby_food ? (
+              <>
+                <div className="section-divider" />
+                <h3 className="villa-amenities-title">🍽 {tt('vdNearbyFoodTitle')}</h3>
+                <p className="villa-detail-description">{villa.nearby_food}</p>
+              </>
+            ) : null}
+
+            {villa.nearby_shops ? (
+              <>
+                <div className="section-divider" />
+                <h3 className="villa-amenities-title">🛒 {tt('vdNearbyShopsTitle')}</h3>
+                <p className="villa-detail-description">{villa.nearby_shops}</p>
               </>
             ) : null}
 
@@ -245,7 +281,7 @@ export default function VillaDetailContent({ villa, reviews, avgRating, photos, 
               ) : null}
             </div>
 
-            <BookingCalendar villaId={villa.id} />
+            <BookingCalendar villaId={villa.id} pricePerNight={villa.price_per_night} />
           </aside>
         </div>
 
