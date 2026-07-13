@@ -150,7 +150,7 @@ export const dict = {
     navContact: 'Contact',
     heroEyebrow: 'Black Sea Coast · Buknari',
     heroTitleLine1: 'Your getaway',
-    heroTitleEm: 'in Buknari',
+    heroTitleEm: 'on the Black Sea',
     heroTitleLine2: 'begins',
     heroTitleLine3: 'right here',
     heroSub:
@@ -294,7 +294,7 @@ export const dict = {
     navContact: 'Контакты',
     heroEyebrow: 'Черноморское побережье · Букнари',
     heroTitleLine1: 'Ваш отдых',
-    heroTitleEm: 'в Букнари',
+    heroTitleEm: 'на Чёрном море',
     heroTitleLine2: 'начинается',
     heroTitleLine3: 'здесь',
     heroSub:
@@ -439,7 +439,7 @@ export const dict = {
     navContact: 'Կապ',
     heroEyebrow: 'Սև ծովի ափ · Բուկնարի',
     heroTitleLine1: 'Ձեր հանգիստը',
-    heroTitleEm: 'Բուկնարիում',
+    heroTitleEm: 'Սև ծովում',
     heroTitleLine2: 'սկսվում է',
     heroTitleLine3: 'հենց այստեղ',
     searchDatePlaceholder: 'Ընտրեք ամսաթիվ',
