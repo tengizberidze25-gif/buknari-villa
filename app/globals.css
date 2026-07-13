@@ -1916,14 +1916,29 @@ a {
   min-height: 320px;
   padding: 48px;
   text-decoration: none;
-  background-image: linear-gradient(90deg, rgba(10, 16, 15, 0.9) 0%, rgba(10, 16, 15, 0.6) 45%, rgba(10, 16, 15, 0.15) 100%),
-    url('/ber-tower-banner.jpg');
-  background-size: cover;
-  background-position: center;
   border: 1px solid var(--glass-border);
 }
 
+.partner-banner-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: left center;
+  z-index: 0;
+}
+
+.partner-banner-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(90deg, rgba(10, 16, 15, 0.92) 0%, rgba(10, 16, 15, 0.68) 45%, rgba(10, 16, 15, 0.15) 100%);
+}
+
 .partner-banner-text {
+  position: relative;
+  z-index: 2;
   max-width: 520px;
 }
 
