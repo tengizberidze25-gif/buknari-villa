@@ -107,6 +107,10 @@ export const dict = {
     vdDistanceSeaLabel: 'ზღვამდე',
     vdNearbyFoodTitle: 'კვების ობიექტები ახლოს',
     vdNearbyShopsTitle: 'მაღაზიები ახლოს',
+    partnerBannerLabel: 'საინვესტიციო პროექტი',
+    partnerBannerTitle: 'BER Tower — საცხოვრებელი კომპლექსი ჩაქვში',
+    partnerBannerDesc: 'პრემიუმ-კლასის აპარტამენტები ზღვასთან, ბათუმიდან 10 კმ-ში. კერძო პლაჟი, საცურაო აუზი, მიწისქვეშა პარკინგი — საინვესტიციო შესაძლებლობა.',
+    partnerBannerBtn: 'დეტალურად →',
 
     mbTitle: 'ჩემი ჯავშნები',
     mbPhoneIntro: 'შეიყვანეთ ტელეფონის ნომერი, რომლითაც ჯავშანი გააკეთეთ — გამოგიგზავნით დამადასტურებელ კოდს SMS-ით.',
@@ -256,6 +260,10 @@ export const dict = {
     vdDistanceSeaLabel: 'to the sea',
     vdNearbyFoodTitle: 'Nearby food',
     vdNearbyShopsTitle: 'Nearby shops',
+    partnerBannerLabel: 'Investment project',
+    partnerBannerTitle: 'BER Tower — residential complex in Chakvi',
+    partnerBannerDesc: 'Premium-class apartments by the sea, 10 km from Batumi. Private beach, swimming pool, underground parking — an investment opportunity.',
+    partnerBannerBtn: 'Learn more →',
 
     mbTitle: 'My Bookings',
     mbPhoneIntro: "Enter the phone number you used to book — we'll text you a verification code.",
@@ -406,6 +414,10 @@ export const dict = {
     vdDistanceSeaLabel: 'до моря',
     vdNearbyFoodTitle: 'Рядом поесть',
     vdNearbyShopsTitle: 'Магазины рядом',
+    partnerBannerLabel: 'Инвестиционный проект',
+    partnerBannerTitle: 'BER Tower — жилой комплекс в Чакве',
+    partnerBannerDesc: 'Апартаменты премиум-класса у моря, в 10 км от Батуми. Частный пляж, бассейн, подземный паркинг — инвестиционная возможность.',
+    partnerBannerBtn: 'Подробнее →',
 
     mbTitle: 'Мои брони',
     mbPhoneIntro: 'Введите номер телефона, на который делали бронь — отправим код подтверждения по SMS.',
@@ -556,6 +568,10 @@ export const dict = {
     vdDistanceSeaLabel: 'մինչև ծովը',
     vdNearbyFoodTitle: 'Սնունդ մոտակայքում',
     vdNearbyShopsTitle: 'Խանութներ մոտակայքում',
+    partnerBannerLabel: 'Ներդրումային ծրագիր',
+    partnerBannerTitle: 'BER Tower — բնակելի համալիր Չաքվիում',
+    partnerBannerDesc: 'Պրեմիում կարգի բնակարաններ ծովի ափին, Բաթումիից 10 կմ հեռավորության վրա: Մասնավոր լողափ, լողավազան, ստորգետնյա կայանատեղի — ներդրումային հնարավորություն։',
+    partnerBannerBtn: 'Մանրամասն →',
 
     mbTitle: 'Իմ ամրագրումները',
     mbPhoneIntro: 'Մուտքագրեք հեռախոսահամարը, որով կատարել եք ամրագրումը — կուղարկենք հաստատման կոդ SMS-ով։',
