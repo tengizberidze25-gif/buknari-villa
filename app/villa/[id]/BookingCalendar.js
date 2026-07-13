@@ -21,7 +21,7 @@ function isSameDay(a, b) {
   return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
 }
 
-export default function BookingCalendar({ villaId, pricePerNight, minNights }) {
+export default function BookingCalendar({ villaId, pricePerNight, minNights, village }) {
   const { lang } = useLanguage();
   const tt = (key) => t(lang, key);
   const MONTH_NAMES = t(lang, 'monthNames');
@@ -44,6 +44,24 @@ export default function BookingCalendar({ villaId, pricePerNight, minNights }) {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [done, setDone] = useState(false);
+  const [forecast, setForecast] = useState(null);
+  const [loadingForecast, setLoadingForecast] = useState(false);
+
+  useEffect(() => {
+    if (!checkIn || !checkOut || !village) {
+      setForecast(null);
+      return;
+    }
+    setLoadingForecast(true);
+    fetch(`/api/weather?village=${encodeURIComponent(village)}&startDate=${toISO(checkIn)}&endDate=${toISO(checkOut)}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.ok) setForecast(data);
+        else setForecast(null);
+      })
+      .catch(() => setForecast(null))
+      .finally(() => setLoadingForecast(false));
+  }, [checkIn, checkOut, village]);
 
   useEffect(() => {
     fetch(`/api/villa-availability?villaId=${villaId}`)
@@ -240,6 +258,22 @@ export default function BookingCalendar({ villaId, pricePerNight, minNights }) {
             </div>
           )}
         </div>
+
+        {checkIn && checkOut && !loadingForecast && forecast && forecast.forecastAvailable && (
+          <div className="booking-forecast">
+            <span className="booking-forecast-icon">{forecast.icon}</span>
+            <span className="booking-forecast-temp">
+              {forecast.tempMin}° – {forecast.tempMax}°C
+            </span>
+            <span className="booking-forecast-condition">{tt(`weather_${forecast.conditionKey}`)}</span>
+            {forecast.partialRange && (
+              <span className="booking-forecast-note">{tt('bcForecastPartial')}</span>
+            )}
+          </div>
+        )}
+        {checkIn && checkOut && !loadingForecast && forecast && forecast.forecastAvailable === false && (
+          <p className="booking-forecast-unavailable">{tt('bcForecastUnavailable')}</p>
+        )}
 
         <input
           type="text"
