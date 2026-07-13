@@ -1913,7 +1913,7 @@ a {
   position: relative;
   border-radius: var(--radius-lg);
   overflow: hidden;
-  min-height: 480px;
+  min-height: 360px;
   padding: 48px;
   text-decoration: none;
   border: 1px solid var(--glass-border);
@@ -1985,7 +1985,7 @@ a {
 @media (max-width: 620px) {
   .partner-banner {
     padding: 28px 22px;
-    min-height: 420px;
+    min-height: 380px;
     align-items: flex-end;
   }
   .partner-banner-text h3 {
