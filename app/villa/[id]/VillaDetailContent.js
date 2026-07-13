@@ -286,7 +286,7 @@ export default function VillaDetailContent({ villa, reviews, avgRating, photos, 
               ) : null}
             </div>
 
-            <BookingCalendar villaId={villa.id} pricePerNight={villa.price_per_night} />
+            <BookingCalendar villaId={villa.id} pricePerNight={villa.price_per_night} minNights={villa.min_nights} />
           </aside>
         </div>
 
