@@ -1942,12 +1942,13 @@ a {
   max-width: 520px;
 }
 
-.partner-banner-eyebrow {
-  font-size: 12px;
-  letter-spacing: 0.12em;
+.partner-banner-label {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--sea-bright);
-  margin-bottom: 12px;
+  margin-bottom: 18px;
 }
 
 .partner-banner-text h3 {
