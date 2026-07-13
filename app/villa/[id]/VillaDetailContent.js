@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Gallery from './Gallery';
 import BookingCalendar from './BookingCalendar';
 import VillaLocationMap from './VillaLocationMap';
+import WeatherWidget from './WeatherWidget';
 import { AMENITIES } from '../../amenities';
 import { ratingLabel } from '../../ratingLabel';
 import { useLanguage } from '../../LanguageContext';
@@ -127,6 +128,7 @@ export default function VillaDetailContent({ villa, reviews, avgRating, photos, 
             {villa.owner_verified ? (
               <div className="verified-owner-badge">✓ {tt('verifiedOwnerLabel')}</div>
             ) : null}
+            <WeatherWidget village={villa.village} />
 
             {avgRating ? (
               <div className="villa-rating-badge">
