@@ -179,7 +179,9 @@ export default function HomeContent({ villas, testimonials }) {
         <div className="wrap hero-inner">
           <div className="eyebrow">{tt('heroEyebrow')}</div>
           <h1>
-            {tt('heroTitleLine1')} <em>{tt('heroTitleEm')}</em>
+            {tt('heroTitleLine1')}
+            <br />
+            <em>{tt('heroTitleEm')}</em>
             <br />
             {tt('heroTitleLine2')}
             <br />
