@@ -261,11 +261,31 @@ export default function BookingCalendar({ villaId, pricePerNight, minNights, vil
 
         {checkIn && checkOut && !loadingForecast && forecast && forecast.forecastAvailable && (
           <div className="booking-forecast">
-            <span className="booking-forecast-icon">{forecast.icon}</span>
-            <span className="booking-forecast-temp">
-              {forecast.tempMin}° – {forecast.tempMax}°C
-            </span>
-            <span className="booking-forecast-condition">{tt(`weather_${forecast.conditionKey}`)}</span>
+            <div className="booking-forecast-summary">
+              <span className="booking-forecast-icon">{forecast.icon}</span>
+              <span className="booking-forecast-temp">
+                {forecast.tempMin}° – {forecast.tempMax}°C
+              </span>
+              <span className="booking-forecast-condition">{tt(`weather_${forecast.conditionKey}`)}</span>
+            </div>
+            {forecast.daily && forecast.daily.length > 1 && (
+              <div className="booking-forecast-days">
+                {forecast.daily.map((d) => {
+                  const dDate = new Date(d.date);
+                  return (
+                    <div key={d.date} className="booking-forecast-day">
+                      <span className="booking-forecast-day-date">
+                        {dDate.getDate()} {MONTH_NAMES[dDate.getMonth()].slice(0, 3)}
+                      </span>
+                      <span className="booking-forecast-day-icon">{d.icon}</span>
+                      <span className="booking-forecast-day-temp">
+                        {d.tempMin}° / {d.tempMax}°
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
             {forecast.partialRange && (
               <span className="booking-forecast-note">{tt('bcForecastPartial')}</span>
             )}
