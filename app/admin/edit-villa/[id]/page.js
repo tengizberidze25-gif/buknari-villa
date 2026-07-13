@@ -162,6 +162,7 @@ export default function AdminEditVillaPage({ params }) {
           description: form.description.value,
           location_name: form.location_name.value,
           price_per_night: form.price_per_night.value,
+          min_nights: form.min_nights.value,
           lat: form.lat.value,
           lng: form.lng.value,
           max_guests: form.max_guests.value,
@@ -281,6 +282,19 @@ export default function AdminEditVillaPage({ params }) {
               <label>ფასი ღამეში (₾) *</label>
               <input name="price_per_night" type="number" min="1" defaultValue={villa.price_per_night || ''} required />
             </div>
+          </div>
+
+          <div className="form-row">
+            <label>მინიმალური ღამეების რაოდენობა</label>
+            <input
+              name="min_nights"
+              type="number"
+              min="1"
+              placeholder="ნაგულისხმევია 1"
+              defaultValue={villa.min_nights || ''}
+              style={{ maxWidth: '160px' }}
+            />
+            <p className="form-hint">სტუმარი ვერ დაჯავშნის ამაზე ნაკლებ ღამეს. ცარიელი დატოვე, თუ შეზღუდვა არ გინდა.</p>
           </div>
 
           <LocationPicker initialLat={villa.lat} initialLng={villa.lng} />
