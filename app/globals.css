@@ -1905,6 +1905,79 @@ a {
   color: var(--sea-bright);
 }
 
+/* ---------- Partner banner (BER Tower) ---------- */
+
+.partner-banner {
+  display: flex;
+  align-items: center;
+  position: relative;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  min-height: 320px;
+  padding: 48px;
+  text-decoration: none;
+  background-image: linear-gradient(90deg, rgba(10, 16, 15, 0.9) 0%, rgba(10, 16, 15, 0.6) 45%, rgba(10, 16, 15, 0.15) 100%),
+    url('/ber-tower-banner.jpg');
+  background-size: cover;
+  background-position: center;
+  border: 1px solid var(--glass-border);
+}
+
+.partner-banner-text {
+  max-width: 520px;
+}
+
+.partner-banner-eyebrow {
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--sea-bright);
+  margin-bottom: 12px;
+}
+
+.partner-banner-text h3 {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 28px;
+  color: var(--foam);
+  margin: 0 0 12px;
+  line-height: 1.25;
+}
+
+.partner-banner-text p {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--sand);
+  margin: 0 0 22px;
+}
+
+.partner-banner-btn {
+  display: inline-flex;
+  align-items: center;
+  background: var(--accent);
+  color: var(--foam);
+  padding: 12px 26px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 14px;
+  transition: background 0.2s ease;
+}
+
+.partner-banner:hover .partner-banner-btn {
+  background: var(--accent-bright);
+}
+
+@media (max-width: 620px) {
+  .partner-banner {
+    padding: 28px 22px;
+    min-height: 380px;
+    align-items: flex-end;
+  }
+  .partner-banner-text h3 {
+    font-size: 22px;
+  }
+}
+
 /* ---------- Footer ---------- */
 
 .footer {
