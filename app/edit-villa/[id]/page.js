@@ -256,6 +256,10 @@ export default function EditVillaPage({ params }) {
           max_guests: form.max_guests.value,
           bedrooms: form.bedrooms.value,
           bathrooms: form.bathrooms.value,
+          distance_center_m: form.distance_center_m.value,
+          distance_sea_m: form.distance_sea_m.value,
+          nearby_food: form.nearby_food.value,
+          nearby_shops: form.nearby_shops.value,
           amenities: selectedAmenities,
           contact_phone: form.contact_phone.value,
           contact_whatsapp: form.contact_whatsapp.value,
@@ -405,6 +409,49 @@ export default function EditVillaPage({ params }) {
               <label>სააბაზანო</label>
               <input name="bathrooms" type="number" min="0" defaultValue={villa.bathrooms || ''} />
             </div>
+          </div>
+
+          <div className="form-grid-2">
+            <div className="form-row">
+              <label>მანძილი ცენტრამდე (მეტრი)</label>
+              <input
+                name="distance_center_m"
+                type="number"
+                min="0"
+                placeholder="მაგ. 500"
+                defaultValue={villa.distance_center_m || ''}
+              />
+            </div>
+            <div className="form-row">
+              <label>მანძილი ზღვამდე (მეტრი)</label>
+              <input
+                name="distance_sea_m"
+                type="number"
+                min="0"
+                placeholder="მაგ. 150"
+                defaultValue={villa.distance_sea_m || ''}
+              />
+            </div>
+          </div>
+
+          <div className="form-row">
+            <label>კვების ობიექტები ახლოს (არასავალდებულო)</label>
+            <textarea
+              name="nearby_food"
+              rows="3"
+              placeholder="მაგ. კაფე 'ზღვისპირა' — 100მ, რესტორანი 'აჭარა' — 300მ"
+              defaultValue={villa.nearby_food || ''}
+            />
+          </div>
+
+          <div className="form-row">
+            <label>მაღაზიები ახლოს (არასავალდებულო)</label>
+            <textarea
+              name="nearby_shops"
+              rows="3"
+              placeholder="მაგ. სუპერმარკეტი 'ნიკორა' — 200მ"
+              defaultValue={villa.nearby_shops || ''}
+            />
           </div>
 
           <div className="form-row">
