@@ -86,6 +86,17 @@ export async function GET(request) {
       const dominantCode = Object.keys(codeCounts).reduce((a, b) => (codeCounts[a] >= codeCounts[b] ? a : b));
       const mapped = WEATHER_CODE_MAP[dominantCode] || { icon: '🌡️', key: 'unknown' };
 
+      const dailyBreakdown = daily.time.map((date, i) => {
+        const dayMapped = WEATHER_CODE_MAP[codes[i]] || { icon: '🌡️', key: 'unknown' };
+        return {
+          date,
+          tempMin: Math.round(lows[i]),
+          tempMax: Math.round(highs[i]),
+          icon: dayMapped.icon,
+          conditionKey: dayMapped.key,
+        };
+      });
+
       return Response.json({
         ok: true,
         forecastAvailable: true,
@@ -95,6 +106,7 @@ export async function GET(request) {
         icon: mapped.icon,
         conditionKey: mapped.key,
         days: daily.time.length,
+        daily: dailyBreakdown,
       });
     }
 
