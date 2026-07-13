@@ -473,7 +473,7 @@ export default function HomeContent({ villas, testimonials }) {
 
         <section className="section partner-banner-section">
           <a
-            href="https://wa.me/995500000000?text=გამარჯობა%2C%20დამაინტერესა%20BER%20Tower"
+            href="https://www.facebook.com/BERTOWERBATUMI"
             target="_blank"
             rel="noopener noreferrer sponsored"
             className="partner-banner"
