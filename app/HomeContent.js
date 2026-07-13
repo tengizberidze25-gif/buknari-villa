@@ -472,7 +472,7 @@ export default function HomeContent({ villas, testimonials }) {
         <div className="section-divider" />
 
         <section className="section partner-banner-section">
-          <div className="partner-banner-label">საინვესტიციო პროექტი</div>
+          <div className="partner-banner-label">{tt('partnerBannerLabel')}</div>
           <a
             href="https://www.facebook.com/BERTOWERBATUMI"
             target="_blank"
@@ -482,12 +482,9 @@ export default function HomeContent({ villas, testimonials }) {
             <img src="/ber-tower-banner.jpg" alt="BER Tower" className="partner-banner-img" />
             <div className="partner-banner-overlay" />
             <div className="partner-banner-text">
-              <h3>BER Tower — საცხოვრებელი კომპლექსი ჩაქვში</h3>
-              <p>
-                პრემიუმ-კლასის აპარტამენტები ზღვასთან, ბათუმიდან 10 კმ-ში. კერძო პლაჟი, საცურაო აუზი, მიწისქვეშა
-                პარკინგი — საინვესტიციო შესაძლებლობა.
-              </p>
-              <span className="partner-banner-btn">დეტალურად →</span>
+              <h3>{tt('partnerBannerTitle')}</h3>
+              <p>{tt('partnerBannerDesc')}</p>
+              <span className="partner-banner-btn">{tt('partnerBannerBtn')}</span>
             </div>
           </a>
         </section>
