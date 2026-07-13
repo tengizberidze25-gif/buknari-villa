@@ -1280,6 +1280,39 @@ a {
   margin-bottom: 20px;
 }
 
+.weather-widget {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  color: var(--sand);
+  font-size: 13px;
+  padding: 7px 14px;
+  border-radius: 100px;
+  margin-bottom: 20px;
+}
+
+.weather-widget-icon {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.weather-widget-temp {
+  font-weight: 700;
+  color: var(--foam);
+}
+
+.weather-widget-condition {
+  color: var(--sand-dim);
+}
+
+.weather-widget-village {
+  color: var(--sand-dim);
+  border-left: 1px solid var(--glass-border);
+  padding-left: 8px;
+}
+
 .villa-rating-badge {
   display: flex;
   align-items: center;
