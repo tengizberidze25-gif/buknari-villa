@@ -131,7 +131,10 @@ export async function POST(request) {
     // Re-translate in the background (best effort) since the text may have changed
     translateText(title, 'en')
       .then(async (titleEn) => {
-        const [titleRu, titleHy, descEn, descRu, descHy, locEn, locRu, locHy] = await Promise.all([
+        const [
+          titleRu, titleHy, descEn, descRu, descHy, locEn, locRu, locHy,
+          foodEn, foodRu, foodHy, shopsEn, shopsRu, shopsHy,
+        ] = await Promise.all([
           translateText(title, 'ru'),
           translateText(title, 'hy'),
           translateText(description, 'en'),
@@ -140,6 +143,12 @@ export async function POST(request) {
           translateText(locationName, 'en'),
           translateText(locationName, 'ru'),
           translateText(locationName, 'hy'),
+          translateText(nearbyFood, 'en'),
+          translateText(nearbyFood, 'ru'),
+          translateText(nearbyFood, 'hy'),
+          translateText(nearbyShops, 'en'),
+          translateText(nearbyShops, 'ru'),
+          translateText(nearbyShops, 'hy'),
         ]);
         await supabaseAdmin
           .from('villas')
@@ -153,6 +162,12 @@ export async function POST(request) {
             location_name_en: locEn,
             location_name_ru: locRu,
             location_name_hy: locHy,
+            nearby_food_en: foodEn,
+            nearby_food_ru: foodRu,
+            nearby_food_hy: foodHy,
+            nearby_shops_en: shopsEn,
+            nearby_shops_ru: shopsRu,
+            nearby_shops_hy: shopsHy,
             translation_status: titleEn || descEn ? 'done' : 'failed',
           })
           .eq('id', villaId);
