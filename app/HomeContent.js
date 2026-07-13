@@ -478,8 +478,10 @@ export default function HomeContent({ villas, testimonials }) {
             rel="noopener noreferrer sponsored"
             className="partner-banner"
           >
+            <img src="/ber-tower-banner.jpg" alt="BER Tower" className="partner-banner-img" />
+            <div className="partner-banner-overlay" />
             <div className="partner-banner-text">
-              <div className="partner-banner-eyebrow">საინვესტიციო შეთავაზება</div>
+              <div className="partner-banner-eyebrow">საინვესტიციო პროექტი</div>
               <h3>BER Tower — საცხოვრებელი კომპლექსი ჩაქვში</h3>
               <p>
                 პრემიუმ-კლასის აპარტამენტები ზღვასთან, ბათუმიდან 10 კმ-ში. კერძო პლაჟი, საცურაო აუზი, მიწისქვეშა
