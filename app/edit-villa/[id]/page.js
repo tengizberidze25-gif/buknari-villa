@@ -1,40 +1,48 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { supabase } from '../../../../lib/supabase';
-import LocationPicker from '../../../LocationPicker';
-import VillageSelect from '../../../VillageSelect';
-import SubLocationSelect from '../../../SubLocationSelect';
-import { AMENITIES } from '../../../amenities';
+import { supabase } from '../../../lib/supabase';
+import LocationPicker from '../../LocationPicker';
+import VillageSelect from '../../VillageSelect';
+import SubLocationSelect from '../../SubLocationSelect';
+import { AMENITIES } from '../../amenities';
 
-export default function AdminEditVillaPage({ params }) {
+export default function EditVillaPage({ params }) {
   const villaId = params.id;
 
+  const [ownerId, setOwnerId] = useState(null);
   const [token, setToken] = useState(null);
   const [villa, setVilla] = useState(null);
   const [existingPhotos, setExistingPhotos] = useState([]);
   const [newPhotos, setNewPhotos] = useState([]);
   const [convertingPhotos, setConvertingPhotos] = useState(false);
   const [removingPhotoId, setRemovingPhotoId] = useState(null);
-  const [settingCoverId, setSettingCoverId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState('');
   const [saved, setSaved] = useState(false);
   const [selectedVillage, setSelectedVillage] = useState('');
+  const [videoFile, setVideoFile] = useState(null);
+  const [uploadingVideo, setUploadingVideo] = useState(false);
+  const [videoMsg, setVideoMsg] = useState('');
+  const [currentVideoUrl, setCurrentVideoUrl] = useState('');
+  const [removingVideo, setRemovingVideo] = useState(false);
 
   useEffect(() => {
-    const storedToken = localStorage.getItem('buknari_admin_token');
-    if (!storedToken) {
-      window.location.href = '/admin';
+    const storedOwnerId = localStorage.getItem('buknari_owner_id');
+    const storedToken = localStorage.getItem('buknari_owner_token');
+    if (!storedOwnerId || !storedToken) {
+      window.location.href = '/register';
       return;
     }
+    setOwnerId(storedOwnerId);
     setToken(storedToken);
 
-    fetch('/api/admin/villas/get', {
+    fetch('/api/owner/villa/get', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token: storedToken, villaId }),
+      body: JSON.stringify({ ownerId: storedOwnerId, token: storedToken, villaId }),
     })
       .then((res) => res.json())
       .then((data) => {
@@ -44,6 +52,7 @@ export default function AdminEditVillaPage({ params }) {
           setVilla(data.villa);
           setExistingPhotos(data.villa.villa_photos || []);
           setSelectedVillage(data.villa.village || '');
+          setCurrentVideoUrl(data.villa.video_url || '');
         }
       })
       .catch(() => setError('კავშირის შეცდომა'))
@@ -51,7 +60,7 @@ export default function AdminEditVillaPage({ params }) {
   }, [villaId]);
 
   const ALLOWED_PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'];
-  const MAX_PHOTO_SIZE = 15 * 1024 * 1024;
+  const MAX_PHOTO_SIZE = 15 * 1024 * 1024; // 15MB
 
   async function handlePhotoChange(e) {
     const files = Array.from(e.target.files || []).slice(0, 20);
@@ -95,14 +104,16 @@ export default function AdminEditVillaPage({ params }) {
     setError(rejected.length > 0 ? `არ აიტვირთა: ${rejected.join(', ')}` : '');
   }
 
+  const [settingCoverId, setSettingCoverId] = useState(null);
+
   async function removeExistingPhoto(photoId) {
     if (!confirm('წავშალო ეს ფოტო?')) return;
     setRemovingPhotoId(photoId);
     try {
-      const res = await fetch('/api/admin/villas/delete-photo', {
+      const res = await fetch('/api/owner/villa/delete-photo', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token, photoId }),
+        body: JSON.stringify({ ownerId, token, villaId, photoId }),
       });
       const data = await res.json();
       if (data.ok) {
@@ -119,10 +130,10 @@ export default function AdminEditVillaPage({ params }) {
   async function setCoverPhoto(photoId) {
     setSettingCoverId(photoId);
     try {
-      const res = await fetch('/api/admin/villas/set-cover-photo', {
+      const res = await fetch('/api/owner/villa/set-cover-photo', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token, villaId, photoId }),
+        body: JSON.stringify({ ownerId, token, villaId, photoId }),
       });
       const data = await res.json();
       if (data.ok) {
@@ -140,6 +151,83 @@ export default function AdminEditVillaPage({ params }) {
     setSettingCoverId(null);
   }
 
+  async function handleUploadVideo() {
+    if (!videoFile) {
+      setVideoMsg('აირჩიეთ ვიდეო ფაილი');
+      return;
+    }
+    setUploadingVideo(true);
+    setVideoMsg('');
+    try {
+      const urlRes = await fetch('/api/owner/villa/video', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ownerId,
+          token,
+          villaId,
+          action: 'get-upload-url',
+          filename: videoFile.name,
+        }),
+      });
+      const urlData = await urlRes.json();
+      if (!urlData.ok) {
+        setVideoMsg(urlData.message || 'ატვირთვის მომზადება ვერ მოხერხდა');
+        setUploadingVideo(false);
+        return;
+      }
+
+      const { error: uploadError } = await supabase.storage
+        .from('villa-videos')
+        .uploadToSignedUrl(urlData.path, urlData.token, videoFile);
+
+      if (uploadError) {
+        setVideoMsg('ატვირთვა ვერ მოხერხდა: ' + uploadError.message);
+        setUploadingVideo(false);
+        return;
+      }
+
+      const confirmRes = await fetch('/api/owner/villa/video', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ownerId, token, villaId, action: 'confirm', path: urlData.path }),
+      });
+      const confirmData = await confirmRes.json();
+      if (confirmData.ok) {
+        setCurrentVideoUrl(confirmData.url);
+        setVideoFile(null);
+        setVideoMsg('ვიდეო წარმატებით აიტვირთა ✓');
+      } else {
+        setVideoMsg(confirmData.message || 'ვიდეოს შენახვა ვერ მოხერხდა');
+      }
+    } catch (e) {
+      setVideoMsg('კავშირის შეცდომა');
+    }
+    setUploadingVideo(false);
+  }
+
+  async function handleRemoveVideo() {
+    if (!confirm('წავშალო ვილის ვიდეო?')) return;
+    setRemovingVideo(true);
+    try {
+      const res = await fetch('/api/owner/villa/video', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ownerId, token, villaId, action: 'delete' }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        setCurrentVideoUrl('');
+        setVideoMsg('');
+      } else {
+        setVideoMsg(data.message || 'წაშლა ვერ მოხერხდა');
+      }
+    } catch (e) {
+      setVideoMsg('კავშირის შეცდომა');
+    }
+    setRemovingVideo(false);
+  }
+
   async function handleSubmit(e) {
     e.preventDefault();
     setError('');
@@ -151,10 +239,11 @@ export default function AdminEditVillaPage({ params }) {
     );
 
     try {
-      const updateRes = await fetch('/api/admin/villas/update', {
+      const updateRes = await fetch('/api/owner/villa/update', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          ownerId,
           token,
           villaId,
           title: form.title.value,
@@ -188,10 +277,11 @@ export default function AdminEditVillaPage({ params }) {
       for (let i = 0; i < newPhotos.length; i++) {
         const file = newPhotos[i];
 
-        const urlRes = await fetch('/api/admin/villas/upload-url', {
+        const urlRes = await fetch('/api/upload-url', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
+            ownerId,
             token,
             villaId,
             filename: file.name,
@@ -207,10 +297,10 @@ export default function AdminEditVillaPage({ params }) {
 
         if (uploadError) continue;
 
-        await fetch('/api/admin/villas/add-photo', {
+        await fetch('/api/add-photo', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ token, villaId, path: urlData.path, sortOrder: startSortOrder + i }),
+          body: JSON.stringify({ ownerId, token, villaId, path: urlData.path, sortOrder: startSortOrder + i }),
         });
       }
 
@@ -221,6 +311,29 @@ export default function AdminEditVillaPage({ params }) {
       setError('კავშირის შეცდომა, სცადეთ თავიდან');
     }
     setSaving(false);
+  }
+
+  async function handleDelete() {
+    if (!confirm('დარწმუნებული ხართ, რომ გსურთ ამ ვილის სამუდამოდ წაშლა? ეს მოქმედება ვერ გაუქმდება.')) return;
+    setDeleting(true);
+    setError('');
+    try {
+      const res = await fetch('/api/owner/villa/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ownerId, token, villaId }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        window.location.href = '/dashboard';
+      } else {
+        setError(data.message || 'წაშლა ვერ მოხერხდა');
+        setDeleting(false);
+      }
+    } catch (e) {
+      setError('კავშირის შეცდომა');
+      setDeleting(false);
+    }
   }
 
   if (loading) {
@@ -243,8 +356,8 @@ export default function AdminEditVillaPage({ params }) {
             <img src="/logo-nav.png" alt="Buknari Villa" style={{ height: '34px', width: 'auto' }} />
           </a>
           <div className="auth-error">{error || 'ვილა ვერ მოიძებნა'}</div>
-          <a href="/admin" className="auth-cta">
-            ადმინ პანელში დაბრუნება →
+          <a href="/dashboard" className="auth-cta">
+            დაშბორდზე დაბრუნება →
           </a>
         </div>
       </div>
@@ -255,13 +368,11 @@ export default function AdminEditVillaPage({ params }) {
     <div className="form-page">
       <div className="auth-texture" />
       <div className="form-card">
-        <a href="/admin" className="auth-logo">
+        <a href="/" className="auth-logo">
           <img src="/logo-nav.png" alt="Buknari Villa" style={{ height: '34px', width: 'auto' }} />
         </a>
-        <h1>
-          ვილის რედაქტირება (ადმინი){villa.display_id ? ` · #${villa.display_id}` : ''}
-        </h1>
-        <p className="auth-sub">ცვლილებები დაუყოვნებლივ აისახება საიტზე.</p>
+        <h1>ვილის რედაქტირება</h1>
+        <p className="auth-sub">ცვლილებები დაუყოვნებლივ აისახება საიტზე. სათაური/აღწერა/ლოკაცია ავტომატურად ხელახლა ითარგმნება.</p>
 
         <form onSubmit={handleSubmit}>
           <div className="form-row">
@@ -324,7 +435,7 @@ export default function AdminEditVillaPage({ params }) {
                 placeholder="ავტომატურად ითვლება რუკაზე მონიშნული წერტილიდან"
                 defaultValue={villa.distance_center_m || ''}
               />
-              <p className="form-hint">ცარიელი დატოვე ავტომატური გამოთვლისთვის, შეავსე მხოლოდ შესასწორებლად.</p>
+              <p className="form-hint">ცარიელი დატოვე, თუ გინდა ავტომატური გამოთვლა რუკაზე მონიშნული ლოკაციის მიხედვით. შეავსე მხოლოდ თუ ავტომატური მნიშვნელობა არასწორია.</p>
             </div>
             <div className="form-row">
               <label>მანძილი ზღვამდე (მეტრი) — არასავალდებულო</label>
@@ -335,7 +446,7 @@ export default function AdminEditVillaPage({ params }) {
                 placeholder="ავტომატურად ითვლება რუკაზე მონიშნული წერტილიდან"
                 defaultValue={villa.distance_sea_m || ''}
               />
-              <p className="form-hint">ცარიელი დატოვე ავტომატური გამოთვლისთვის.</p>
+              <p className="form-hint">ცარიელი დატოვე, თუ გინდა ავტომატური გამოთვლა.</p>
             </div>
           </div>
 
@@ -440,6 +551,41 @@ export default function AdminEditVillaPage({ params }) {
             )}
           </div>
 
+          <div className="form-row">
+            <label>ვილის ვიდეო (15-20 წამი)</label>
+            {currentVideoUrl && (
+              <div style={{ marginBottom: '12px' }}>
+                <video src={currentVideoUrl} controls style={{ width: '100%', maxWidth: '320px', borderRadius: 'var(--radius-md)' }} />
+                <div style={{ marginTop: '8px' }}>
+                  <button
+                    type="button"
+                    className="existing-photo-remove"
+                    style={{ position: 'static', width: 'auto', height: 'auto', padding: '6px 14px', borderRadius: '999px' }}
+                    disabled={removingVideo}
+                    onClick={handleRemoveVideo}
+                  >
+                    {removingVideo ? 'იშლება...' : '✕ ვიდეოს წაშლა'}
+                  </button>
+                </div>
+              </div>
+            )}
+            <div className="video-upload-form">
+              <div className="video-upload-field">
+                <input type="file" accept="video/*" onChange={(e) => setVideoFile(e.target.files[0] || null)} />
+                {videoFile && <span className="video-upload-filename">{videoFile.name}</span>}
+              </div>
+              <button
+                type="button"
+                className="video-upload-btn"
+                disabled={uploadingVideo || !videoFile}
+                onClick={handleUploadVideo}
+              >
+                {uploadingVideo ? 'იტვირთება...' : currentVideoUrl ? 'ვიდეოს შეცვლა' : 'ვიდეოს ატვირთვა'}
+              </button>
+            </div>
+            {videoMsg && <p className="dashboard-empty-hint">{videoMsg}</p>}
+          </div>
+
           {error && <div className="auth-error">{error}</div>}
           {saved && <p className="dashboard-empty-hint">ცვლილებები შენახულია ✓</p>}
 
@@ -447,6 +593,12 @@ export default function AdminEditVillaPage({ params }) {
             {saving ? 'ინახება...' : 'ცვლილებების შენახვა'}
           </button>
         </form>
+
+        <div className="danger-zone">
+          <button type="button" className="btn-delete-villa" onClick={handleDelete} disabled={deleting}>
+            {deleting ? 'იშლება...' : 'ვილის სამუდამოდ წაშლა'}
+          </button>
+        </div>
       </div>
     </div>
   );
