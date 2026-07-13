@@ -272,14 +272,17 @@ export default function BookingCalendar({ villaId, pricePerNight, minNights, vil
               <div className="booking-forecast-days">
                 {forecast.daily.map((d) => {
                   const dDate = new Date(d.date);
+                  const weekdayIdx = (dDate.getDay() + 6) % 7; // Monday = 0
                   return (
                     <div key={d.date} className="booking-forecast-day">
+                      <span className="booking-forecast-day-weekday">{DAY_NAMES[weekdayIdx]}</span>
                       <span className="booking-forecast-day-date">
                         {dDate.getDate()} {MONTH_NAMES[dDate.getMonth()].slice(0, 3)}
                       </span>
                       <span className="booking-forecast-day-icon">{d.icon}</span>
                       <span className="booking-forecast-day-temp">
-                        {d.tempMin}° / {d.tempMax}°
+                        <span className="booking-forecast-day-min">{d.tempMin}°</span>{' '}
+                        <span className="booking-forecast-day-max">{d.tempMax}°</span>
                       </span>
                     </div>
                   );
