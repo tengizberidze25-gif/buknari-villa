@@ -196,7 +196,7 @@ export default function VillaDetailContent({ villa, reviews, avgRating, photos, 
               <>
                 <div className="section-divider" />
                 <h3 className="villa-amenities-title">🍽 {tt('vdNearbyFoodTitle')}</h3>
-                <p className="villa-detail-description">{villa.nearby_food}</p>
+                <p className="villa-detail-description">{localized(villa, 'nearby_food', lang)}</p>
               </>
             ) : null}
 
@@ -204,7 +204,7 @@ export default function VillaDetailContent({ villa, reviews, avgRating, photos, 
               <>
                 <div className="section-divider" />
                 <h3 className="villa-amenities-title">🛒 {tt('vdNearbyShopsTitle')}</h3>
-                <p className="villa-detail-description">{villa.nearby_shops}</p>
+                <p className="villa-detail-description">{localized(villa, 'nearby_shops', lang)}</p>
               </>
             ) : null}
 
