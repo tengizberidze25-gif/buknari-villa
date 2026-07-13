@@ -12,6 +12,7 @@ import LangSwitch from '../../LangSwitch';
 import { localizedHref } from '../../localizedHref';
 import { countLabel } from '../../pluralLabel';
 import { approxPrice } from '../../currency';
+import { getAutoDistances } from '../../../lib/geo';
 
 function localized(villa, field, lang) {
   if (lang === 'en' && villa[`${field}_en`]) return villa[`${field}_en`];
@@ -49,6 +50,10 @@ export default function VillaDetailContent({ villa, reviews, avgRating, photos, 
 
   const title = localized(villa, 'title', lang);
   const description = localized(villa, 'description', lang);
+
+  const autoDistances = getAutoDistances(villa.village, villa.lat, villa.lng);
+  const distanceCenterM = villa.distance_center_m || autoDistances.center;
+  const distanceSeaM = villa.distance_sea_m || autoDistances.sea;
 
   const [shareMenuOpen, setShareMenuOpen] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -138,11 +143,11 @@ export default function VillaDetailContent({ villa, reviews, avgRating, photos, 
               {villa.max_guests ? <span>👤 {villa.max_guests} {countLabel(villa.max_guests, lang, 'guest')}</span> : null}
               {villa.bedrooms ? <span>🛏 {villa.bedrooms} {countLabel(villa.bedrooms, lang, 'bedroom')}</span> : null}
               {villa.bathrooms ? <span>🛁 {villa.bathrooms} {countLabel(villa.bathrooms, lang, 'bathroom')}</span> : null}
-              {villa.distance_center_m ? (
-                <span>🚶 {formatDistance(villa.distance_center_m, lang)} {tt('vdDistanceCenterLabel')}</span>
+              {distanceCenterM ? (
+                <span>🚶 {formatDistance(distanceCenterM, lang)} {tt('vdDistanceCenterLabel')}</span>
               ) : null}
-              {villa.distance_sea_m ? (
-                <span>🌊 {formatDistance(villa.distance_sea_m, lang)} {tt('vdDistanceSeaLabel')}</span>
+              {distanceSeaM ? (
+                <span>🌊 {formatDistance(distanceSeaM, lang)} {tt('vdDistanceSeaLabel')}</span>
               ) : null}
             </div>
 
