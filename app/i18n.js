@@ -6,7 +6,7 @@ export const dict = {
     navContact: 'კონტაქტი',
     heroEyebrow: 'შავი ზღვის სანაპირო · ბუკნარი',
     heroTitleLine1: 'შენი დასვენება',
-    heroTitleEm: 'ბუკნარის',
+    heroTitleEm: 'შავი ზღვის',
     heroTitleLine2: 'სანაპიროზე',
     heroTitleLine3: 'იწყება აქ',
     heroSub:
