@@ -508,6 +508,7 @@ a {
 
 .section-divider {
   height: 1px;
+  margin: 28px 0;
   background: linear-gradient(90deg, transparent, var(--wood-line) 20%, var(--wood-line) 80%, transparent);
 }
 
