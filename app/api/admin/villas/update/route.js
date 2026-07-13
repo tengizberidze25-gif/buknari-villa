@@ -37,6 +37,7 @@ export async function POST(request) {
     const lat = body.lat ? Number(body.lat) : null;
     const lng = body.lng ? Number(body.lng) : null;
     const pricePerNight = Number(body.price_per_night) || null;
+    const minNights = Number(body.min_nights) || null;
     const maxGuests = Number(body.max_guests) || null;
     const bedrooms = Number(body.bedrooms) || null;
     const bathrooms = Number(body.bathrooms) || null;
@@ -62,6 +63,7 @@ export async function POST(request) {
         lat,
         lng,
         price_per_night: pricePerNight,
+        min_nights: minNights,
         max_guests: maxGuests,
         bedrooms,
         bathrooms,
