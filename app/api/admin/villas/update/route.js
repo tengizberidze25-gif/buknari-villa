@@ -40,6 +40,10 @@ export async function POST(request) {
     const maxGuests = Number(body.max_guests) || null;
     const bedrooms = Number(body.bedrooms) || null;
     const bathrooms = Number(body.bathrooms) || null;
+    const distanceCenterM = Number(body.distance_center_m) || null;
+    const distanceSeaM = Number(body.distance_sea_m) || null;
+    const nearbyFood = (body.nearby_food || '').toString().trim();
+    const nearbyShops = (body.nearby_shops || '').toString().trim();
     const amenities = Array.isArray(body.amenities) ? body.amenities : [];
     const contactPhone = (body.contact_phone || '').toString().trim();
     const contactWhatsapp = (body.contact_whatsapp || '').toString().trim();
@@ -61,6 +65,10 @@ export async function POST(request) {
         max_guests: maxGuests,
         bedrooms,
         bathrooms,
+        distance_center_m: distanceCenterM,
+        distance_sea_m: distanceSeaM,
+        nearby_food: nearbyFood,
+        nearby_shops: nearbyShops,
         amenities,
         contact_phone: contactPhone,
         contact_whatsapp: contactWhatsapp,
