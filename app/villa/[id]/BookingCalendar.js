@@ -21,7 +21,7 @@ function isSameDay(a, b) {
   return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
 }
 
-export default function BookingCalendar({ villaId }) {
+export default function BookingCalendar({ villaId, pricePerNight }) {
   const { lang } = useLanguage();
   const tt = (key) => t(lang, key);
   const MONTH_NAMES = t(lang, 'monthNames');
@@ -222,7 +222,16 @@ export default function BookingCalendar({ villaId }) {
             <label>{tt('bcCheckOut')}</label>
             <span>{checkOut ? toISO(checkOut) : '—'}</span>
           </div>
-          {nights > 0 && <div className="booking-nights">{nights} {tt('nightsLabel')}</div>}
+          {nights > 0 && (
+            <div className="booking-nights">
+              {nights} {tt('nightsLabel')}
+              {pricePerNight ? (
+                <span className="booking-total-price">
+                  · ₾{(nights * pricePerNight).toLocaleString()} {tt('bcTotalLabel')}
+                </span>
+              ) : null}
+            </div>
+          )}
         </div>
 
         <input
