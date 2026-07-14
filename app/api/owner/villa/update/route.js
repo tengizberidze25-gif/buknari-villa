@@ -91,6 +91,9 @@ export async function POST(request) {
     const distanceSeaM = Number(body.distance_sea_m) || null;
     const nearbyFood = (body.nearby_food || '').toString().trim();
     const nearbyShops = (body.nearby_shops || '').toString().trim();
+    const checkinTime = (body.checkin_time || '').toString().trim();
+    const checkoutTime = (body.checkout_time || '').toString().trim();
+    const cancellationPolicy = (body.cancellation_policy || '').toString().trim();
     const amenities = Array.isArray(body.amenities) ? body.amenities : [];
     const contactPhone = (body.contact_phone || '').toString().trim();
     const contactWhatsapp = (body.contact_whatsapp || '').toString().trim();
@@ -117,6 +120,9 @@ export async function POST(request) {
         distance_sea_m: distanceSeaM,
         nearby_food: nearbyFood,
         nearby_shops: nearbyShops,
+        checkin_time: checkinTime,
+        checkout_time: checkoutTime,
+        cancellation_policy: cancellationPolicy,
         amenities,
         contact_phone: contactPhone,
         contact_whatsapp: contactWhatsapp,
@@ -134,6 +140,7 @@ export async function POST(request) {
         const [
           titleRu, titleHy, descEn, descRu, descHy, locEn, locRu, locHy,
           foodEn, foodRu, foodHy, shopsEn, shopsRu, shopsHy,
+          cancelEn, cancelRu, cancelHy,
         ] = await Promise.all([
           translateText(title, 'ru'),
           translateText(title, 'hy'),
@@ -149,6 +156,9 @@ export async function POST(request) {
           translateText(nearbyShops, 'en'),
           translateText(nearbyShops, 'ru'),
           translateText(nearbyShops, 'hy'),
+          translateText(cancellationPolicy, 'en'),
+          translateText(cancellationPolicy, 'ru'),
+          translateText(cancellationPolicy, 'hy'),
         ]);
         await supabaseAdmin
           .from('villas')
@@ -168,6 +178,9 @@ export async function POST(request) {
             nearby_shops_en: shopsEn,
             nearby_shops_ru: shopsRu,
             nearby_shops_hy: shopsHy,
+            cancellation_policy_en: cancelEn,
+            cancellation_policy_ru: cancelRu,
+            cancellation_policy_hy: cancelHy,
             translation_status: titleEn || descEn ? 'done' : 'failed',
           })
           .eq('id', villaId);
