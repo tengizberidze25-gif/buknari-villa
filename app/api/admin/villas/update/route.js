@@ -45,6 +45,9 @@ export async function POST(request) {
     const distanceSeaM = Number(body.distance_sea_m) || null;
     const nearbyFood = (body.nearby_food || '').toString().trim();
     const nearbyShops = (body.nearby_shops || '').toString().trim();
+    const checkinTime = (body.checkin_time || '').toString().trim();
+    const checkoutTime = (body.checkout_time || '').toString().trim();
+    const cancellationPolicy = (body.cancellation_policy || '').toString().trim();
     const amenities = Array.isArray(body.amenities) ? body.amenities : [];
     const contactPhone = (body.contact_phone || '').toString().trim();
     const contactWhatsapp = (body.contact_whatsapp || '').toString().trim();
@@ -71,6 +74,9 @@ export async function POST(request) {
         distance_sea_m: distanceSeaM,
         nearby_food: nearbyFood,
         nearby_shops: nearbyShops,
+        checkin_time: checkinTime,
+        checkout_time: checkoutTime,
+        cancellation_policy: cancellationPolicy,
         amenities,
         contact_phone: contactPhone,
         contact_whatsapp: contactWhatsapp,
