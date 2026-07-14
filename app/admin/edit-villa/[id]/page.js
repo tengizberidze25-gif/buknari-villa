@@ -172,6 +172,9 @@ export default function AdminEditVillaPage({ params }) {
           distance_sea_m: form.distance_sea_m.value,
           nearby_food: form.nearby_food.value,
           nearby_shops: form.nearby_shops.value,
+          checkin_time: form.checkin_time.value,
+          checkout_time: form.checkout_time.value,
+          cancellation_policy: form.cancellation_policy.value,
           amenities: selectedAmenities,
           contact_phone: form.contact_phone.value,
           contact_whatsapp: form.contact_whatsapp.value,
@@ -356,6 +359,37 @@ export default function AdminEditVillaPage({ params }) {
               rows="3"
               placeholder="მაგ. სუპერმარკეტი 'ნიკორა' — 200მ"
               defaultValue={villa.nearby_shops || ''}
+            />
+          </div>
+
+          <div className="form-grid-2">
+            <div className="form-row">
+              <label>ჩექინის დრო</label>
+              <input
+                name="checkin_time"
+                type="text"
+                placeholder="მაგ. 14:00"
+                defaultValue={villa.checkin_time || ''}
+              />
+            </div>
+            <div className="form-row">
+              <label>ჩექაუთის დრო</label>
+              <input
+                name="checkout_time"
+                type="text"
+                placeholder="მაგ. 11:00"
+                defaultValue={villa.checkout_time || ''}
+              />
+            </div>
+          </div>
+
+          <div className="form-row">
+            <label>გაუქმების პოლიტიკა (არასავალდებულო)</label>
+            <textarea
+              name="cancellation_policy"
+              rows="3"
+              placeholder="მაგ. უფასო გაუქმება ჩამოსვლამდე 48 საათით ადრე. მოგვიანებით — არ ბრუნდება."
+              defaultValue={villa.cancellation_policy || ''}
             />
           </div>
 
