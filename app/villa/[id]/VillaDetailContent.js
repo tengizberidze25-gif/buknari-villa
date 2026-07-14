@@ -210,6 +210,33 @@ export default function VillaDetailContent({ villa, reviews, avgRating, photos, 
               </>
             ) : null}
 
+            {(villa.checkin_time || villa.checkout_time || villa.cancellation_policy) ? (
+              <>
+                <div className="section-divider" />
+                <h3 className="villa-amenities-title">📋 {tt('vdStayInfoTitle')}</h3>
+                <div className="villa-stay-info">
+                  {villa.checkin_time ? (
+                    <div className="villa-stay-info-row">
+                      <span className="villa-stay-info-label">🔑 {tt('vdCheckinLabel')}</span>
+                      <span>{villa.checkin_time}</span>
+                    </div>
+                  ) : null}
+                  {villa.checkout_time ? (
+                    <div className="villa-stay-info-row">
+                      <span className="villa-stay-info-label">🚪 {tt('vdCheckoutLabel')}</span>
+                      <span>{villa.checkout_time}</span>
+                    </div>
+                  ) : null}
+                  {villa.cancellation_policy ? (
+                    <div className="villa-stay-info-row villa-stay-info-row-block">
+                      <span className="villa-stay-info-label">↩️ {tt('vdCancellationLabel')}</span>
+                      <p>{localized(villa, 'cancellation_policy', lang)}</p>
+                    </div>
+                  ) : null}
+                </div>
+              </>
+            ) : null}
+
             {reviews.length > 0 ? (
               <>
                 <div className="section-divider" />
