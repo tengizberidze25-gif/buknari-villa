@@ -46,6 +46,12 @@ export default function BookingCalendar({ villaId, pricePerNight, minNights, vil
   const [done, setDone] = useState(false);
   const [forecast, setForecast] = useState(null);
   const [loadingForecast, setLoadingForecast] = useState(false);
+  const [showNotifyForm, setShowNotifyForm] = useState(false);
+  const [notifyStart, setNotifyStart] = useState('');
+  const [notifyEnd, setNotifyEnd] = useState('');
+  const [notifyPhone, setNotifyPhone] = useState('');
+  const [notifySubmitting, setNotifySubmitting] = useState(false);
+  const [notifyMsg, setNotifyMsg] = useState('');
 
   useEffect(() => {
     if (!checkIn || !checkOut || !village) {
@@ -163,6 +169,33 @@ export default function BookingCalendar({ villaId, pricePerNight, minNights, vil
     setSubmitting(false);
   }
 
+  async function handleNotifySubmit(e) {
+    e.preventDefault();
+    if (!notifyStart || !notifyEnd || !notifyPhone) {
+      setNotifyMsg(tt('bcErrorSelectDates'));
+      return;
+    }
+    setNotifySubmitting(true);
+    setNotifyMsg('');
+    try {
+      const res = await fetch('/api/notify-when-available', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ villaId, phone: notifyPhone, checkIn: notifyStart, checkOut: notifyEnd }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        setNotifyMsg(tt('bcNotifySuccess'));
+        setNotifyPhone('');
+      } else {
+        setNotifyMsg(data.message || tt('genericError'));
+      }
+    } catch (err) {
+      setNotifyMsg(tt('connectionErrorRetry'));
+    }
+    setNotifySubmitting(false);
+  }
+
   const year = viewMonth.getFullYear();
   const month = viewMonth.getMonth();
   const firstOfMonth = new Date(year, month, 1);
@@ -236,6 +269,48 @@ export default function BookingCalendar({ villaId, pricePerNight, minNights, vil
       </div>
 
       {loadingRanges && <p className="booking-loading">{tt('bcLoadingAvailability')}</p>}
+
+      {!showNotifyForm ? (
+        <button type="button" className="booking-notify-toggle" onClick={() => setShowNotifyForm(true)}>
+          🔔 {tt('bcNotifyToggle')}
+        </button>
+      ) : (
+        <div className="booking-notify-form">
+          <p className="booking-notify-intro">{tt('bcNotifyIntro')}</p>
+          <form onSubmit={handleNotifySubmit}>
+            <div className="booking-selected-dates">
+              <div>
+                <label>{tt('bcCheckIn')}</label>
+                <input
+                  type="date"
+                  value={notifyStart}
+                  min={new Date().toISOString().slice(0, 10)}
+                  onChange={(e) => setNotifyStart(e.target.value)}
+                />
+              </div>
+              <div>
+                <label>{tt('bcCheckOut')}</label>
+                <input
+                  type="date"
+                  value={notifyEnd}
+                  min={notifyStart || new Date().toISOString().slice(0, 10)}
+                  onChange={(e) => setNotifyEnd(e.target.value)}
+                />
+              </div>
+            </div>
+            <input
+              type="text"
+              placeholder={tt('bcPhonePlaceholder')}
+              value={notifyPhone}
+              onChange={(e) => setNotifyPhone(e.target.value)}
+            />
+            {notifyMsg && <p className="booking-notify-msg">{notifyMsg}</p>}
+            <button type="submit" disabled={notifySubmitting}>
+              {notifySubmitting ? tt('bcSubmitting') : tt('bcNotifySubmitBtn')}
+            </button>
+          </form>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="booking-form">
         <div className="booking-selected-dates">
