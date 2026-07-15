@@ -94,6 +94,7 @@ export async function POST(request) {
     const checkinTime = (body.checkin_time || '').toString().trim();
     const checkoutTime = (body.checkout_time || '').toString().trim();
     const cancellationPolicy = (body.cancellation_policy || '').toString().trim();
+    const houseRules = (body.house_rules || '').toString().trim();
     const amenities = Array.isArray(body.amenities) ? body.amenities : [];
     const contactPhone = (body.contact_phone || '').toString().trim();
     const contactWhatsapp = (body.contact_whatsapp || '').toString().trim();
@@ -123,6 +124,7 @@ export async function POST(request) {
         checkin_time: checkinTime,
         checkout_time: checkoutTime,
         cancellation_policy: cancellationPolicy,
+        house_rules: houseRules,
         amenities,
         contact_phone: contactPhone,
         contact_whatsapp: contactWhatsapp,
@@ -140,7 +142,7 @@ export async function POST(request) {
         const [
           titleRu, titleHy, descEn, descRu, descHy, locEn, locRu, locHy,
           foodEn, foodRu, foodHy, shopsEn, shopsRu, shopsHy,
-          cancelEn, cancelRu, cancelHy,
+          cancelEn, cancelRu, cancelHy, rulesEn, rulesRu, rulesHy,
         ] = await Promise.all([
           translateText(title, 'ru'),
           translateText(title, 'hy'),
@@ -159,6 +161,9 @@ export async function POST(request) {
           translateText(cancellationPolicy, 'en'),
           translateText(cancellationPolicy, 'ru'),
           translateText(cancellationPolicy, 'hy'),
+          translateText(houseRules, 'en'),
+          translateText(houseRules, 'ru'),
+          translateText(houseRules, 'hy'),
         ]);
         await supabaseAdmin
           .from('villas')
@@ -181,6 +186,9 @@ export async function POST(request) {
             cancellation_policy_en: cancelEn,
             cancellation_policy_ru: cancelRu,
             cancellation_policy_hy: cancelHy,
+            house_rules_en: rulesEn,
+            house_rules_ru: rulesRu,
+            house_rules_hy: rulesHy,
             translation_status: titleEn || descEn ? 'done' : 'failed',
           })
           .eq('id', villaId);
