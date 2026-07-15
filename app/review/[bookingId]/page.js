@@ -5,6 +5,7 @@ import { useLanguage } from '../../LanguageContext';
 import { t } from '../../i18n';
 import LangSwitch from '../../LangSwitch';
 import { localizedHref } from '../../localizedHref';
+import { supabase } from '../../../lib/supabase';
 
 export default function ReviewPage({ params, searchParams }) {
   const { lang } = useLanguage();
@@ -19,6 +20,7 @@ export default function ReviewPage({ params, searchParams }) {
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [comment, setComment] = useState('');
+  const [photoFile, setPhotoFile] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
 
@@ -48,10 +50,28 @@ export default function ReviewPage({ params, searchParams }) {
     setSubmitting(true);
     setError('');
     try {
+      let photoPath = null;
+
+      if (photoFile) {
+        const urlRes = await fetch('/api/review-photo-upload-url', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ bookingId, token, filename: photoFile.name }),
+        });
+        const urlData = await urlRes.json();
+
+        if (urlData.ok) {
+          const { error: uploadError } = await supabase.storage
+            .from('review-photos')
+            .uploadToSignedUrl(urlData.path, urlData.token, photoFile);
+          if (!uploadError) photoPath = urlData.path;
+        }
+      }
+
       const res = await fetch('/api/submit-review', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ bookingId, token, rating, comment }),
+        body: JSON.stringify({ bookingId, token, rating, comment, photoPath }),
       });
       const data = await res.json();
       if (data.ok) setDone(true);
@@ -110,6 +130,16 @@ export default function ReviewPage({ params, searchParams }) {
                   value={comment}
                   onChange={(e) => setComment(e.target.value)}
                 />
+
+                <div className="form-row">
+                  <label>{tt('rvPhotoLabel')}</label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => setPhotoFile(e.target.files[0] || null)}
+                  />
+                  {photoFile && <span className="video-upload-filename">{photoFile.name}</span>}
+                </div>
 
                 {error && <div className="auth-error">{error}</div>}
 
