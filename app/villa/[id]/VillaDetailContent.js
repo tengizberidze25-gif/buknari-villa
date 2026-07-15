@@ -255,6 +255,9 @@ export default function VillaDetailContent({ villa, reviews, avgRating, photos, 
                         </span>
                       </div>
                       {r.comment ? <p className="villa-review-comment">{r.comment}</p> : null}
+                      {r.photo_url ? (
+                        <img src={r.photo_url} alt="" className="villa-review-photo" />
+                      ) : null}
                     </div>
                   ))}
                 </div>
