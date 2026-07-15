@@ -60,11 +60,12 @@ export default function VillaMap({ villas, villaTitle, lang }) {
         if (!mapInstance.current) {
           mapInstance.current = new google.maps.Map(mapRef.current, {
             center,
-            zoom: 13,
+            zoom: withCoords.length === 1 ? 18 : 13,
             mapTypeId: 'satellite',
             mapTypeControl: true,
             streetViewControl: false,
             fullscreenControl: false,
+            tilt: 45,
           });
         } else {
           mapInstance.current.setCenter(center);
