@@ -95,6 +95,7 @@ export async function POST(request) {
     const checkoutTime = (body.checkout_time || '').toString().trim();
     const cancellationPolicy = (body.cancellation_policy || '').toString().trim();
     const houseRules = (body.house_rules || '').toString().trim();
+    const faq = (body.faq || '').toString().trim();
     const amenities = Array.isArray(body.amenities) ? body.amenities : [];
     const contactPhone = (body.contact_phone || '').toString().trim();
     const contactWhatsapp = (body.contact_whatsapp || '').toString().trim();
@@ -125,6 +126,7 @@ export async function POST(request) {
         checkout_time: checkoutTime,
         cancellation_policy: cancellationPolicy,
         house_rules: houseRules,
+        faq,
         amenities,
         contact_phone: contactPhone,
         contact_whatsapp: contactWhatsapp,
@@ -143,6 +145,7 @@ export async function POST(request) {
           titleRu, titleHy, descEn, descRu, descHy, locEn, locRu, locHy,
           foodEn, foodRu, foodHy, shopsEn, shopsRu, shopsHy,
           cancelEn, cancelRu, cancelHy, rulesEn, rulesRu, rulesHy,
+          faqEn, faqRu, faqHy,
         ] = await Promise.all([
           translateText(title, 'ru'),
           translateText(title, 'hy'),
@@ -164,6 +167,9 @@ export async function POST(request) {
           translateText(houseRules, 'en'),
           translateText(houseRules, 'ru'),
           translateText(houseRules, 'hy'),
+          translateText(faq, 'en'),
+          translateText(faq, 'ru'),
+          translateText(faq, 'hy'),
         ]);
         await supabaseAdmin
           .from('villas')
@@ -189,6 +195,9 @@ export async function POST(request) {
             house_rules_en: rulesEn,
             house_rules_ru: rulesRu,
             house_rules_hy: rulesHy,
+            faq_en: faqEn,
+            faq_ru: faqRu,
+            faq_hy: faqHy,
             translation_status: titleEn || descEn ? 'done' : 'failed',
           })
           .eq('id', villaId);
