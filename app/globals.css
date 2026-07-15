@@ -1478,6 +1478,15 @@ a {
   margin: 0;
 }
 
+.villa-review-photo {
+  margin-top: 10px;
+  max-width: 220px;
+  max-height: 220px;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--glass-border);
+}
+
 .review-score-picker {
   display: grid;
   grid-template-columns: repeat(10, 1fr);
