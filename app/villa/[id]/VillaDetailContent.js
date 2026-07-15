@@ -243,6 +243,14 @@ export default function VillaDetailContent({ villa, reviews, avgRating, photos, 
               </>
             ) : null}
 
+            {villa.faq ? (
+              <>
+                <div className="section-divider" />
+                <h3 className="villa-amenities-title">❓ {tt('vdFaqTitle')}</h3>
+                <p className="villa-detail-description">{localized(villa, 'faq', lang)}</p>
+              </>
+            ) : null}
+
             {reviews.length > 0 ? (
               <>
                 <div className="section-divider" />
