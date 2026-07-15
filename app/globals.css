@@ -1195,6 +1195,51 @@ a {
   margin: 0;
 }
 
+.booking-notify-form input {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  padding: 11px 14px;
+  color: var(--foam);
+  font-family: var(--sans);
+  font-size: 14px;
+  width: 100%;
+  color-scheme: dark;
+}
+
+.booking-notify-form .booking-selected-dates {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.booking-notify-form .booking-selected-dates label {
+  display: block;
+  font-size: 11px;
+  color: var(--sand-dim);
+  margin-bottom: 4px;
+}
+
+.booking-notify-form button[type='submit'] {
+  background: var(--sea-bright);
+  color: var(--bg);
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 12px;
+  font-weight: 600;
+  font-family: var(--sans);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.booking-notify-form button[type='submit']:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .booking-form input,
 .booking-form textarea {
   background: var(--glass-bg);
