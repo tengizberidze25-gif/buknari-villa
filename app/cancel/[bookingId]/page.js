@@ -6,7 +6,7 @@ import { t } from '../../i18n';
 import LangSwitch from '../../LangSwitch';
 import { localizedHref } from '../../localizedHref';
 
-export default function CancelBookingPage({ params, searchParams }) {
+export default function CancelBookingPage({ params }) {
   const { lang } = useLanguage();
   const tt = (key) => t(lang, key);
 
@@ -16,8 +16,7 @@ export default function CancelBookingPage({ params, searchParams }) {
     declined: tt('statusDeclined'),
   };
 
-  const bookingId = params.bookingId;
-  const token = searchParams.t;
+  const code = params.bookingId;
 
   const [loading, setLoading] = useState(true);
   const [booking, setBooking] = useState(null);
@@ -26,12 +25,12 @@ export default function CancelBookingPage({ params, searchParams }) {
   const [done, setDone] = useState(false);
 
   useEffect(() => {
-    if (!token) {
+    if (!code) {
       setError(tt('cbLinkIncomplete'));
       setLoading(false);
       return;
     }
-    fetch(`/api/booking-info?bookingId=${bookingId}&t=${token}&lang=${lang}`)
+    fetch(`/api/booking-info?code=${code}&lang=${lang}`)
       .then((res) => res.json())
       .then((data) => {
         if (!data.ok) setError(data.message || tt('cbNotFound'));
@@ -40,7 +39,7 @@ export default function CancelBookingPage({ params, searchParams }) {
       .catch(() => setError(tt('connectionError')))
       .finally(() => setLoading(false));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [bookingId, token, lang]);
+  }, [code, lang]);
 
   async function handleCancel() {
     setCancelling(true);
@@ -49,7 +48,7 @@ export default function CancelBookingPage({ params, searchParams }) {
       const res = await fetch('/api/guest-cancel-booking', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ bookingId, token }),
+        body: JSON.stringify({ code }),
       });
       const data = await res.json();
       if (data.ok) setDone(true);
