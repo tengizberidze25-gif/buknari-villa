@@ -21,7 +21,42 @@ function isSameDay(a, b) {
   return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
 }
 
-export default function BookingCalendar({ villaId, pricePerNight, minNights, village }) {
+// Checks whether a date falls within a recurring annual season, given as
+// 'MM-DD' strings. Handles seasons that wrap across the new year (e.g. Dec–Jan).
+function isDateInSeason(date, startMMDD, endMMDD) {
+  if (!startMMDD || !endMMDD) return false;
+  const [sm, sd] = startMMDD.split('-').map(Number);
+  const [em, ed] = endMMDD.split('-').map(Number);
+  const val = (date.getMonth() + 1) * 100 + date.getDate();
+  const startVal = sm * 100 + sd;
+  const endVal = em * 100 + ed;
+  if (startVal <= endVal) return val >= startVal && val <= endVal;
+  return val >= startVal || val <= endVal; // wraps around the year boundary
+}
+
+// Sums the per-night price across a stay, using the high-season price for any
+// night that falls within the recurring season range.
+function computeStayTotal(checkIn, checkOut, basePrice, seasonPrice, seasonStart, seasonEnd) {
+  if (!checkIn || !checkOut || !basePrice) return 0;
+  let total = 0;
+  let cursor = new Date(checkIn);
+  while (cursor < checkOut) {
+    const useSeasonPrice = seasonPrice && isDateInSeason(cursor, seasonStart, seasonEnd);
+    total += useSeasonPrice ? seasonPrice : basePrice;
+    cursor = addDays(cursor, 1);
+  }
+  return total;
+}
+
+export default function BookingCalendar({
+  villaId,
+  pricePerNight,
+  minNights,
+  village,
+  highSeasonPrice,
+  highSeasonStart,
+  highSeasonEnd,
+}) {
   const { lang } = useLanguage();
   const tt = (key) => t(lang, key);
   const MONTH_NAMES = t(lang, 'monthNames');
@@ -209,6 +244,11 @@ export default function BookingCalendar({ villaId, pricePerNight, minNights, vil
   const nights =
     checkIn && checkOut ? Math.round((checkOut - checkIn) / (1000 * 60 * 60 * 24)) : 0;
 
+  const stayTotal =
+    checkIn && checkOut
+      ? computeStayTotal(checkIn, checkOut, pricePerNight, highSeasonPrice, highSeasonStart, highSeasonEnd)
+      : 0;
+
   if (done) {
     const dateRange = `${toISO(checkIn)} — ${toISO(checkOut)}`;
     return (
@@ -327,9 +367,12 @@ export default function BookingCalendar({ villaId, pricePerNight, minNights, vil
               {nights} {tt('nightsLabel')}
               {pricePerNight ? (
                 <span className="booking-total-price">
-                  · ₾{(nights * pricePerNight).toLocaleString()} {tt('bcTotalLabel')}
+                  · ₾{stayTotal.toLocaleString()} {tt('bcTotalLabel')}
                 </span>
               ) : null}
+              {stayTotal !== nights * pricePerNight && (
+                <span className="booking-season-note">{tt('bcSeasonPriceNote')}</span>
+              )}
             </div>
           )}
         </div>
