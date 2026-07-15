@@ -8,9 +8,11 @@ function normalizeSmsPhone(phone) {
   return '995' + digits;
 }
 
-function signBookingToken(bookingId) {
-  const secret = process.env.SESSION_SECRET;
-  return crypto.createHmac('sha256', secret).update(bookingId).digest('hex');
+function generateCancelCode() {
+  // Short, URL-safe random code — no login needed to use it, so length still
+  // matters for security, but it doesn't need to carry a signature since it's
+  // looked up directly against the one row it belongs to.
+  return crypto.randomBytes(6).toString('base64url');
 }
 
 async function sendSms(phone, text) {
@@ -128,6 +130,7 @@ export async function POST(request) {
         guest_phone: guestPhone,
         guest_message: guestMessage,
         status: 'pending',
+        cancel_code: generateCancelCode(),
       })
       .select()
       .single();
@@ -156,8 +159,7 @@ export async function POST(request) {
     // Confirm to the guest, with a self-service cancel link (no login needed)
     const normalizedGuest = normalizeSmsPhone(guestPhone);
     if (normalizedGuest) {
-      const cancelToken = signBookingToken(inserted.id);
-      const cancelUrl = `https://buknarivilla.ge/cancel/${inserted.id}?t=${cancelToken}`;
+      const cancelUrl = `https://buknarivilla.ge/cancel/${inserted.cancel_code}`;
       await sendSms(
         normalizedGuest,
         `თქვენი ჯავშნის მოთხოვნა მიღებულია — "${villa.title}", ${checkIn} → ${checkOut}. მფლობელი დაგიკავშირდებათ დასადასტურებლად. გაუქმება: ${cancelUrl}`
