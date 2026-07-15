@@ -150,6 +150,11 @@ export default function AdminEditVillaPage({ params }) {
       (el) => el.value
     );
 
+    const seasonStartFull = form.high_season_start.value;
+    const seasonEndFull = form.high_season_end.value;
+    const highSeasonStart = seasonStartFull ? seasonStartFull.slice(5) : '';
+    const highSeasonEnd = seasonEndFull ? seasonEndFull.slice(5) : '';
+
     try {
       const updateRes = await fetch('/api/admin/villas/update', {
         method: 'POST',
@@ -163,6 +168,9 @@ export default function AdminEditVillaPage({ params }) {
           location_name: form.location_name.value,
           price_per_night: form.price_per_night.value,
           min_nights: form.min_nights.value,
+          high_season_price: form.high_season_price.value,
+          high_season_start: highSeasonStart,
+          high_season_end: highSeasonEnd,
           lat: form.lat.value,
           lng: form.lng.value,
           max_guests: form.max_guests.value,
@@ -300,6 +308,40 @@ export default function AdminEditVillaPage({ params }) {
               style={{ maxWidth: '160px' }}
             />
             <p className="form-hint">სტუმარი ვერ დაჯავშნის ამაზე ნაკლებ ღამეს. ცარიელი დატოვე, თუ შეზღუდვა არ გინდა.</p>
+          </div>
+
+          <div className="form-row">
+            <label>მაღალი სეზონის ფასი (₾) — არასავალდებულო</label>
+            <input
+              name="high_season_price"
+              type="number"
+              min="1"
+              placeholder="მაგ. 350"
+              defaultValue={villa.high_season_price || ''}
+              style={{ maxWidth: '160px' }}
+            />
+            <p className="form-hint">
+              თუ შეავსებ, ქვემოთ მითითებულ პერიოდში ავტომატურად ეს ფასი გამოჩნდება ჩვეულებრივი ფასის ნაცვლად — ყოველწლიურად მეორდება, წელი მნიშვნელობა არ აქვს.
+            </p>
+          </div>
+
+          <div className="form-grid-2">
+            <div className="form-row">
+              <label>სეზონის დაწყება</label>
+              <input
+                name="high_season_start"
+                type="date"
+                defaultValue={villa.high_season_start ? `2024-${villa.high_season_start}` : ''}
+              />
+            </div>
+            <div className="form-row">
+              <label>სეზონის დასრულება</label>
+              <input
+                name="high_season_end"
+                type="date"
+                defaultValue={villa.high_season_end ? `2024-${villa.high_season_end}` : ''}
+              />
+            </div>
           </div>
 
           <LocationPicker initialLat={villa.lat} initialLng={villa.lng} />
