@@ -49,6 +49,7 @@ export async function POST(request) {
     const checkoutTime = (body.checkout_time || '').toString().trim();
     const cancellationPolicy = (body.cancellation_policy || '').toString().trim();
     const houseRules = (body.house_rules || '').toString().trim();
+    const faq = (body.faq || '').toString().trim();
     const amenities = Array.isArray(body.amenities) ? body.amenities : [];
     const contactPhone = (body.contact_phone || '').toString().trim();
     const contactWhatsapp = (body.contact_whatsapp || '').toString().trim();
@@ -79,6 +80,7 @@ export async function POST(request) {
         checkout_time: checkoutTime,
         cancellation_policy: cancellationPolicy,
         house_rules: houseRules,
+        faq,
         amenities,
         contact_phone: contactPhone,
         contact_whatsapp: contactWhatsapp,
