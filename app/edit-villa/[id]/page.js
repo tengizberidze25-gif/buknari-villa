@@ -265,6 +265,7 @@ export default function EditVillaPage({ params }) {
           checkout_time: form.checkout_time.value,
           cancellation_policy: form.cancellation_policy.value,
           house_rules: form.house_rules.value,
+          faq: form.faq.value,
           amenities: selectedAmenities,
           contact_phone: form.contact_phone.value,
           contact_whatsapp: form.contact_whatsapp.value,
@@ -512,6 +513,16 @@ export default function EditVillaPage({ params }) {
               rows="4"
               placeholder="მაგ. შინაური ცხოველები დაშვებულია. მოწევა მხოლოდ აივანზე. წვეულებები/ხმაური 23:00 საათის შემდეგ აკრძალულია."
               defaultValue={villa.house_rules || ''}
+            />
+          </div>
+
+          <div className="form-row">
+            <label>ხშირად დასმული კითხვები (არასავალდებულო)</label>
+            <textarea
+              name="faq"
+              rows="5"
+              placeholder={'მაგ.\nროგორ მივხვდე ვილამდე? — ნავიგატორში ჩაწერეთ ზუსტი მისამართი, ბოლო 200მ გრუნტის გზაა.\nარის ადრეული ჩექინი შესაძლებელი? — შეთანხმებით, დამატებითი გადასახადის გარეშე.'}
+              defaultValue={villa.faq || ''}
             />
           </div>
 
