@@ -1,27 +1,19 @@
 import { supabaseAdmin } from '../../../lib/supabaseAdmin';
-import crypto from 'crypto';
-
-function verifyBookingToken(bookingId, token) {
-  const secret = process.env.SESSION_SECRET;
-  const expected = crypto.createHmac('sha256', secret).update(bookingId).digest('hex');
-  return token === expected;
-}
 
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
-    const bookingId = searchParams.get('bookingId');
-    const token = searchParams.get('t');
+    const code = searchParams.get('code');
     const lang = searchParams.get('lang') || 'ka';
 
-    if (!bookingId || !token || !verifyBookingToken(bookingId, token)) {
+    if (!code) {
       return Response.json({ ok: false, message: 'ბმული არასწორია ან ვადაგასულია' }, { status: 403 });
     }
 
     const { data: booking } = await supabaseAdmin
       .from('villa_bookings')
       .select('id, check_in, check_out, status, villas(title, title_en, title_ru, title_hy)')
-      .eq('id', bookingId)
+      .eq('cancel_code', code)
       .single();
 
     if (!booking) {
