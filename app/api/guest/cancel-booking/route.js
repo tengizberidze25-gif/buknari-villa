@@ -27,6 +27,39 @@ function verifyToken(token, phone) {
   }
 }
 
+async function sendSms(phone, text) {
+  const publicKey = process.env.BULKSMS_PUBLIC_KEY;
+  const privateKey = process.env.BULKSMS_API_TOKEN;
+  const sender = process.env.BULKSMS_SENDER || 'BUKNARI';
+
+  const url =
+    'https://api.bulksms.ge/gateway/api/sms/v1/message/send?publicKey=' +
+    encodeURIComponent(publicKey);
+
+  try {
+    await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + privateKey,
+      },
+      body: JSON.stringify({
+        Text: text,
+        Purpose: 'INF',
+        Options: {
+          Originator: sender,
+          Encoding: 'UNICODE',
+          SmsType: 'SMS',
+          ReportLabel: 'Buknari Villa Booking',
+        },
+        Receivers: [{ Receiver: phone }],
+      }),
+    });
+  } catch (e) {
+    // Best-effort — cancellation already succeeded even if SMS fails
+  }
+}
+
 export async function POST(request) {
   try {
     const { phone, token, bookingId } = await request.json();
@@ -39,7 +72,7 @@ export async function POST(request) {
     // Server-side ownership check: this booking must actually belong to this phone number
     const { data: booking } = await supabaseAdmin
       .from('villa_bookings')
-      .select('id, guest_phone')
+      .select('id, guest_name, guest_phone, check_in, check_out, villas(title, owner_id)')
       .eq('id', bookingId)
       .single();
 
@@ -51,6 +84,25 @@ export async function POST(request) {
 
     if (error) {
       return Response.json({ ok: false, message: 'გაუქმება ვერ მოხერხდა' }, { status: 500 });
+    }
+
+    // Notify the owner by SMS (best-effort, doesn't block the response)
+    if (booking.villas?.owner_id) {
+      const { data: owner } = await supabaseAdmin
+        .from('owners')
+        .select('phone')
+        .eq('id', booking.villas.owner_id)
+        .single();
+
+      if (owner?.phone) {
+        const normalizedOwner = normalizeSmsPhone(owner.phone);
+        if (normalizedOwner) {
+          await sendSms(
+            normalizedOwner,
+            `სტუმარმა გააუქმა ჯავშანი — "${booking.villas.title}", ${booking.check_in} → ${booking.check_out}. სტუმარი: ${booking.guest_name}.`
+          );
+        }
+      }
     }
 
     return Response.json({ ok: true });
