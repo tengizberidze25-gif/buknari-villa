@@ -1216,6 +1216,18 @@ a {
   padding: 0;
 }
 
+.booking-notify-form .booking-selected-dates > div {
+  min-width: 0;
+}
+
+.booking-notify-form .booking-selected-dates input {
+  width: 100%;
+  min-width: 0;
+  padding-left: 10px;
+  padding-right: 6px;
+  font-size: 13px;
+}
+
 .booking-notify-form .booking-selected-dates label {
   display: block;
   font-size: 11px;
