@@ -264,6 +264,7 @@ export default function EditVillaPage({ params }) {
           checkin_time: form.checkin_time.value,
           checkout_time: form.checkout_time.value,
           cancellation_policy: form.cancellation_policy.value,
+          house_rules: form.house_rules.value,
           amenities: selectedAmenities,
           contact_phone: form.contact_phone.value,
           contact_whatsapp: form.contact_whatsapp.value,
@@ -501,6 +502,16 @@ export default function EditVillaPage({ params }) {
               rows="3"
               placeholder="მაგ. უფასო გაუქმება ჩამოსვლამდე 48 საათით ადრე. მოგვიანებით — არ ბრუნდება."
               defaultValue={villa.cancellation_policy || ''}
+            />
+          </div>
+
+          <div className="form-row">
+            <label>სახლის წესები (არასავალდებულო)</label>
+            <textarea
+              name="house_rules"
+              rows="4"
+              placeholder="მაგ. შინაური ცხოველები დაშვებულია. მოწევა მხოლოდ აივანზე. წვეულებები/ხმაური 23:00 საათის შემდეგ აკრძალულია."
+              defaultValue={villa.house_rules || ''}
             />
           </div>
 
