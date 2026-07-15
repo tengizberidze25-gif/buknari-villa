@@ -49,7 +49,7 @@ async function sendSms(phone, text) {
 
 export async function POST(request) {
   try {
-    const { bookingId, token, rating, comment } = await request.json();
+    const { bookingId, token, rating, comment, photoPath } = await request.json();
 
     if (!bookingId || !token || !verifyBookingToken(bookingId, token)) {
       return Response.json({ ok: false, message: 'ბმული არასწორია' }, { status: 403 });
@@ -80,12 +80,19 @@ export async function POST(request) {
       return Response.json({ ok: false, message: 'თქვენ უკვე დატოვეთ შეფასება ამ ჯავშანზე' }, { status: 409 });
     }
 
+    let photoUrl = null;
+    if (photoPath) {
+      const { data: publicUrlData } = supabaseAdmin.storage.from('review-photos').getPublicUrl(photoPath);
+      photoUrl = publicUrlData.publicUrl;
+    }
+
     const { error } = await supabaseAdmin.from('villa_reviews').insert({
       villa_id: booking.villa_id,
       booking_id: booking.id,
       guest_name: booking.guest_name,
       rating: ratingNum,
       comment: (comment || '').toString().trim(),
+      photo_url: photoUrl,
     });
 
     if (error) {
