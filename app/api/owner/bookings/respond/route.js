@@ -60,6 +60,30 @@ async function sendSms(phone, text) {
   }
 }
 
+async function notifyAvailability(villaId, freedCheckIn, freedCheckOut, villaTitle) {
+  const { data: notifications } = await supabaseAdmin
+    .from('availability_notifications')
+    .select('id, phone, check_in, check_out')
+    .eq('villa_id', villaId)
+    .eq('notified', false);
+
+  if (!notifications || notifications.length === 0) return;
+
+  for (const n of notifications) {
+    const overlaps = new Date(n.check_in) < new Date(freedCheckOut) && new Date(n.check_out) > new Date(freedCheckIn);
+    if (!overlaps) continue;
+
+    const normalized = normalizeSmsPhone(n.phone);
+    if (normalized) {
+      await sendSms(
+        normalized,
+        `სასიხარულო ამბავი! "${villaTitle}" გათავისუფლდა თქვენთვის საინტერესო თარიღებში. დაჯავშნეთ სანამ სხვამ დაიკავებს: https://buknarivilla.ge`
+      );
+    }
+    await supabaseAdmin.from('availability_notifications').update({ notified: true }).eq('id', n.id);
+  }
+}
+
 export async function POST(request) {
   try {
     const { ownerId, token, bookingId, action } = await request.json();
@@ -101,6 +125,11 @@ export async function POST(request) {
           `თქვენი ჯავშანი დადასტურდა! "${booking.villas.title}" — ${booking.check_in} → ${booking.check_out}. მადლობა, რომ ირჩევთ Buknari Villa-ს.`
         );
       }
+    }
+
+    if (action === 'decline') {
+      // Best-effort: let anyone waiting for these dates know they just opened up
+      await notifyAvailability(booking.villa_id, booking.check_in, booking.check_out, booking.villas.title);
     }
 
     return Response.json({ ok: true });
