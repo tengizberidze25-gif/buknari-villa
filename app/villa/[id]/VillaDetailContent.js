@@ -289,6 +289,11 @@ export default function VillaDetailContent({ villa, reviews, avgRating, photos, 
                       {approxPrice(villa.price_per_night, lang)}
                     </div>
                   )}
+                  {villa.high_season_price ? (
+                    <div className="villa-high-season-note">
+                      🔥 ₾{villa.high_season_price} {tt('perNight')} — {tt('vdHighSeasonLabel')}
+                    </div>
+                  ) : null}
                 </div>
                 <div className="villa-share-wrap">
                   <button
@@ -337,6 +342,9 @@ export default function VillaDetailContent({ villa, reviews, avgRating, photos, 
               pricePerNight={villa.price_per_night}
               minNights={villa.min_nights}
               village={villa.village}
+              highSeasonPrice={villa.high_season_price}
+              highSeasonStart={villa.high_season_start}
+              highSeasonEnd={villa.high_season_end}
             />
           </aside>
         </div>
