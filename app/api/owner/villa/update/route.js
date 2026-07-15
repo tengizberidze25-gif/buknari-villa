@@ -84,6 +84,9 @@ export async function POST(request) {
     const lng = body.lng ? Number(body.lng) : null;
     const pricePerNight = Number(body.price_per_night) || null;
     const minNights = Number(body.min_nights) || null;
+    const highSeasonPrice = Number(body.high_season_price) || null;
+    const highSeasonStart = (body.high_season_start || '').toString().trim() || null;
+    const highSeasonEnd = (body.high_season_end || '').toString().trim() || null;
     const maxGuests = Number(body.max_guests) || null;
     const bedrooms = Number(body.bedrooms) || null;
     const bathrooms = Number(body.bathrooms) || null;
@@ -115,6 +118,9 @@ export async function POST(request) {
         lng,
         price_per_night: pricePerNight,
         min_nights: minNights,
+        high_season_price: highSeasonPrice,
+        high_season_start: highSeasonStart,
+        high_season_end: highSeasonEnd,
         max_guests: maxGuests,
         bedrooms,
         bathrooms,
