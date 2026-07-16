@@ -3,6 +3,11 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
 
+const MONTH_NAMES_KA = [
+  'იანვარი', 'თებერვალი', 'მარტი', 'აპრილი', 'მაისი', 'ივნისი',
+  'ივლისი', 'აგვისტო', 'სექტემბერი', 'ოქტომბერი', 'ნოემბერი', 'დეკემბერი',
+];
+
 const STATUS_LABELS = {
   pending: 'მოლოდინში',
   approved: 'დამტკიცებული',
@@ -670,6 +675,7 @@ export default function AdminPage() {
                 <div className="owner-villa-stats">
                   <span>👁 {villa.views_count || 0} ნახვა</span>
                   <span>📩 {villa.request_count || 0} მოთხოვნა</span>
+                  <span>📅 {MONTH_NAMES_KA[new Date().getMonth()]}: {villa.month_occupancy || 0}% დაკავებული</span>
                 </div>
               </div>
               <span className={`admin-status-badge admin-status-${villa.status}`}>
