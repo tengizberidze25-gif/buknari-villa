@@ -35,10 +35,43 @@ export default function VillaMap({ villas, villaTitle, lang }) {
   const mapRef = useRef(null);
   const mapInstance = useRef(null);
   const markersRef = useRef([]);
+  const headingAnimRef = useRef(null);
   const [loadError, setLoadError] = useState(false);
+  const [is3DActive, setIs3DActive] = useState(false);
 
   const withCoords = villas.filter((v) => v.lat && v.lng);
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+  const singleVillaCoords = withCoords.length === 1 ? withCoords[0] : null;
+
+  function activate3DView() {
+    const map = mapInstance.current;
+    if (!map || !singleVillaCoords) return;
+
+    setIs3DActive(true);
+    if (headingAnimRef.current) clearInterval(headingAnimRef.current);
+
+    map.setCenter({ lat: Number(singleVillaCoords.lat), lng: Number(singleVillaCoords.lng) });
+    map.setZoom(19);
+    map.setTilt(45);
+    map.setHeading(0);
+
+    // Slow cinematic rotation around the property — stops after one full turn.
+    let heading = 0;
+    headingAnimRef.current = setInterval(() => {
+      heading = (heading + 3) % 360;
+      map.setHeading(heading);
+      if (heading === 0) {
+        clearInterval(headingAnimRef.current);
+        headingAnimRef.current = null;
+      }
+    }, 60);
+  }
+
+  useEffect(() => {
+    return () => {
+      if (headingAnimRef.current) clearInterval(headingAnimRef.current);
+    };
+  }, []);
 
   useEffect(() => {
     if (!apiKey || withCoords.length === 0) return;
@@ -140,6 +173,15 @@ export default function VillaMap({ villas, villaTitle, lang }) {
   return (
     <div className="villa-map-wrap">
       <div ref={mapRef} style={{ height: '480px', width: '100%' }} />
+      {singleVillaCoords && (
+        <button
+          type="button"
+          className={`villa-map-3d-btn${is3DActive ? ' active' : ''}`}
+          onClick={activate3DView}
+        >
+          🏔️ 3D ხედი
+        </button>
+      )}
     </div>
   );
 }
