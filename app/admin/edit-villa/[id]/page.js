@@ -171,6 +171,8 @@ export default function AdminEditVillaPage({ params }) {
           high_season_price: form.high_season_price.value,
           high_season_start: highSeasonStart,
           high_season_end: highSeasonEnd,
+          long_stay_discount_min_nights: form.long_stay_discount_min_nights.value,
+          long_stay_discount_pct: form.long_stay_discount_pct.value,
           lat: form.lat.value,
           lng: form.lng.value,
           max_guests: form.max_guests.value,
@@ -343,6 +345,35 @@ export default function AdminEditVillaPage({ params }) {
               />
             </div>
           </div>
+
+          <div className="form-row">
+            <label>ხანგრძლივი ყოფნის ფასდაკლება — არასავალდებულო</label>
+            <div className="form-grid-2">
+              <div>
+                <input
+                  name="long_stay_discount_min_nights"
+                  type="number"
+                  min="2"
+                  placeholder="მინ. ღამეები (მაგ. 7)"
+                  defaultValue={villa.long_stay_discount_min_nights || ''}
+                />
+              </div>
+              <div>
+                <input
+                  name="long_stay_discount_pct"
+                  type="number"
+                  min="1"
+                  max="50"
+                  placeholder="ფასდაკლება % (მაგ. 10)"
+                  defaultValue={villa.long_stay_discount_pct || ''}
+                />
+              </div>
+            </div>
+            <p className="form-hint">
+              თუ ორივე ველი შეავსებ, სტუმარს ავტომატურად დაუთვლის ფასდაკლებას, თუ მითითებულ ან მეტ ღამეს დაჯავშნის. ცარიელი — ფასდაკლება არ გამოჩნდება.
+            </p>
+          </div>
+
 
           <LocationPicker initialLat={villa.lat} initialLng={villa.lng} />
 
