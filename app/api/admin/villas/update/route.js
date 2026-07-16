@@ -41,6 +41,8 @@ export async function POST(request) {
     const highSeasonPrice = Number(body.high_season_price) || null;
     const highSeasonStart = (body.high_season_start || '').toString().trim() || null;
     const highSeasonEnd = (body.high_season_end || '').toString().trim() || null;
+    const longStayDiscountMinNights = Number(body.long_stay_discount_min_nights) || null;
+    const longStayDiscountPct = Number(body.long_stay_discount_pct) || null;
     const maxGuests = Number(body.max_guests) || null;
     const bedrooms = Number(body.bedrooms) || null;
     const bathrooms = Number(body.bathrooms) || null;
@@ -75,6 +77,8 @@ export async function POST(request) {
         high_season_price: highSeasonPrice,
         high_season_start: highSeasonStart,
         high_season_end: highSeasonEnd,
+        long_stay_discount_min_nights: longStayDiscountMinNights,
+        long_stay_discount_pct: longStayDiscountPct,
         max_guests: maxGuests,
         bedrooms,
         bathrooms,
