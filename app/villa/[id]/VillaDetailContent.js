@@ -385,6 +385,8 @@ export default function VillaDetailContent({ villa, reviews, avgRating, photos, 
 
             <BookingCalendar
               villaId={villa.id}
+              villaTitle={title}
+              whatsappNumber={villa.contact_whatsapp}
               pricePerNight={villa.price_per_night}
               minNights={villa.min_nights}
               village={villa.village}
