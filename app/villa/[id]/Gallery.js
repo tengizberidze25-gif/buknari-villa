@@ -79,6 +79,7 @@ export default function Gallery({ photos, title }) {
           )}
 
           <img
+            key={openIndex}
             src={photos[openIndex]}
             alt={`${title} ${openIndex + 1}`}
             className="villa-lightbox-img"
