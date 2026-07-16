@@ -1172,6 +1172,25 @@ a {
   margin-top: 2px;
 }
 
+.booking-whatsapp-btn {
+  display: block;
+  text-align: center;
+  background: #25d366;
+  color: #0f1210;
+  font-weight: 700;
+  font-size: 14.5px;
+  padding: 13px;
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  margin-top: 10px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.booking-whatsapp-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(37, 211, 102, 0.3);
+}
+
 .villa-high-season-note {
   font-size: 12.5px;
   color: var(--sand-dim);
