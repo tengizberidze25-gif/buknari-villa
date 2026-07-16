@@ -75,6 +75,7 @@ export default function BookingCalendar({
   const [checkOut, setCheckOut] = useState(null);
   const [guestName, setGuestName] = useState('');
   const [guestPhone, setGuestPhone] = useState('');
+  const [guestEmail, setGuestEmail] = useState('');
   const [guestMessage, setGuestMessage] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
@@ -182,6 +183,7 @@ export default function BookingCalendar({
           checkOut: toISO(checkOut),
           guestName,
           guestPhone,
+          guestEmail,
           guestMessage,
         }),
       });
@@ -427,6 +429,12 @@ export default function BookingCalendar({
           placeholder={tt('bcPhonePlaceholder')}
           value={guestPhone}
           onChange={(e) => setGuestPhone(e.target.value)}
+        />
+        <input
+          type="email"
+          placeholder={tt('bcEmailPlaceholder')}
+          value={guestEmail}
+          onChange={(e) => setGuestEmail(e.target.value)}
         />
         <textarea
           placeholder={tt('bcMessagePlaceholder')}
