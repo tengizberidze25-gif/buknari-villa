@@ -38,6 +38,7 @@ export default function VillaMap({ villas, villaTitle, lang }) {
   const headingAnimRef = useRef(null);
   const [loadError, setLoadError] = useState(false);
   const [is3DActive, setIs3DActive] = useState(false);
+  const [tilt3DUnavailable, setTilt3DUnavailable] = useState(false);
 
   const withCoords = villas.filter((v) => v.lat && v.lng);
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
@@ -45,26 +46,41 @@ export default function VillaMap({ villas, villaTitle, lang }) {
 
   function activate3DView() {
     const map = mapInstance.current;
-    if (!map || !singleVillaCoords) return;
+    const google = typeof window !== 'undefined' ? window.google : null;
+    if (!map || !singleVillaCoords || !google) return;
 
     setIs3DActive(true);
+    setTilt3DUnavailable(false);
     if (headingAnimRef.current) clearInterval(headingAnimRef.current);
 
-    map.setCenter({ lat: Number(singleVillaCoords.lat), lng: Number(singleVillaCoords.lng) });
+    const target = { lat: Number(singleVillaCoords.lat), lng: Number(singleVillaCoords.lng) };
+    map.setCenter(target);
     map.setZoom(19);
-    map.setTilt(45);
-    map.setHeading(0);
 
-    // Slow cinematic rotation around the property — stops after one full turn.
-    let heading = 0;
-    headingAnimRef.current = setInterval(() => {
-      heading = (heading + 3) % 360;
-      map.setHeading(heading);
-      if (heading === 0) {
-        clearInterval(headingAnimRef.current);
-        headingAnimRef.current = null;
-      }
-    }, 60);
+    // Tilt requests are silently ignored if the map hasn't finished loading
+    // tiles at the new zoom yet — waiting for 'idle' makes this reliable.
+    google.maps.event.addListenerOnce(map, 'idle', () => {
+      map.setTilt(45);
+
+      // Confirm the tilt actually took — some locations simply don't have
+      // 45° imagery, in which case Maps silently keeps tilt at 0.
+      setTimeout(() => {
+        if (map.getTilt() === 0) {
+          setTilt3DUnavailable(true);
+          return;
+        }
+        map.setHeading(0);
+        let heading = 0;
+        headingAnimRef.current = setInterval(() => {
+          heading = (heading + 3) % 360;
+          map.setHeading(heading);
+          if (heading === 0) {
+            clearInterval(headingAnimRef.current);
+            headingAnimRef.current = null;
+          }
+        }, 60);
+      }, 600);
+    });
   }
 
   useEffect(() => {
@@ -182,6 +198,11 @@ export default function VillaMap({ villas, villaTitle, lang }) {
         >
           🏔️ 3D ხედი
         </button>
+      )}
+      {tilt3DUnavailable && (
+        <div className="villa-map-3d-hint">
+          ამ ზუსტ წერტილში Google-ს 45° დაფარვა არ აქვს — ცოტა მოშორებით (გზასთან) შეიძლება იმუშაოს.
+        </div>
       )}
     </div>
   );
