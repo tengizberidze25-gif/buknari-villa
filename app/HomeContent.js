@@ -19,6 +19,27 @@ function coverPhoto(villa) {
   return sorted[0].url;
 }
 
+// Checks whether today falls within a recurring annual season, given as
+// 'MM-DD' strings. Handles seasons that wrap across the new year (e.g. Dec–Jan).
+function isTodayInSeason(startMMDD, endMMDD) {
+  if (!startMMDD || !endMMDD) return false;
+  const today = new Date();
+  const [sm, sd] = startMMDD.split('-').map(Number);
+  const [em, ed] = endMMDD.split('-').map(Number);
+  const val = (today.getMonth() + 1) * 100 + today.getDate();
+  const startVal = sm * 100 + sd;
+  const endVal = em * 100 + ed;
+  if (startVal <= endVal) return val >= startVal && val <= endVal;
+  return val >= startVal || val <= endVal;
+}
+
+function displayPrice(villa) {
+  if (villa.high_season_price && isTodayInSeason(villa.high_season_start, villa.high_season_end)) {
+    return villa.high_season_price;
+  }
+  return villa.price_per_night;
+}
+
 function villaTitle(villa, lang) {
   if (lang === 'en' && villa.title_en) return villa.title_en;
   if (lang === 'ru' && villa.title_ru) return villa.title_ru;
@@ -367,7 +388,7 @@ export default function HomeContent({ villas, testimonials }) {
                         {favorites.has(villa.id) ? '❤️' : '🤍'}
                       </button>
                       <div className="villa-price-tag">
-                        <span>₾{villa.price_per_night || '—'}</span> {tt('perNight')}
+                        <span>₾{displayPrice(villa) || '—'}</span> {tt('perNight')}
                       </div>
                       {showBadge && <div className="villa-unavailable-badge">{tt('datesBookedBadge')}</div>}
                       {!showBadge && popularVillaIds.has(villa.id) && (
