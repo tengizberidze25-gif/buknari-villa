@@ -29,6 +29,20 @@ function amenityLabel(a, lang) {
   return a.label;
 }
 
+// Checks whether today falls within a recurring annual season, given as
+// 'MM-DD' strings. Handles seasons that wrap across the new year (e.g. Dec–Jan).
+function isTodayInSeason(startMMDD, endMMDD) {
+  if (!startMMDD || !endMMDD) return false;
+  const today = new Date();
+  const [sm, sd] = startMMDD.split('-').map(Number);
+  const [em, ed] = endMMDD.split('-').map(Number);
+  const val = (today.getMonth() + 1) * 100 + today.getDate();
+  const startVal = sm * 100 + sd;
+  const endVal = em * 100 + ed;
+  if (startVal <= endVal) return val >= startVal && val <= endVal;
+  return val >= startVal || val <= endVal;
+}
+
 const LOCALE_MAP = { ka: 'ka-GE', en: 'en-US', ru: 'ru-RU', hy: 'hy-AM' };
 
 const DISTANCE_UNITS = {
@@ -55,6 +69,10 @@ export default function VillaDetailContent({ villa, reviews, avgRating, photos, 
   const autoDistances = getAutoDistances(villa.village, villa.lat, villa.lng);
   const distanceCenterM = villa.distance_center_m || autoDistances.center;
   const distanceSeaM = villa.distance_sea_m || autoDistances.sea;
+
+  const inHighSeasonNow =
+    villa.high_season_price && isTodayInSeason(villa.high_season_start, villa.high_season_end);
+  const headlinePrice = inHighSeasonNow ? villa.high_season_price : villa.price_per_night;
 
   const [shareMenuOpen, setShareMenuOpen] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -283,15 +301,18 @@ export default function VillaDetailContent({ villa, reviews, avgRating, photos, 
             <div className="villa-detail-price-box">
               <div className="villa-detail-price-row">
                 <div className="villa-detail-price">
-                  <span>₾{villa.price_per_night || '—'}</span> {tt('perNight')}
-                  {approxPrice(villa.price_per_night, lang) && (
+                  <span>₾{headlinePrice || '—'}</span> {tt('perNight')}
+                  {inHighSeasonNow ? <span className="villa-price-season-tag">🔥 {tt('vdHighSeasonLabel')}</span> : null}
+                  {approxPrice(headlinePrice, lang) && (
                     <div style={{ fontSize: '0.8rem', opacity: 0.65, fontWeight: 400 }}>
-                      {approxPrice(villa.price_per_night, lang)}
+                      {approxPrice(headlinePrice, lang)}
                     </div>
                   )}
                   {villa.high_season_price ? (
                     <div className="villa-high-season-note">
-                      🔥 ₾{villa.high_season_price} {tt('perNight')} — {tt('vdHighSeasonLabel')}
+                      {inHighSeasonNow
+                        ? `${tt('vdRegularPriceLabel')}: ₾${villa.price_per_night} ${tt('perNight')}`
+                        : `🔥 ₾${villa.high_season_price} ${tt('perNight')} — ${tt('vdHighSeasonLabel')}`}
                     </div>
                   ) : null}
                 </div>
