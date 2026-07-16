@@ -57,6 +57,8 @@ function computeLongStayDiscount(nights, minNights, pct) {
 
 export default function BookingCalendar({
   villaId,
+  villaTitle,
+  whatsappNumber,
   pricePerNight,
   minNights,
   village,
@@ -286,6 +288,20 @@ export default function BookingCalendar({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [discountedTotal]);
 
+  const whatsappDigits = (whatsappNumber || '').toString().replace(/\D/g, '');
+  const whatsappMessage =
+    nights > 0 && checkIn && checkOut
+      ? tt('bcWhatsappMessageDates')
+          .replace('{title}', villaTitle || '')
+          .replace('{checkIn}', toISO(checkIn))
+          .replace('{checkOut}', toISO(checkOut))
+          .replace('{nights}', nights)
+          .replace('{total}', discountedTotal.toLocaleString())
+      : tt('bcWhatsappMessageGeneric').replace('{title}', villaTitle || '');
+  const whatsappBookingUrl = whatsappDigits
+    ? `https://wa.me/${whatsappDigits}?text=${encodeURIComponent(whatsappMessage)}`
+    : null;
+
   if (done) {
     const dateRange = `${toISO(checkIn)} — ${toISO(checkOut)}`;
     return (
@@ -432,6 +448,17 @@ export default function BookingCalendar({
             </div>
           </div>
         ) : null}
+
+        {whatsappBookingUrl && (
+          <a
+            href={whatsappBookingUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="booking-whatsapp-btn"
+          >
+            💬 {tt('bcWhatsappBookBtn')}
+          </a>
+        )}
 
         {checkIn && checkOut && !loadingForecast && forecast && forecast.forecastAvailable && (
           <div className="booking-forecast">
