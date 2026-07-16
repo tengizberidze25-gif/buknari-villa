@@ -54,6 +54,7 @@ export default function LocationPicker({ initialLat, initialLng }) {
           mapTypeControl: true,
           streetViewControl: false,
           fullscreenControl: false,
+          tilt: 45,
         });
         mapInstance.current = map;
 
