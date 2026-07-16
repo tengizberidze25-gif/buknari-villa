@@ -10,6 +10,7 @@ import { ratingLabel } from './ratingLabel';
 import VillageVideoGallery from './VillageVideoGallery';
 import { localizedHref } from './localizedHref';
 import { countLabel } from './pluralLabel';
+import { getAutoDistances } from '../lib/geo';
 
 const VillaMap = dynamic(() => import('./VillaMap'), { ssr: false });
 
@@ -115,6 +116,19 @@ export default function HomeContent({ villas, testimonials }) {
       else next.add(villaId);
       localStorage.setItem('buknari_favorites', JSON.stringify([...next]));
       return next;
+    });
+  }
+
+  const [compareIds, setCompareIds] = useState([]);
+  const [compareOpen, setCompareOpen] = useState(false);
+
+  function toggleCompare(villaId, e) {
+    e.preventDefault();
+    e.stopPropagation();
+    setCompareIds((prev) => {
+      if (prev.includes(villaId)) return prev.filter((id) => id !== villaId);
+      if (prev.length >= 3) return prev; // cap at 3 villas for a readable table
+      return [...prev, villaId];
     });
   }
 
@@ -414,6 +428,14 @@ export default function HomeContent({ villas, testimonials }) {
                         {villa.max_guests ? <span>👤 {villa.max_guests} {countLabel(villa.max_guests, lang, 'guest')}</span> : null}
                         {villa.bedrooms ? <span>🛏 {villa.bedrooms} {countLabel(villa.bedrooms, lang, 'bedroom')}</span> : null}
                       </div>
+                      <button
+                        type="button"
+                        className={`villa-compare-btn${compareIds.includes(villa.id) ? ' active' : ''}`}
+                        onClick={(e) => toggleCompare(villa.id, e)}
+                      >
+                        {compareIds.includes(villa.id) ? '✓ ' : '⚖️ '}
+                        {tt('compareBtnLabel')}
+                      </button>
                     </div>
                   </a>
                 );
@@ -526,6 +548,126 @@ export default function HomeContent({ villas, testimonials }) {
         <a href={localizedHref('/terms', lang)} className="footer-email">{tt('footerTerms')}</a>
         <div className="footer-meta">{tt('footerMeta')}</div>
       </footer>
+
+      {compareIds.length > 0 && !compareOpen && (
+        <div className="compare-bar">
+          <span className="compare-bar-count">
+            ⚖️ {tt('compareBarLabel')} ({compareIds.length}/3)
+          </span>
+          <div className="compare-bar-actions">
+            <button type="button" className="compare-bar-clear" onClick={() => setCompareIds([])}>
+              {tt('compareClearLabel')}
+            </button>
+            <button
+              type="button"
+              className="compare-bar-open"
+              disabled={compareIds.length < 2}
+              onClick={() => setCompareOpen(true)}
+            >
+              {tt('compareOpenLabel')} →
+            </button>
+          </div>
+        </div>
+      )}
+
+      {compareOpen && (
+        <div className="compare-modal-overlay" onClick={() => setCompareOpen(false)}>
+          <div className="compare-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="compare-modal-header">
+              <h3>{tt('compareModalTitle')}</h3>
+              <button type="button" className="compare-modal-close" onClick={() => setCompareOpen(false)}>
+                ✕
+              </button>
+            </div>
+            <div className="compare-table-wrap">
+              <table className="compare-table">
+                <tbody>
+                  <tr className="compare-row-photo">
+                    <td></td>
+                    {compareIds.map((id) => {
+                      const v = villas.find((x) => x.id === id);
+                      if (!v) return <td key={id} />;
+                      return (
+                        <td key={id}>
+                          <img src={coverPhoto(v) || '/placeholder-villa.jpg'} alt="" className="compare-photo" />
+                          <a href={localizedHref(`/villa/${v.id}`, lang)} className="compare-title-link">
+                            {villaTitle(v, lang)}
+                          </a>
+                        </td>
+                      );
+                    })}
+                  </tr>
+                  <tr>
+                    <td className="compare-row-label">{tt('perNight')}</td>
+                    {compareIds.map((id) => {
+                      const v = villas.find((x) => x.id === id);
+                      return <td key={id}>{v ? `₾${displayPrice(v)}` : '—'}</td>;
+                    })}
+                  </tr>
+                  <tr>
+                    <td className="compare-row-label">{tt('guestsLabel')}</td>
+                    {compareIds.map((id) => {
+                      const v = villas.find((x) => x.id === id);
+                      return <td key={id}>{v?.max_guests || '—'}</td>;
+                    })}
+                  </tr>
+                  <tr>
+                    <td className="compare-row-label">{tt('bedroomsLabel')}</td>
+                    {compareIds.map((id) => {
+                      const v = villas.find((x) => x.id === id);
+                      return <td key={id}>{v?.bedrooms || '—'}</td>;
+                    })}
+                  </tr>
+                  <tr>
+                    <td className="compare-row-label">{tt('bathroomsLabel')}</td>
+                    {compareIds.map((id) => {
+                      const v = villas.find((x) => x.id === id);
+                      return <td key={id}>{v?.bathrooms || '—'}</td>;
+                    })}
+                  </tr>
+                  <tr>
+                    <td className="compare-row-label">{tt('reviewsLabel')}</td>
+                    {compareIds.map((id) => {
+                      const v = villas.find((x) => x.id === id);
+                      return <td key={id}>{v?.avg_rating ? `${v.avg_rating} ★` : '—'}</td>;
+                    })}
+                  </tr>
+                  <tr>
+                    <td className="compare-row-label">{tt('vdDistanceCenterLabel')}</td>
+                    {compareIds.map((id) => {
+                      const v = villas.find((x) => x.id === id);
+                      if (!v) return <td key={id}>—</td>;
+                      const auto = getAutoDistances(v.village, v.lat, v.lng);
+                      const d = v.distance_center_m || auto.center;
+                      return <td key={id}>{d ? `${d < 1000 ? d + ' მ' : (d / 1000).toFixed(1) + ' კმ'}` : '—'}</td>;
+                    })}
+                  </tr>
+                  <tr>
+                    <td className="compare-row-label">{tt('vdDistanceSeaLabel')}</td>
+                    {compareIds.map((id) => {
+                      const v = villas.find((x) => x.id === id);
+                      if (!v) return <td key={id}>—</td>;
+                      const auto = getAutoDistances(v.village, v.lat, v.lng);
+                      const d = v.distance_sea_m || auto.sea;
+                      return <td key={id}>{d ? `${d < 1000 ? d + ' მ' : (d / 1000).toFixed(1) + ' კმ'}` : '—'}</td>;
+                    })}
+                  </tr>
+                  <tr>
+                    <td></td>
+                    {compareIds.map((id) => (
+                      <td key={id}>
+                        <a href={localizedHref(`/villa/${id}`, lang)} className="compare-view-btn">
+                          {tt('compareViewLabel')} →
+                        </a>
+                      </td>
+                    ))}
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
