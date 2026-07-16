@@ -13,6 +13,38 @@ function fmt(dateStr) {
   return dateStr;
 }
 
+const MONTH_NAMES_KA = [
+  'იანვარი', 'თებერვალი', 'მარტი', 'აპრილი', 'მაისი', 'ივნისი',
+  'ივლისი', 'აგვისტო', 'სექტემბერი', 'ოქტომბერი', 'ნოემბერი', 'დეკემბერი',
+];
+
+// Percentage of the current calendar month already booked (confirmed
+// bookings + owner-blocked dates count; pending/declined don't).
+function computeMonthOccupancy(villaBookings) {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const monthStart = new Date(year, month, 1);
+  const monthEnd = new Date(year, month + 1, 1); // exclusive
+
+  const blocking = villaBookings.filter((b) => b.status === 'confirmed' || b.status === 'owner_block');
+
+  const bookedDays = new Set();
+  blocking.forEach((b) => {
+    let d = new Date(b.check_in);
+    const end = new Date(b.check_out);
+    while (d < end) {
+      if (d >= monthStart && d < monthEnd) {
+        bookedDays.add(d.getDate());
+      }
+      d.setDate(d.getDate() + 1);
+    }
+  });
+
+  return Math.round((bookedDays.size / daysInMonth) * 100);
+}
+
 export default function DashboardPage() {
   const [ownerId, setOwnerId] = useState(null);
   const [token, setToken] = useState(null);
@@ -151,6 +183,7 @@ export default function DashboardPage() {
           const confirmed = villaBookings.filter((b) => b.status === 'confirmed');
           const ownerBlocks = villaBookings.filter((b) => b.status === 'owner_block');
           const guestRequests = villaBookings.filter((b) => b.status !== 'owner_block');
+          const monthOccupancy = computeMonthOccupancy(villaBookings);
           const form = blockForm[villa.id] || { checkIn: '', checkOut: '' };
 
           return (
@@ -165,6 +198,7 @@ export default function DashboardPage() {
               <div className="owner-villa-stats">
                 <span>👁 {villa.views_count || 0} ნახვა</span>
                 <span>📩 {guestRequests.length} მოთხოვნა</span>
+                <span>📅 {MONTH_NAMES_KA[new Date().getMonth()]}: {monthOccupancy}% დაკავებული</span>
               </div>
 
               {pending.length > 0 && (
