@@ -76,6 +76,7 @@ export default function VillaDetailContent({ villa, reviews, avgRating, photos, 
 
   const [shareMenuOpen, setShareMenuOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [socialProof, setSocialProof] = useState(null);
   const villaUrl = `https://www.buknarivilla.ge/villa/${villa.id}`;
 
   useEffect(() => {
@@ -87,6 +88,15 @@ export default function VillaDetailContent({ villa, reviews, avgRating, photos, 
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ villaId: villa.id }),
     }).catch(() => {});
+  }, [villa.id]);
+
+  useEffect(() => {
+    fetch(`/api/villa-social-proof?villaId=${villa.id}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.ok) setSocialProof(data);
+      })
+      .catch(() => {});
   }, [villa.id]);
 
   async function handleShareClick() {
@@ -357,6 +367,21 @@ export default function VillaDetailContent({ villa, reviews, avgRating, photos, 
                 <p className="villa-detail-nocontact">{tt('vdNoContact')}</p>
               ) : null}
             </div>
+
+            {socialProof && (socialProof.recentViews >= 3 || socialProof.recentBookingHoursAgo) && (
+              <div className="villa-social-proof">
+                {socialProof.recentBookingHoursAgo ? (
+                  <div className="villa-social-proof-item">
+                    🔥 {tt('vdRecentBooking').replace('{hours}', socialProof.recentBookingHoursAgo)}
+                  </div>
+                ) : null}
+                {socialProof.recentViews >= 3 ? (
+                  <div className="villa-social-proof-item">
+                    👀 {tt('vdRecentViews').replace('{count}', socialProof.recentViews)}
+                  </div>
+                ) : null}
+              </div>
+            )}
 
             <BookingCalendar
               villaId={villa.id}
