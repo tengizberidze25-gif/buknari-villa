@@ -1068,6 +1068,64 @@ a {
   font-style: italic;
 }
 
+.booking-price-breakdown {
+  margin-top: 10px;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  background: linear-gradient(160deg, var(--glass-bg-strong), transparent);
+  animation: bpFadeIn 0.35s ease;
+}
+
+@keyframes bpFadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.booking-price-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  color: var(--sand);
+  padding: 4px 0;
+}
+
+.booking-price-row-note {
+  font-size: 11px;
+  font-style: italic;
+  color: var(--accent-bright);
+  padding-top: 0;
+}
+
+.booking-price-row-discount {
+  color: var(--sea-bright);
+  font-weight: 600;
+}
+
+.booking-price-total {
+  border-top: 1px solid var(--glass-border);
+  margin-top: 6px;
+  padding-top: 10px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--foam);
+}
+
+.booking-price-total-amount {
+  font-family: var(--serif);
+  font-size: 22px;
+  color: var(--accent-bright);
+  font-variant-numeric: tabular-nums;
+}
+
+.booking-price-avg {
+  text-align: right;
+  font-size: 11.5px;
+  color: var(--sand-dim);
+  margin-top: 2px;
+}
+
 .villa-high-season-note {
   font-size: 12.5px;
   color: var(--sand-dim);
