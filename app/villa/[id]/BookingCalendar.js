@@ -48,6 +48,14 @@ function computeStayTotal(checkIn, checkOut, basePrice, seasonPrice, seasonStart
   return total;
 }
 
+// Rewards longer stays with a modest discount — nudges guests toward
+// booking more nights and gives the price box something worth animating.
+function computeLongStayDiscount(nights) {
+  if (nights >= 14) return 0.1;
+  if (nights >= 7) return 0.05;
+  return 0;
+}
+
 export default function BookingCalendar({
   villaId,
   pricePerNight,
@@ -88,6 +96,7 @@ export default function BookingCalendar({
   const [notifyPhone, setNotifyPhone] = useState('');
   const [notifySubmitting, setNotifySubmitting] = useState(false);
   const [notifyMsg, setNotifyMsg] = useState('');
+  const [animatedTotal, setAnimatedTotal] = useState(0);
 
   useEffect(() => {
     if (!checkIn || !checkOut || !village) {
@@ -251,6 +260,31 @@ export default function BookingCalendar({
       ? computeStayTotal(checkIn, checkOut, pricePerNight, highSeasonPrice, highSeasonStart, highSeasonEnd)
       : 0;
 
+  const discountPct = computeLongStayDiscount(nights);
+  const discountAmount = Math.round(stayTotal * discountPct);
+  const discountedTotal = stayTotal - discountAmount;
+
+  useEffect(() => {
+    if (!discountedTotal) {
+      setAnimatedTotal(0);
+      return;
+    }
+    const from = animatedTotal;
+    const to = discountedTotal;
+    const duration = 550;
+    const start = performance.now();
+    let frame;
+    function tick(now) {
+      const progress = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setAnimatedTotal(Math.round(from + (to - from) * eased));
+      if (progress < 1) frame = requestAnimationFrame(tick);
+    }
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [discountedTotal]);
+
   if (done) {
     const dateRange = `${toISO(checkIn)} — ${toISO(checkOut)}`;
     return (
@@ -367,17 +401,36 @@ export default function BookingCalendar({
           {nights > 0 && (
             <div className="booking-nights">
               {nights} {tt('nightsLabel')}
-              {pricePerNight ? (
-                <span className="booking-total-price">
-                  · ₾{stayTotal.toLocaleString()} {tt('bcTotalLabel')}
-                </span>
-              ) : null}
-              {stayTotal !== nights * pricePerNight && (
-                <span className="booking-season-note">{tt('bcSeasonPriceNote')}</span>
-              )}
             </div>
           )}
         </div>
+
+        {nights > 0 && pricePerNight ? (
+          <div className="booking-price-breakdown">
+            <div className="booking-price-row">
+              <span>₾{pricePerNight.toLocaleString()} × {nights} {tt('nightsLabel')}</span>
+              <span>₾{stayTotal.toLocaleString()}</span>
+            </div>
+            {stayTotal !== nights * pricePerNight && (
+              <div className="booking-price-row booking-price-row-note">
+                <span>{tt('bcSeasonPriceNote')}</span>
+              </div>
+            )}
+            {discountPct > 0 && (
+              <div className="booking-price-row booking-price-row-discount">
+                <span>{tt('bcLongStayDiscount').replace('{pct}', Math.round(discountPct * 100))}</span>
+                <span>−₾{discountAmount.toLocaleString()}</span>
+              </div>
+            )}
+            <div className="booking-price-row booking-price-total">
+              <span>{tt('bcTotalLabel')}</span>
+              <span className="booking-price-total-amount">₾{animatedTotal.toLocaleString()}</span>
+            </div>
+            <div className="booking-price-avg">
+              {tt('bcAvgPerNight').replace('{amount}', Math.round(discountedTotal / nights).toLocaleString())}
+            </div>
+          </div>
+        ) : null}
 
         {checkIn && checkOut && !loadingForecast && forecast && forecast.forecastAvailable && (
           <div className="booking-forecast">
