@@ -99,6 +99,7 @@ export default function VillaMap({ villas, villaTitle, lang }) {
             streetViewControl: false,
             fullscreenControl: false,
             tilt: 45,
+            gestureHandling: 'greedy',
           });
         } else {
           mapInstance.current.setCenter(center);
