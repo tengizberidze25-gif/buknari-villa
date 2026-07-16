@@ -15,6 +15,14 @@ export async function POST(request) {
       return Response.json({ ok: false, message: 'დათვლა ვერ მოხერხდა' }, { status: 500 });
     }
 
+    // Best-effort — powers the "viewed recently" social-proof badge.
+    // Doesn't affect the response even if this insert fails.
+    try {
+      await supabaseAdmin.from('villa_view_events').insert({ villa_id: villaId });
+    } catch (e) {
+      // ignore
+    }
+
     return Response.json({ ok: true });
   } catch (err) {
     return Response.json({ ok: false, message: String(err) }, { status: 500 });
