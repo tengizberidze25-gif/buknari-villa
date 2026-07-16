@@ -48,12 +48,11 @@ function computeStayTotal(checkIn, checkOut, basePrice, seasonPrice, seasonStart
   return total;
 }
 
-// Rewards longer stays with a modest discount — nudges guests toward
-// booking more nights and gives the price box something worth animating.
-function computeLongStayDiscount(nights) {
-  if (nights >= 14) return 0.1;
-  if (nights >= 7) return 0.05;
-  return 0;
+// Rewards longer stays with a discount, if the owner has configured one for
+// this villa — nudges guests toward booking more nights.
+function computeLongStayDiscount(nights, minNights, pct) {
+  if (!minNights || !pct || nights < minNights) return 0;
+  return Math.min(pct, 50) / 100;
 }
 
 export default function BookingCalendar({
@@ -64,6 +63,8 @@ export default function BookingCalendar({
   highSeasonPrice,
   highSeasonStart,
   highSeasonEnd,
+  longStayDiscountMinNights,
+  longStayDiscountPct,
 }) {
   const { lang } = useLanguage();
   const tt = (key) => t(lang, key);
@@ -260,7 +261,7 @@ export default function BookingCalendar({
       ? computeStayTotal(checkIn, checkOut, pricePerNight, highSeasonPrice, highSeasonStart, highSeasonEnd)
       : 0;
 
-  const discountPct = computeLongStayDiscount(nights);
+  const discountPct = computeLongStayDiscount(nights, longStayDiscountMinNights, longStayDiscountPct);
   const discountAmount = Math.round(stayTotal * discountPct);
   const discountedTotal = stayTotal - discountAmount;
 
