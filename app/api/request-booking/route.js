@@ -48,6 +48,29 @@ async function sendSms(phone, text) {
   }
 }
 
+async function sendEmail(to, subject, html) {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey || !to) return;
+
+  try {
+    await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        from: process.env.RESEND_FROM || 'Buknari Villa <onboarding@resend.dev>',
+        to: [to],
+        subject,
+        html,
+      }),
+    });
+  } catch (e) {
+    // Best-effort — booking already succeeded even if email fails
+  }
+}
+
 export async function POST(request) {
   try {
     const body = await request.json();
@@ -56,6 +79,7 @@ export async function POST(request) {
     const checkOut = body.checkOut;
     const guestName = (body.guestName || '').toString().trim();
     const guestPhone = (body.guestPhone || '').toString().trim();
+    const guestEmail = (body.guestEmail || '').toString().trim();
     const guestMessage = (body.guestMessage || '').toString().trim();
 
     if (!villaId || !checkIn || !checkOut || !guestName || !guestPhone) {
@@ -128,6 +152,7 @@ export async function POST(request) {
         check_out: checkOut,
         guest_name: guestName,
         guest_phone: guestPhone,
+        guest_email: guestEmail,
         guest_message: guestMessage,
         status: 'pending',
         cancel_code: generateCancelCode(),
@@ -158,11 +183,28 @@ export async function POST(request) {
 
     // Confirm to the guest, with a self-service cancel link (no login needed)
     const normalizedGuest = normalizeSmsPhone(guestPhone);
+    const cancelUrl = `https://buknarivilla.ge/cancel/${inserted.cancel_code}`;
     if (normalizedGuest) {
-      const cancelUrl = `https://buknarivilla.ge/cancel/${inserted.cancel_code}`;
       await sendSms(
         normalizedGuest,
         `თქვენი ჯავშნის მოთხოვნა მიღებულია — "${villa.title}", ${checkIn} → ${checkOut}. მფლობელი დაგიკავშირდებათ დასადასტურებლად. გაუქმება: ${cancelUrl}`
+      );
+    }
+
+    if (guestEmail) {
+      await sendEmail(
+        guestEmail,
+        `ჯავშნის მოთხოვნა მიღებულია — ${villa.title}`,
+        `
+          <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+            <h2>თქვენი ჯავშნის მოთხოვნა მიღებულია</h2>
+            <p><strong>${villa.title}</strong></p>
+            <p>${checkIn} → ${checkOut}</p>
+            <p>მფლობელი მალე დაგიკავშირდებათ დასადასტურებლად.</p>
+            <p><a href="${cancelUrl}">ჯავშნის გაუქმება</a></p>
+            <p style="color: #888; font-size: 13px; margin-top: 24px;">Buknari Villa — buknarivilla.ge</p>
+          </div>
+        `
       );
     }
 
