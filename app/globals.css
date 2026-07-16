@@ -1506,11 +1506,12 @@ a {
   height: 100%;
   object-fit: cover;
   display: block;
-  transition: transform 0.4s ease;
+  animation: kenBurns1 24s ease-in-out infinite alternate;
+  will-change: transform;
 }
 
 .villa-gallery-main:hover img {
-  transform: scale(1.03);
+  animation-play-state: paused;
 }
 
 .villa-gallery-sub {
@@ -1534,11 +1535,51 @@ a {
   height: 100%;
   object-fit: cover;
   display: block;
-  transition: transform 0.4s ease;
+  animation: kenBurns2 24s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+.villa-gallery-thumb:nth-child(2) img {
+  animation-name: kenBurns3;
+}
+
+.villa-gallery-thumb:nth-child(3) img {
+  animation-name: kenBurns4;
+}
+
+.villa-gallery-thumb:nth-child(4) img {
+  animation-name: kenBurns1;
 }
 
 .villa-gallery-thumb:hover img {
-  transform: scale(1.03);
+  animation-play-state: paused;
+}
+
+@keyframes kenBurns1 {
+  0% { transform: scale(1) translate(0, 0); }
+  100% { transform: scale(1.15) translate(-3%, -2%); }
+}
+
+@keyframes kenBurns2 {
+  0% { transform: scale(1.1) translate(-2%, 1%); }
+  100% { transform: scale(1.22) translate(1%, -2%); }
+}
+
+@keyframes kenBurns3 {
+  0% { transform: scale(1) translate(1%, -1%); }
+  100% { transform: scale(1.15) translate(-2%, 2%); }
+}
+
+@keyframes kenBurns4 {
+  0% { transform: scale(1.12) translate(0, 2%); }
+  100% { transform: scale(1) translate(-1%, -1%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .villa-gallery-main img,
+  .villa-gallery-thumb img {
+    animation: none;
+  }
 }
 
 .villa-gallery-more {
@@ -2008,6 +2049,12 @@ a {
   max-height: 82vh;
   object-fit: contain;
   border-radius: 4px;
+  animation: lightboxArrive 1.1s ease-out;
+}
+
+@keyframes lightboxArrive {
+  0% { transform: scale(0.97); opacity: 0.6; }
+  100% { transform: scale(1); opacity: 1; }
 }
 
 .villa-lightbox-close {
