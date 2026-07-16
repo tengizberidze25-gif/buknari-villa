@@ -349,15 +349,20 @@ export default function HomeContent({ villas, testimonials }) {
             </div>
             <div className="section-head-right">
               <p>{tt('sectionSub')}</p>
-              {favorites.size > 0 && (
-                <button
-                  type="button"
-                  className={`favorites-toggle${favoritesOnly ? ' active' : ''}`}
-                  onClick={() => setFavoritesOnly((v) => !v)}
-                >
-                  ❤️ {tt('favoritesOnlyLabel')} ({favorites.size})
-                </button>
-              )}
+              <div className="section-head-actions">
+                {favorites.size > 0 && (
+                  <button
+                    type="button"
+                    className={`favorites-toggle${favoritesOnly ? ' active' : ''}`}
+                    onClick={() => setFavoritesOnly((v) => !v)}
+                  >
+                    ❤️ {tt('favoritesOnlyLabel')} ({favorites.size})
+                  </button>
+                )}
+                <a href="#map" className="favorites-toggle">
+                  🗺️ {tt('viewOnMapLabel')}
+                </a>
+              </div>
             </div>
           </div>
 
@@ -425,6 +430,9 @@ export default function HomeContent({ villas, testimonials }) {
               <div className="section-eyebrow">{tt('mapEyebrow')}</div>
               <h2>{tt('mapTitle')}</h2>
             </div>
+            <a href="#listings" className="favorites-toggle">
+              ☰ {tt('backToListLabel')}
+            </a>
           </div>
           <VillaMap villas={filteredVillas} villaTitle={villaTitle} lang={lang} />
         </section>
