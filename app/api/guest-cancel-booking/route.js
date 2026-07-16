@@ -40,6 +40,29 @@ async function sendSms(phone, text) {
   }
 }
 
+async function sendEmail(to, subject, html) {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey || !to) return;
+
+  try {
+    await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        from: process.env.RESEND_FROM || 'Buknari Villa <onboarding@resend.dev>',
+        to: [to],
+        subject,
+        html,
+      }),
+    });
+  } catch (e) {
+    // Best-effort
+  }
+}
+
 async function notifyAvailability(villaId, freedCheckIn, freedCheckOut, villaTitle) {
   const { data: notifications } = await supabaseAdmin
     .from('availability_notifications')
@@ -74,7 +97,7 @@ export async function POST(request) {
 
     const { data: booking } = await supabaseAdmin
       .from('villa_bookings')
-      .select('id, check_in, check_out, guest_name, guest_phone, villa_id, villas(title, owner_id)')
+      .select('id, check_in, check_out, guest_name, guest_phone, guest_email, villa_id, villas(title, owner_id)')
       .eq('cancel_code', code)
       .single();
 
@@ -118,6 +141,21 @@ export async function POST(request) {
       await sendSms(
         normalizedGuest,
         `თქვენი ჯავშანი გაუქმებულია — "${villaTitle}", ${booking.check_in} → ${booking.check_out}.`
+      );
+    }
+
+    if (booking.guest_email) {
+      await sendEmail(
+        booking.guest_email,
+        `ჯავშანი გაუქმებულია — ${villaTitle}`,
+        `
+          <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+            <h2>თქვენი ჯავშანი გაუქმებულია</h2>
+            <p><strong>${villaTitle}</strong></p>
+            <p>${booking.check_in} → ${booking.check_out}</p>
+            <p style="color: #888; font-size: 13px; margin-top: 24px;">Buknari Villa — buknarivilla.ge</p>
+          </div>
+        `
       );
     }
 
