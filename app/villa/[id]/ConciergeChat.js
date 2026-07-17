@@ -4,6 +4,14 @@ import { useState, useRef, useEffect } from 'react';
 import { useLanguage } from '../../LanguageContext';
 import { t } from '../../i18n';
 
+function stripMarkdown(text) {
+  return text
+    .replace(/\*\*(.*?)\*\*/g, '$1')
+    .replace(/\*(.*?)\*/g, '$1')
+    .replace(/^#{1,6}\s*/gm, '')
+    .replace(/^[-•]\s*/gm, '');
+}
+
 export default function ConciergeChat({ villaId }) {
   const { lang } = useLanguage();
   const tt = (key) => t(lang, key);
@@ -45,7 +53,7 @@ export default function ConciergeChat({ villaId }) {
       });
       const data = await res.json();
       if (data.ok) {
-        setMessages([...newMessages, { role: 'assistant', content: data.reply }]);
+        setMessages([...newMessages, { role: 'assistant', content: stripMarkdown(data.reply) }]);
       } else {
         setError(data.message || tt('conciergeError'));
       }
