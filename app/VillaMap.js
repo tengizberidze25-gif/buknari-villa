@@ -5,6 +5,8 @@ import { localizedHref } from './localizedHref';
 
 const BUKNARI_CENTER = { lat: 41.718, lng: 41.755 };
 
+const BUKNARI_MAP_ID = '68ce22de336b927b206a407b';
+
 function coverPhoto(villa) {
   if (!villa.villa_photos || villa.villa_photos.length === 0) return null;
   const sorted = [...villa.villa_photos].sort((a, b) => a.sort_order - b.sort_order);
@@ -49,6 +51,17 @@ export default function VillaMap({ villas, villaTitle, lang }) {
     const google = typeof window !== 'undefined' ? window.google : null;
     if (!map || !singleVillaCoords || !google) return;
 
+    // Toggle off — back to the normal flat satellite view.
+    if (is3DActive) {
+      if (headingAnimRef.current) clearInterval(headingAnimRef.current);
+      map.setTilt(0);
+      map.setHeading(0);
+      map.setMapTypeId('satellite');
+      setIs3DActive(false);
+      setTilt3DUnavailable(false);
+      return;
+    }
+
     setIs3DActive(true);
     setTilt3DUnavailable(false);
     if (headingAnimRef.current) clearInterval(headingAnimRef.current);
@@ -56,14 +69,18 @@ export default function VillaMap({ villas, villaTitle, lang }) {
     const target = { lat: Number(singleVillaCoords.lat), lng: Number(singleVillaCoords.lng) };
     map.setCenter(target);
     map.setZoom(19);
+    // 3D building extrusion renders on the vector-tiled hybrid/roadmap
+    // layer (requires the Map ID) — plain satellite imagery is raster-only
+    // and never tilts, regardless of API version.
+    map.setMapTypeId('hybrid');
 
     // Tilt requests are silently ignored if the map hasn't finished loading
     // tiles at the new zoom yet — waiting for 'idle' makes this reliable.
     google.maps.event.addListenerOnce(map, 'idle', () => {
-      map.setTilt(45);
+      map.setTilt(67.5);
 
       // Confirm the tilt actually took — some locations simply don't have
-      // 45° imagery, in which case Maps silently keeps tilt at 0.
+      // 3D building data yet, in which case Maps silently keeps tilt at 0.
       setTimeout(() => {
         if (map.getTilt() === 0) {
           setTilt3DUnavailable(true);
@@ -114,8 +131,8 @@ export default function VillaMap({ villas, villaTitle, lang }) {
             mapTypeControl: true,
             streetViewControl: false,
             fullscreenControl: false,
-            tilt: 45,
             gestureHandling: 'greedy',
+            mapId: BUKNARI_MAP_ID,
           });
         } else {
           mapInstance.current.setCenter(center);
@@ -196,12 +213,12 @@ export default function VillaMap({ villas, villaTitle, lang }) {
           className={`villa-map-3d-btn${is3DActive ? ' active' : ''}`}
           onClick={activate3DView}
         >
-          🏔️ 3D ხედი
+          {is3DActive ? '🛰️ ჩვეულებრივი ხედი' : '🏔️ 3D ხედი'}
         </button>
       )}
       {tilt3DUnavailable && (
         <div className="villa-map-3d-hint">
-          ამ ზუსტ წერტილში Google-ს 45° დაფარვა არ აქვს — ცოტა მოშორებით (გზასთან) შეიძლება იმუშაოს.
+          ამ ზუსტ წერტილში Google-ს ჯერ არ აქვს 3D შენობის მონაცემი — ეს ხშირად სოფლურ ადგილებში ასეა, დიდ ქალაქებში უფრო სავარაუდოა.
         </div>
       )}
     </div>
