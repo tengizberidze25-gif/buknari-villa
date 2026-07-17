@@ -1781,6 +1781,10 @@ a {
   align-items: start;
 }
 
+.villa-detail-grid > * {
+  min-width: 0;
+}
+
 .villa-detail-location {
   color: var(--sea-bright);
   font-size: 14px;
