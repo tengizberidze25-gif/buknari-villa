@@ -374,6 +374,15 @@ export default function AdminEditVillaPage({ params }) {
             </p>
           </div>
 
+          <div className="form-row">
+            <div className="referral-info-box">
+              <strong>ℹ️ სარეფერალო სისტემა (მთელ საიტზე, ავტომატურად)</strong>
+              <p>
+                სტუმრები, ვინც ადრინდელი სტუმრის გაზიარებული ბმულით მოდიან, ავტომატურად ხედავენ ფასდაკლებას (% იმართება Admin → საიტის პარამეტრები-დან, ყველა ვილაზე ერთნაირად).
+              </p>
+            </div>
+          </div>
+
 
           <LocationPicker initialLat={villa.lat} initialLng={villa.lng} />
 
