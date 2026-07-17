@@ -59,7 +59,7 @@ export async function GET(request) {
     // Confirmed bookings whose checkout date has already passed and haven't been asked for a review yet
     const { data: bookings, error } = await supabaseAdmin
       .from('villa_bookings')
-      .select('id, check_out, guest_phone, villas(title)')
+      .select('id, check_out, guest_phone, villas(title, referral_excluded)')
       .eq('status', 'confirmed')
       .eq('review_sms_sent', false)
       .lt('check_out', today);
@@ -84,20 +84,26 @@ export async function GET(request) {
         const reviewToken = crypto.createHmac('sha256', secret).update(booking.id).digest('hex');
         const reviewUrl = `https://buknarivilla.ge/review/${booking.id}?t=${reviewToken}`;
 
-        // Issue a fresh, opaque referral code now that the stay is confirmed
-        // and actually completed — this is the only point a shareable link
-        // is created, which keeps the reward program abuse-resistant.
-        const referralCode = generateReferralCode();
-        await supabaseAdmin.from('referral_codes').insert({
-          code: referralCode,
-          phone: normalized,
-          booking_id: booking.id,
-        });
-        const referralUrl = `https://buknarivilla.ge/?ref=${referralCode}`;
+        let referralLine = '';
+        if (!booking.villas?.referral_excluded) {
+          // Issue a fresh, opaque referral code now that the stay is
+          // confirmed and actually completed — this is the only point a
+          // shareable link is created, which keeps the reward program
+          // abuse-resistant. Skipped entirely if the owner opted this
+          // villa out of the referral program.
+          const referralCode = generateReferralCode();
+          await supabaseAdmin.from('referral_codes').insert({
+            code: referralCode,
+            phone: normalized,
+            booking_id: booking.id,
+          });
+          const referralUrl = `https://buknarivilla.ge/?ref=${referralCode}`;
+          referralLine = `\n\nგააზიარეთ Buknari Villa მეგობრებთან და მიიღეთ ${referralDiscountPct}% ფასდაკლება შემდეგ ჯავშანზე: ${referralUrl}`;
+        }
 
         await sendSms(
           normalized,
-          `როგორი იყო თქვენი დასვენება "${booking.villas?.title || ''}"-ში? დაგვეხმარეთ სხვა სტუმრებს, დატოვეთ შეფასება: ${reviewUrl}\n\nგააზიარეთ Buknari Villa მეგობრებთან და მიიღეთ ${referralDiscountPct}% ფასდაკლება შემდეგ ჯავშანზე: ${referralUrl}`
+          `როგორი იყო თქვენი დასვენება "${booking.villas?.title || ''}"-ში? დაგვეხმარეთ სხვა სტუმრებს, დატოვეთ შეფასება: ${reviewUrl}${referralLine}`
         );
         sentCount++;
       }
