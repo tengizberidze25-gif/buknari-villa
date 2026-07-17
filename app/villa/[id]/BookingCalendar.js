@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useLanguage } from '../../LanguageContext';
 import { t } from '../../i18n';
 import { getStoredReferralCode } from '../../referralCode';
+import TravelPostcard from './TravelPostcard';
 
 function toISO(date) {
   const y = date.getFullYear();
@@ -59,6 +60,7 @@ function computeLongStayDiscount(nights, minNights, pct) {
 export default function BookingCalendar({
   villaId,
   villaTitle,
+  villaCoverPhoto,
   whatsappNumber,
   pricePerNight,
   minNights,
@@ -356,6 +358,7 @@ export default function BookingCalendar({
         <div className="booking-done-icon">✓</div>
         <h3>{tt('bcDoneTitle')}</h3>
         <p>{tt('bcDoneMessage').replace('{dates}', dateRange)}</p>
+        <TravelPostcard villaTitle={villaTitle} coverPhoto={villaCoverPhoto} checkIn={checkIn} checkOut={checkOut} />
         {!referralExcluded && (
           <p className="booking-referral-later-hint">
             {tt('bcReferralAfterStayHint').replace('{pct}', siteReferralPct)}
