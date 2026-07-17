@@ -145,6 +145,19 @@ export async function POST(request) {
       return Response.json({ ok: false, message: 'სამწუხაროდ, ეს თარიღები უკვე დაკავებულია' }, { status: 409 });
     }
 
+    // Resolve the opaque referral code (if any) to the phone it belongs to.
+    // Codes are only ever issued post-checkout, so a valid code here means a
+    // real, completed stay — not just a submitted request.
+    let resolvedReferrerPhone = null;
+    if (referralCode) {
+      const { data: codeRow } = await supabaseAdmin
+        .from('referral_codes')
+        .select('phone')
+        .eq('code', referralCode)
+        .maybeSingle();
+      resolvedReferrerPhone = codeRow?.phone || null;
+    }
+
     const { data: inserted, error } = await supabaseAdmin
       .from('villa_bookings')
       .insert({
@@ -157,7 +170,7 @@ export async function POST(request) {
         guest_message: guestMessage,
         status: 'pending',
         cancel_code: generateCancelCode(),
-        referred_by_phone: normalizeSmsPhone(referralCode) || null,
+        referred_by_phone: resolvedReferrerPhone,
       })
       .select()
       .single();
@@ -171,7 +184,7 @@ export async function POST(request) {
     // 2) This guest arrived via someone else's referral link, which earns
     //    that person a fresh reward for their next booking.
     const normalizedGuestForReferral = normalizeSmsPhone(guestPhone);
-    const normalizedReferrer = normalizeSmsPhone(referralCode);
+    const normalizedReferrer = resolvedReferrerPhone;
 
     const { data: referralSetting } = await supabaseAdmin
       .from('site_settings')
@@ -224,16 +237,15 @@ export async function POST(request) {
       }
     }
 
-    // Confirm to the guest, with a self-service cancel link (no login needed)
+    // Confirm to the guest, with a self-service cancel link (no login needed).
+    // Their personal referral link is sent separately, after checkout —
+    // see /api/cron/send-review-links.
     const normalizedGuest = normalizeSmsPhone(guestPhone);
     const cancelUrl = `https://buknarivilla.ge/cancel/${inserted.cancel_code}`;
-    const referralShareUrl = normalizedGuest
-      ? `https://buknarivilla.ge/?ref=${normalizedGuest.replace(/^995/, '')}`
-      : null;
     if (normalizedGuest) {
       await sendSms(
         normalizedGuest,
-        `თქვენი ჯავშნის მოთხოვნა მიღებულია — "${villa.title}", ${checkIn} → ${checkOut}. მფლობელი დაგიკავშირდებათ დასადასტურებლად. გაუქმება: ${cancelUrl}\n\nგააზიარეთ Buknari Villa მეგობრებთან და მიიღეთ ${referralDiscountPct}% ფასდაკლება შემდეგ ჯავშანზე: ${referralShareUrl}`
+        `თქვენი ჯავშნის მოთხოვნა მიღებულია — "${villa.title}", ${checkIn} → ${checkOut}. მფლობელი დაგიკავშირდებათ დასადასტურებლად. გაუქმება: ${cancelUrl}`
       );
     }
 
@@ -248,9 +260,6 @@ export async function POST(request) {
             <p>${checkIn} → ${checkOut}</p>
             <p>მფლობელი მალე დაგიკავშირდებათ დასადასტურებლად.</p>
             <p><a href="${cancelUrl}">ჯავშნის გაუქმება</a></p>
-            <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
-            <p>გააზიარეთ Buknari Villa მეგობრებთან — გაზიარებული ბმულით მათი პირველი ჯავშანი, თქვენ მიიღებთ ${referralDiscountPct}% ფასდაკლებას შემდეგ ჯავშანზე:</p>
-            <p><a href="${referralShareUrl}">${referralShareUrl}</a></p>
             <p style="color: #888; font-size: 13px; margin-top: 24px;">Buknari Villa — buknarivilla.ge</p>
           </div>
         `
