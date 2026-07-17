@@ -3,6 +3,7 @@ import { headers } from 'next/headers';
 import { LanguageProvider } from './LanguageContext';
 import Analytics from './Analytics';
 import CookieConsent from './CookieConsent';
+import ReferralCapture from './ReferralCapture';
 
 export const metadata = {
   metadataBase: new URL('https://www.buknarivilla.ge'),
@@ -45,6 +46,7 @@ export default function RootLayout({ children }) {
           <CookieConsent />
         </LanguageProvider>
         <Analytics gaId={gaId} />
+        <ReferralCapture />
       </body>
     </html>
   );
