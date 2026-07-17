@@ -68,6 +68,7 @@ export default function BookingCalendar({
   highSeasonEnd,
   longStayDiscountMinNights,
   longStayDiscountPct,
+  referralExcluded,
 }) {
   const { lang } = useLanguage();
   const tt = (key) => t(lang, key);
@@ -106,8 +107,9 @@ export default function BookingCalendar({
   const [siteReferralPct, setSiteReferralPct] = useState(10);
 
   useEffect(() => {
+    if (referralExcluded) return;
     setReferralCode(getStoredReferralCode());
-  }, []);
+  }, [referralExcluded]);
 
   useEffect(() => {
     fetch('/api/site-settings')
@@ -119,6 +121,10 @@ export default function BookingCalendar({
   }, []);
 
   useEffect(() => {
+    if (referralExcluded) {
+      setOwnRewardPct(0);
+      return;
+    }
     const digits = guestPhone.replace(/\D/g, '');
     if (digits.length < 9) {
       setOwnRewardPct(0);
@@ -134,7 +140,7 @@ export default function BookingCalendar({
     return () => {
       cancelled = true;
     };
-  }, [guestPhone]);
+  }, [guestPhone, referralExcluded]);
 
   useEffect(() => {
     if (!checkIn || !checkOut || !village) {
@@ -350,9 +356,11 @@ export default function BookingCalendar({
         <div className="booking-done-icon">✓</div>
         <h3>{tt('bcDoneTitle')}</h3>
         <p>{tt('bcDoneMessage').replace('{dates}', dateRange)}</p>
-        <p className="booking-referral-later-hint">
-          {tt('bcReferralAfterStayHint').replace('{pct}', siteReferralPct)}
-        </p>
+        {!referralExcluded && (
+          <p className="booking-referral-later-hint">
+            {tt('bcReferralAfterStayHint').replace('{pct}', siteReferralPct)}
+          </p>
+        )}
       </div>
     );
   }
