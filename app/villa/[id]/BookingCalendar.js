@@ -104,9 +104,19 @@ export default function BookingCalendar({
   const [referralCode, setReferralCode] = useState(null);
   const [ownRewardPct, setOwnRewardPct] = useState(0);
   const [shareLinkCopied, setShareLinkCopied] = useState(false);
+  const [siteReferralPct, setSiteReferralPct] = useState(10);
 
   useEffect(() => {
     setReferralCode(getStoredReferralCode());
+  }, []);
+
+  useEffect(() => {
+    fetch('/api/site-settings')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.ok) setSiteReferralPct(data.referralDiscountPct);
+      })
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -292,7 +302,7 @@ export default function BookingCalendar({
 
   const longStayDiscountPctValue = computeLongStayDiscount(nights, longStayDiscountMinNights, longStayDiscountPct);
   const guestPhoneDigits = guestPhone.replace(/\D/g, '').replace(/^995/, '');
-  const referralDiscountPctValue = referralCode && referralCode !== guestPhoneDigits ? 0.1 : 0;
+  const referralDiscountPctValue = referralCode && referralCode !== guestPhoneDigits ? siteReferralPct / 100 : 0;
   const ownRewardDiscountPctValue = ownRewardPct > 0 ? ownRewardPct / 100 : 0;
 
   const discountPct = longStayDiscountPctValue + referralDiscountPctValue + ownRewardDiscountPctValue;
@@ -344,7 +354,7 @@ export default function BookingCalendar({
         <p>{tt('bcDoneMessage').replace('{dates}', dateRange)}</p>
         {shareUrl && (
           <div className="booking-referral-share">
-            <p>{tt('bcReferralShareIntro')}</p>
+            <p>{tt('bcReferralShareIntro').replace('{pct}', siteReferralPct)}</p>
             <div className="booking-referral-share-row">
               <input type="text" readOnly value={shareUrl} onFocus={(e) => e.target.select()} />
               <button
