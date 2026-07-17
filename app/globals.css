@@ -573,6 +573,24 @@ a {
   margin: 6px 0 0;
 }
 
+.referral-opt-out-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(217, 164, 65, 0.25);
+  font-size: 13px;
+  color: var(--foam);
+  cursor: pointer;
+}
+
+.referral-opt-out-label input {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
 .section-divider {
   height: 1px;
   margin: 28px 0;
