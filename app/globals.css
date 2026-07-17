@@ -552,6 +552,27 @@ a {
   color: var(--sea-bright);
 }
 
+.referral-info-box {
+  background: rgba(217, 164, 65, 0.1);
+  border: 1px solid rgba(217, 164, 65, 0.3);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+}
+
+.referral-info-box strong {
+  display: block;
+  color: #d9a441;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.referral-info-box p {
+  font-size: 13px;
+  color: var(--sand);
+  line-height: 1.6;
+  margin: 6px 0 0;
+}
+
 .section-divider {
   height: 1px;
   margin: 28px 0;
