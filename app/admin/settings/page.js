@@ -8,6 +8,8 @@ export default function AdminSettingsPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState('');
+  const [notifying, setNotifying] = useState(false);
+  const [notifyResult, setNotifyResult] = useState(null);
 
   useEffect(() => {
     const stored = localStorage.getItem('buknari_admin_token');
@@ -43,6 +45,29 @@ export default function AdminSettingsPage() {
       setMsg('შეცდომა');
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function handleNotifyOwners() {
+    if (!window.confirm('SMS გაეგზავნება ყველა owner-ს referral სისტემის შესახებ. გავაგრძელოთ?')) return;
+    setNotifying(true);
+    setNotifyResult(null);
+    try {
+      const res = await fetch('/api/admin/notify-owners-referral', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        setNotifyResult(`გაიგზავნა ${data.sent} / ${data.total} owner-ზე${data.failed ? ` (${data.failed} ვერ გაიგზავნა)` : ''}`);
+      } else {
+        setNotifyResult(data.message || 'შეცდომა');
+      }
+    } catch (err) {
+      setNotifyResult('შეცდომა');
+    } finally {
+      setNotifying(false);
     }
   }
 
@@ -83,6 +108,23 @@ export default function AdminSettingsPage() {
             {msg && <p className="dashboard-empty-hint" style={{ marginTop: '12px' }}>{msg}</p>}
           </form>
         )}
+
+        <div className="referral-info-box" style={{ maxWidth: '420px', marginTop: '32px' }}>
+          <strong>📢 Owner-ების ინფორმირება</strong>
+          <p>
+            SMS-ით შეატყობინე ყველა owner-ს referral სისტემის შესახებ — ერთხელ, ყველასთვის ერთდროულად.
+          </p>
+          <button
+            type="button"
+            className="cta-btn"
+            onClick={handleNotifyOwners}
+            disabled={notifying}
+            style={{ marginTop: '10px' }}
+          >
+            {notifying ? 'იგზავნება...' : 'გაუგზავნე ყველა Owner-ს'}
+          </button>
+          {notifyResult && <p className="dashboard-empty-hint" style={{ marginTop: '10px' }}>{notifyResult}</p>}
+        </div>
       </main>
     </div>
   );
