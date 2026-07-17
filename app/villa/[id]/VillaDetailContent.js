@@ -104,12 +104,17 @@ export default function VillaDetailContent({ villa, reviews, avgRating, photos, 
   }, [villa.id]);
 
   useEffect(() => {
-    fetch(`/api/villa-social-proof?villaId=${villa.id}`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.ok) setSocialProof(data);
-      })
-      .catch(() => {});
+    function loadSocialProof() {
+      fetch(`/api/villa-social-proof?villaId=${villa.id}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.ok) setSocialProof(data);
+        })
+        .catch(() => {});
+    }
+    loadSocialProof();
+    const interval = setInterval(loadSocialProof, 30000);
+    return () => clearInterval(interval);
   }, [villa.id]);
 
   async function handleShareClick() {
@@ -166,6 +171,12 @@ export default function VillaDetailContent({ villa, reviews, avgRating, photos, 
               {villa.display_id ? <span className="villa-detail-id">#{villa.display_id}</span> : null}
             </div>
             <h1 className="villa-detail-title">{title}</h1>
+            {socialProof && socialProof.liveViewers >= 2 && (
+              <div className="live-presence-badge">
+                <span className="live-presence-dot"></span>
+                {tt('vdLiveViewers').replace('{count}', socialProof.liveViewers)}
+              </div>
+            )}
             {villa.owner_verified ? (
               <div className="verified-owner-badge">✓ {tt('verifiedOwnerLabel')}</div>
             ) : null}
