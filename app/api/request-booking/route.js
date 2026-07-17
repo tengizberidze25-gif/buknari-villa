@@ -173,6 +173,13 @@ export async function POST(request) {
     const normalizedGuestForReferral = normalizeSmsPhone(guestPhone);
     const normalizedReferrer = normalizeSmsPhone(referralCode);
 
+    const { data: referralSetting } = await supabaseAdmin
+      .from('site_settings')
+      .select('value')
+      .eq('key', 'referral_discount_pct')
+      .maybeSingle();
+    const referralDiscountPct = referralSetting?.value ? Number(referralSetting.value) : 10;
+
     if (normalizedGuestForReferral) {
       const { data: ownReward } = await supabaseAdmin
         .from('referral_rewards')
@@ -190,13 +197,13 @@ export async function POST(request) {
     if (normalizedReferrer && normalizedReferrer !== normalizedGuestForReferral) {
       await supabaseAdmin.from('referral_rewards').insert({
         phone: normalizedReferrer,
-        discount_pct: 10,
+        discount_pct: referralDiscountPct,
         source_booking_id: inserted.id,
       });
 
       await sendSms(
         normalizedReferrer,
-        `მადლობა! თქვენმა მეგობარმა დაჯავშნა Buknari Villa თქვენი ბმულით — თქვენ მიიღეთ 10% ფასდაკლება შემდეგ ჯავშანზე. buknarivilla.ge`
+        `მადლობა! თქვენმა მეგობარმა დაჯავშნა Buknari Villa თქვენი ბმულით — თქვენ მიიღეთ ${referralDiscountPct}% ფასდაკლება შემდეგ ჯავშანზე. buknarivilla.ge`
       );
     }
 
@@ -226,7 +233,7 @@ export async function POST(request) {
     if (normalizedGuest) {
       await sendSms(
         normalizedGuest,
-        `თქვენი ჯავშნის მოთხოვნა მიღებულია — "${villa.title}", ${checkIn} → ${checkOut}. მფლობელი დაგიკავშირდებათ დასადასტურებლად. გაუქმება: ${cancelUrl}\n\nგააზიარეთ Buknari Villa მეგობრებთან და მიიღეთ 10% ფასდაკლება შემდეგ ჯავშანზე: ${referralShareUrl}`
+        `თქვენი ჯავშნის მოთხოვნა მიღებულია — "${villa.title}", ${checkIn} → ${checkOut}. მფლობელი დაგიკავშირდებათ დასადასტურებლად. გაუქმება: ${cancelUrl}\n\nგააზიარეთ Buknari Villa მეგობრებთან და მიიღეთ ${referralDiscountPct}% ფასდაკლება შემდეგ ჯავშანზე: ${referralShareUrl}`
       );
     }
 
@@ -242,7 +249,7 @@ export async function POST(request) {
             <p>მფლობელი მალე დაგიკავშირდებათ დასადასტურებლად.</p>
             <p><a href="${cancelUrl}">ჯავშნის გაუქმება</a></p>
             <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
-            <p>გააზიარეთ Buknari Villa მეგობრებთან — გაზიარებული ბმულით მათი პირველი ჯავშანი, თქვენ მიიღებთ 10% ფასდაკლებას შემდეგ ჯავშანზე:</p>
+            <p>გააზიარეთ Buknari Villa მეგობრებთან — გაზიარებული ბმულით მათი პირველი ჯავშანი, თქვენ მიიღებთ ${referralDiscountPct}% ფასდაკლებას შემდეგ ჯავშანზე:</p>
             <p><a href="${referralShareUrl}">${referralShareUrl}</a></p>
             <p style="color: #888; font-size: 13px; margin-top: 24px;">Buknari Villa — buknarivilla.ge</p>
           </div>
