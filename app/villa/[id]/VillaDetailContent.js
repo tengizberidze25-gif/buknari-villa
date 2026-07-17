@@ -15,6 +15,7 @@ import { countLabel } from '../../pluralLabel';
 import { approxPrice } from '../../currency';
 import { getAutoDistances } from '../../../lib/geo';
 import ConciergeChat from './ConciergeChat';
+import SunsetCountdown from './SunsetCountdown';
 
 function localized(villa, field, lang) {
   if (lang === 'en' && villa[`${field}_en`]) return villa[`${field}_en`];
@@ -177,6 +178,7 @@ export default function VillaDetailContent({ villa, reviews, avgRating, photos, 
                 {tt('vdLiveViewers').replace('{count}', socialProof.liveViewers)}
               </div>
             )}
+            <SunsetCountdown lat={villa.lat} lng={villa.lng} />
             {villa.owner_verified ? (
               <div className="verified-owner-badge">✓ {tt('verifiedOwnerLabel')}</div>
             ) : null}
