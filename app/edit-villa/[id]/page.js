@@ -264,6 +264,7 @@ export default function EditVillaPage({ params }) {
           high_season_end: highSeasonEnd,
           long_stay_discount_min_nights: form.long_stay_discount_min_nights.value,
           long_stay_discount_pct: form.long_stay_discount_pct.value,
+          referral_excluded: form.referral_excluded.checked,
           lat: form.lat.value,
           lng: form.lng.value,
           max_guests: form.max_guests.value,
@@ -496,6 +497,14 @@ export default function EditVillaPage({ params }) {
               <p>
                 თუ სტუმართან ფასზე ტელეფონით/WhatsApp-ით თანხმდები, გაითვალისწინე ეს ფასდაკლება — ჯავშნის დეტალებში დაინახავ, არის თუ არა ის მოწვეული.
               </p>
+              <label className="referral-opt-out-label">
+                <input
+                  type="checkbox"
+                  name="referral_excluded"
+                  defaultChecked={!!villa.referral_excluded}
+                />
+                ამ ვილაზე გამორთე სარეფერალო სისტემა (ფასდაკლებაც და ბმულის გაგზავნაც)
+              </label>
             </div>
           </div>
 
