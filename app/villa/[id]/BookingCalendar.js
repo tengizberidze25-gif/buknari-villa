@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useLanguage } from '../../LanguageContext';
 import { t } from '../../i18n';
+import { getStoredReferralCode } from '../../referralCode';
 
 function toISO(date) {
   const y = date.getFullYear();
@@ -100,6 +101,31 @@ export default function BookingCalendar({
   const [notifySubmitting, setNotifySubmitting] = useState(false);
   const [notifyMsg, setNotifyMsg] = useState('');
   const [animatedTotal, setAnimatedTotal] = useState(0);
+  const [referralCode, setReferralCode] = useState(null);
+  const [ownRewardPct, setOwnRewardPct] = useState(0);
+  const [shareLinkCopied, setShareLinkCopied] = useState(false);
+
+  useEffect(() => {
+    setReferralCode(getStoredReferralCode());
+  }, []);
+
+  useEffect(() => {
+    const digits = guestPhone.replace(/\D/g, '');
+    if (digits.length < 9) {
+      setOwnRewardPct(0);
+      return;
+    }
+    let cancelled = false;
+    fetch(`/api/check-referral-reward?phone=${digits}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (!cancelled && data.ok) setOwnRewardPct(data.hasReward ? data.discountPct : 0);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [guestPhone]);
 
   useEffect(() => {
     if (!checkIn || !checkOut || !village) {
@@ -197,6 +223,7 @@ export default function BookingCalendar({
           guestPhone,
           guestEmail,
           guestMessage,
+          referralCode: referralCode || '',
         }),
       });
       const data = await res.json();
@@ -263,7 +290,12 @@ export default function BookingCalendar({
       ? computeStayTotal(checkIn, checkOut, pricePerNight, highSeasonPrice, highSeasonStart, highSeasonEnd)
       : 0;
 
-  const discountPct = computeLongStayDiscount(nights, longStayDiscountMinNights, longStayDiscountPct);
+  const longStayDiscountPctValue = computeLongStayDiscount(nights, longStayDiscountMinNights, longStayDiscountPct);
+  const guestPhoneDigits = guestPhone.replace(/\D/g, '').replace(/^995/, '');
+  const referralDiscountPctValue = referralCode && referralCode !== guestPhoneDigits ? 0.1 : 0;
+  const ownRewardDiscountPctValue = ownRewardPct > 0 ? ownRewardPct / 100 : 0;
+
+  const discountPct = longStayDiscountPctValue + referralDiscountPctValue + ownRewardDiscountPctValue;
   const discountAmount = Math.round(stayTotal * discountPct);
   const discountedTotal = stayTotal - discountAmount;
 
@@ -304,11 +336,30 @@ export default function BookingCalendar({
 
   if (done) {
     const dateRange = `${toISO(checkIn)} — ${toISO(checkOut)}`;
+    const shareUrl = guestPhoneDigits ? `https://buknarivilla.ge/?ref=${guestPhoneDigits}` : null;
     return (
       <div className="booking-box booking-done">
         <div className="booking-done-icon">✓</div>
         <h3>{tt('bcDoneTitle')}</h3>
         <p>{tt('bcDoneMessage').replace('{dates}', dateRange)}</p>
+        {shareUrl && (
+          <div className="booking-referral-share">
+            <p>{tt('bcReferralShareIntro')}</p>
+            <div className="booking-referral-share-row">
+              <input type="text" readOnly value={shareUrl} onFocus={(e) => e.target.select()} />
+              <button
+                type="button"
+                onClick={() => {
+                  navigator.clipboard.writeText(shareUrl);
+                  setShareLinkCopied(true);
+                  setTimeout(() => setShareLinkCopied(false), 2000);
+                }}
+              >
+                {shareLinkCopied ? tt('vdLinkCopied') : tt('vdCopyLink')}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
@@ -433,10 +484,22 @@ export default function BookingCalendar({
                 <span>{tt('bcSeasonPriceNote')}</span>
               </div>
             )}
-            {discountPct > 0 && (
+            {longStayDiscountPctValue > 0 && (
               <div className="booking-price-row booking-price-row-discount">
-                <span>{tt('bcLongStayDiscount').replace('{pct}', Math.round(discountPct * 100))}</span>
-                <span>−₾{discountAmount.toLocaleString()}</span>
+                <span>{tt('bcLongStayDiscount').replace('{pct}', Math.round(longStayDiscountPctValue * 100))}</span>
+                <span>−₾{Math.round(stayTotal * longStayDiscountPctValue).toLocaleString()}</span>
+              </div>
+            )}
+            {referralDiscountPctValue > 0 && (
+              <div className="booking-price-row booking-price-row-discount booking-price-row-referral">
+                <span>🎁 {tt('bcReferralDiscount').replace('{pct}', Math.round(referralDiscountPctValue * 100))}</span>
+                <span>−₾{Math.round(stayTotal * referralDiscountPctValue).toLocaleString()}</span>
+              </div>
+            )}
+            {ownRewardDiscountPctValue > 0 && (
+              <div className="booking-price-row booking-price-row-discount booking-price-row-referral">
+                <span>🎉 {tt('bcOwnRewardDiscount').replace('{pct}', Math.round(ownRewardDiscountPctValue * 100))}</span>
+                <span>−₾{Math.round(stayTotal * ownRewardDiscountPctValue).toLocaleString()}</span>
               </div>
             )}
             <div className="booking-price-row booking-price-total">
@@ -448,6 +511,10 @@ export default function BookingCalendar({
             </div>
           </div>
         ) : null}
+
+        {referralCode && !ownRewardDiscountPct && referralDiscountPctValue > 0 && (
+          <p className="booking-referral-hint">🎁 {tt('bcReferralAppliedHint')}</p>
+        )}
 
         {whatsappBookingUrl && (
           <a
