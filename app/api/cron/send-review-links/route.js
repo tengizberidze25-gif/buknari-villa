@@ -8,6 +8,11 @@ function normalizeSmsPhone(phone) {
   return '995' + digits;
 }
 
+function generateReferralCode() {
+  // Short, URL-safe, unguessable — never derived from the phone number.
+  return crypto.randomBytes(5).toString('base64url');
+}
+
 async function sendSms(phone, text) {
   const publicKey = process.env.BULKSMS_PUBLIC_KEY;
   const privateKey = process.env.BULKSMS_API_TOKEN;
@@ -65,15 +70,34 @@ export async function GET(request) {
 
     let sentCount = 0;
 
+    const { data: referralSetting } = await supabaseAdmin
+      .from('site_settings')
+      .select('value')
+      .eq('key', 'referral_discount_pct')
+      .maybeSingle();
+    const referralDiscountPct = referralSetting?.value ? Number(referralSetting.value) : 10;
+
     for (const booking of bookings || []) {
       const normalized = normalizeSmsPhone(booking.guest_phone);
       if (normalized) {
         const secret = process.env.SESSION_SECRET;
         const reviewToken = crypto.createHmac('sha256', secret).update(booking.id).digest('hex');
         const reviewUrl = `https://buknarivilla.ge/review/${booking.id}?t=${reviewToken}`;
+
+        // Issue a fresh, opaque referral code now that the stay is confirmed
+        // and actually completed — this is the only point a shareable link
+        // is created, which keeps the reward program abuse-resistant.
+        const referralCode = generateReferralCode();
+        await supabaseAdmin.from('referral_codes').insert({
+          code: referralCode,
+          phone: normalized,
+          booking_id: booking.id,
+        });
+        const referralUrl = `https://buknarivilla.ge/?ref=${referralCode}`;
+
         await sendSms(
           normalized,
-          `როგორი იყო თქვენი დასვენება "${booking.villas?.title || ''}"-ში? დაგვეხმარეთ სხვა სტუმრებს, დატოვეთ შეფასება: ${reviewUrl}`
+          `როგორი იყო თქვენი დასვენება "${booking.villas?.title || ''}"-ში? დაგვეხმარეთ სხვა სტუმრებს, დატოვეთ შეფასება: ${reviewUrl}\n\nგააზიარეთ Buknari Villa მეგობრებთან და მიიღეთ ${referralDiscountPct}% ფასდაკლება შემდეგ ჯავშანზე: ${referralUrl}`
         );
         sentCount++;
       }
