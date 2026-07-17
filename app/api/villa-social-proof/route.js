@@ -10,8 +10,9 @@ export async function GET(request) {
 
     const since48h = new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString();
     const since72h = new Date(Date.now() - 72 * 60 * 60 * 1000).toISOString();
+    const since10min = new Date(Date.now() - 10 * 60 * 1000).toISOString();
 
-    const [{ count: recentViews }, { data: recentBookings }] = await Promise.all([
+    const [{ count: recentViews }, { data: recentBookings }, { count: liveViewers }] = await Promise.all([
       supabaseAdmin
         .from('villa_view_events')
         .select('id', { count: 'exact', head: true })
@@ -25,6 +26,11 @@ export async function GET(request) {
         .gte('created_at', since72h)
         .order('created_at', { ascending: false })
         .limit(1),
+      supabaseAdmin
+        .from('villa_view_events')
+        .select('id', { count: 'exact', head: true })
+        .eq('villa_id', villaId)
+        .gte('created_at', since10min),
     ]);
 
     let recentBookingHoursAgo = null;
@@ -37,6 +43,7 @@ export async function GET(request) {
       ok: true,
       recentViews: recentViews || 0,
       recentBookingHoursAgo,
+      liveViewers: liveViewers || 0,
     });
   } catch (err) {
     return Response.json({ ok: false, message: String(err) }, { status: 500 });
