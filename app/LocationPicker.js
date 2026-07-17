@@ -54,8 +54,8 @@ export default function LocationPicker({ initialLat, initialLng }) {
           mapTypeControl: true,
           streetViewControl: false,
           fullscreenControl: false,
-          tilt: 45,
           gestureHandling: 'greedy',
+          mapId: '68ce22de336b927b206a407b',
         });
         mapInstance.current = map;
 
