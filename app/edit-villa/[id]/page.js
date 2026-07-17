@@ -487,6 +487,18 @@ export default function EditVillaPage({ params }) {
             </p>
           </div>
 
+          <div className="form-row">
+            <div className="referral-info-box">
+              <strong>ℹ️ სარეფერალო სისტემა (მთელ საიტზე, ავტომატურად)</strong>
+              <p>
+                სტუმრები, ვინც ადრინდელი სტუმრის გაზიარებული ბმულით მოდიან, ავტომატურად ხედავენ ფასდაკლებას (ნაგულისხმევად 10%, ჯამურ ფასზე). ეს არის საიტის საერთო ფუნქცია — ცალკე ვილაზე დაყენება არ სჭირდება.
+              </p>
+              <p>
+                თუ სტუმართან ფასზე ტელეფონით/WhatsApp-ით თანხმდები, გაითვალისწინე ეს ფასდაკლება — ჯავშნის დეტალებში დაინახავ, არის თუ არა ის მოწვეული.
+              </p>
+            </div>
+          </div>
+
           <LocationPicker initialLat={villa.lat} initialLng={villa.lng} />
 
           <div className="form-grid-3">
