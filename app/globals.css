@@ -1200,6 +1200,15 @@ a {
   white-space: nowrap;
 }
 
+.booking-referral-later-hint {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--glass-border);
+  font-size: 13px;
+  color: var(--sand);
+  text-align: center;
+}
+
 .booking-price-total {
   border-top: 1px solid var(--glass-border);
   margin-top: 6px;
