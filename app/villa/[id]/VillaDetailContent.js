@@ -14,6 +14,7 @@ import { localizedHref } from '../../localizedHref';
 import { countLabel } from '../../pluralLabel';
 import { approxPrice } from '../../currency';
 import { getAutoDistances } from '../../../lib/geo';
+import ConciergeChat from './ConciergeChat';
 
 function localized(villa, field, lang) {
   if (lang === 'en' && villa[`${field}_en`]) return villa[`${field}_en`];
@@ -463,6 +464,8 @@ export default function VillaDetailContent({ villa, reviews, avgRating, photos, 
           </button>
         </div>
       )}
+
+      <ConciergeChat villaId={villa.id} />
     </>
   );
 }
