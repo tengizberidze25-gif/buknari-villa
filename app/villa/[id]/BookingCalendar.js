@@ -103,7 +103,6 @@ export default function BookingCalendar({
   const [animatedTotal, setAnimatedTotal] = useState(0);
   const [referralCode, setReferralCode] = useState(null);
   const [ownRewardPct, setOwnRewardPct] = useState(0);
-  const [shareLinkCopied, setShareLinkCopied] = useState(false);
   const [siteReferralPct, setSiteReferralPct] = useState(10);
 
   useEffect(() => {
@@ -302,7 +301,7 @@ export default function BookingCalendar({
 
   const longStayDiscountPctValue = computeLongStayDiscount(nights, longStayDiscountMinNights, longStayDiscountPct);
   const guestPhoneDigits = guestPhone.replace(/\D/g, '').replace(/^995/, '');
-  const referralDiscountPctValue = referralCode && referralCode !== guestPhoneDigits ? siteReferralPct / 100 : 0;
+  const referralDiscountPctValue = referralCode ? siteReferralPct / 100 : 0;
   const ownRewardDiscountPctValue = ownRewardPct > 0 ? ownRewardPct / 100 : 0;
 
   const discountPct = longStayDiscountPctValue + referralDiscountPctValue + ownRewardDiscountPctValue;
@@ -346,30 +345,14 @@ export default function BookingCalendar({
 
   if (done) {
     const dateRange = `${toISO(checkIn)} — ${toISO(checkOut)}`;
-    const shareUrl = guestPhoneDigits ? `https://buknarivilla.ge/?ref=${guestPhoneDigits}` : null;
     return (
       <div className="booking-box booking-done">
         <div className="booking-done-icon">✓</div>
         <h3>{tt('bcDoneTitle')}</h3>
         <p>{tt('bcDoneMessage').replace('{dates}', dateRange)}</p>
-        {shareUrl && (
-          <div className="booking-referral-share">
-            <p>{tt('bcReferralShareIntro').replace('{pct}', siteReferralPct)}</p>
-            <div className="booking-referral-share-row">
-              <input type="text" readOnly value={shareUrl} onFocus={(e) => e.target.select()} />
-              <button
-                type="button"
-                onClick={() => {
-                  navigator.clipboard.writeText(shareUrl);
-                  setShareLinkCopied(true);
-                  setTimeout(() => setShareLinkCopied(false), 2000);
-                }}
-              >
-                {shareLinkCopied ? tt('vdLinkCopied') : tt('vdCopyLink')}
-              </button>
-            </div>
-          </div>
-        )}
+        <p className="booking-referral-later-hint">
+          {tt('bcReferralAfterStayHint').replace('{pct}', siteReferralPct)}
+        </p>
       </div>
     );
   }
