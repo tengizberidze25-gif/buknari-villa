@@ -77,7 +77,19 @@ export default function VillaDetailContent({ villa, reviews, avgRating, photos, 
   const [shareMenuOpen, setShareMenuOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [socialProof, setSocialProof] = useState(null);
+  const [showStickyBar, setShowStickyBar] = useState(false);
   const villaUrl = `https://www.buknarivilla.ge/villa/${villa.id}`;
+
+  useEffect(() => {
+    const target = document.getElementById('villa-booking-box');
+    if (!target) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setShowStickyBar(!entry.isIntersecting),
+      { threshold: 0 }
+    );
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const key = `buknari_viewed_${villa.id}`;
@@ -307,7 +319,7 @@ export default function VillaDetailContent({ villa, reviews, avgRating, photos, 
             ) : null}
           </div>
 
-          <aside className="villa-detail-sidebar">
+          <aside className="villa-detail-sidebar" id="villa-booking-box">
             <div className="villa-detail-price-box">
               <div className="villa-detail-price-row">
                 <div className="villa-detail-price">
@@ -433,6 +445,24 @@ export default function VillaDetailContent({ villa, reviews, avgRating, photos, 
         <div className="footer-logo">Buknari Villa</div>
         <div className="footer-meta">{tt('footerMeta')}</div>
       </footer>
+
+      {showStickyBar && (
+        <div className="sticky-book-bar">
+          <div className="sticky-book-bar-price">
+            <span className="sticky-book-bar-amount">₾{headlinePrice || '—'}</span>
+            <span className="sticky-book-bar-unit">{tt('perNight')}</span>
+          </div>
+          <button
+            type="button"
+            className="sticky-book-bar-btn"
+            onClick={() =>
+              document.getElementById('villa-booking-box')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+            }
+          >
+            {tt('stickyBookBtn')}
+          </button>
+        </div>
+      )}
     </>
   );
 }
