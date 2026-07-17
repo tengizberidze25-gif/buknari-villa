@@ -2240,6 +2240,65 @@ a {
   }
 }
 
+.sticky-book-bar {
+  display: none;
+}
+
+@media (max-width: 720px) {
+  .sticky-book-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 60;
+    background: rgba(18, 19, 15, 0.96);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid var(--glass-border);
+    padding: 12px 18px;
+    padding-bottom: calc(12px + env(safe-area-inset-bottom));
+    animation: stickyBarSlideUp 0.25s ease;
+  }
+
+  @keyframes stickyBarSlideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+
+  .sticky-book-bar-price {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+  }
+
+  .sticky-book-bar-amount {
+    font-family: var(--serif);
+    font-size: 20px;
+    color: var(--foam);
+    font-weight: 700;
+  }
+
+  .sticky-book-bar-unit {
+    font-size: 13px;
+    color: var(--sand-dim);
+  }
+
+  .sticky-book-bar-btn {
+    background: var(--accent);
+    color: var(--foam);
+    border: none;
+    border-radius: 999px;
+    padding: 12px 26px;
+    font-size: 14.5px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+}
+
 /* ---------- Villa cards ---------- */
 .empty-state {
   text-align: center;
