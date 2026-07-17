@@ -113,7 +113,7 @@ export async function POST(request) {
     // Confirm the villa exists and is approved
     const { data: villa } = await supabaseAdmin
       .from('villas')
-      .select('id, title, status, owner_id, min_nights')
+      .select('id, title, status, owner_id, min_nights, referral_excluded')
       .eq('id', villaId)
       .single();
 
@@ -147,9 +147,10 @@ export async function POST(request) {
 
     // Resolve the opaque referral code (if any) to the phone it belongs to.
     // Codes are only ever issued post-checkout, so a valid code here means a
-    // real, completed stay — not just a submitted request.
+    // real, completed stay — not just a submitted request. Skipped entirely
+    // if the owner opted this villa out of the referral program.
     let resolvedReferrerPhone = null;
-    if (referralCode) {
+    if (referralCode && !villa.referral_excluded) {
       const { data: codeRow } = await supabaseAdmin
         .from('referral_codes')
         .select('phone')
@@ -193,7 +194,7 @@ export async function POST(request) {
       .maybeSingle();
     const referralDiscountPct = referralSetting?.value ? Number(referralSetting.value) : 10;
 
-    if (normalizedGuestForReferral) {
+    if (normalizedGuestForReferral && !villa.referral_excluded) {
       const { data: ownReward } = await supabaseAdmin
         .from('referral_rewards')
         .select('id')
