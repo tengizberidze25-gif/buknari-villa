@@ -395,6 +395,7 @@ export default function VillaDetailContent({ villa, reviews, avgRating, photos, 
               highSeasonEnd={villa.high_season_end}
               longStayDiscountMinNights={villa.long_stay_discount_min_nights}
               longStayDiscountPct={villa.long_stay_discount_pct}
+              referralExcluded={villa.referral_excluded}
             />
           </aside>
         </div>
