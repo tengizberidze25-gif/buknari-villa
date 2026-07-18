@@ -8,7 +8,11 @@ export default function Analytics({ gaId }) {
 
   useEffect(() => {
     function checkConsent() {
-      setConsented(localStorage.getItem('buknari_cookie_consent') === 'accepted');
+      try {
+        setConsented(localStorage.getItem('buknari_cookie_consent') === 'accepted');
+      } catch (e) {
+        setConsented(false);
+      }
     }
     checkConsent();
     window.addEventListener('buknari-cookie-consent-changed', checkConsent);
