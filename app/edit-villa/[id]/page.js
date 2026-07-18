@@ -505,6 +505,11 @@ export default function EditVillaPage({ params }) {
                 />
                 ამ ვილაზე გამორთე სარეფერალო სისტემა (ფასდაკლებაც და ბმულის გაგზავნაც)
               </label>
+              <p style={{ marginTop: '10px' }}>
+                <a href="/guide/owners" target="_blank" rel="noopener noreferrer">
+                  📖 სრული გზამკვლევი ყველა ფუნქციის შესახებ →
+                </a>
+              </p>
             </div>
           </div>
 
