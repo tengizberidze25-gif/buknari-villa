@@ -95,8 +95,14 @@ export default function VillaDetailContent({ villa, reviews, avgRating, photos, 
 
   useEffect(() => {
     const key = `buknari_viewed_${villa.id}`;
-    if (sessionStorage.getItem(key)) return;
-    sessionStorage.setItem(key, '1');
+    try {
+      if (sessionStorage.getItem(key)) return;
+      sessionStorage.setItem(key, '1');
+    } catch (e) {
+      // sessionStorage can throw in Safari private mode or restricted
+      // in-app browser contexts (e.g. opened via a QR scanner) — if so,
+      // we just skip the dedup and always log the view below.
+    }
     fetch('/api/villa-view', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
