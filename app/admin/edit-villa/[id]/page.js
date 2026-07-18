@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../../../../lib/supabase';
 import LocationPicker from '../../../LocationPicker';
+import VillaQRCode from '../../../VillaQRCode';
 import VillageSelect from '../../../VillageSelect';
 import SubLocationSelect from '../../../SubLocationSelect';
 import { AMENITIES } from '../../../amenities';
@@ -394,6 +395,16 @@ export default function AdminEditVillaPage({ params }) {
                   📖 სრული გზამკვლევი ყველა ფუნქციის შესახებ →
                 </a>
               </p>
+            </div>
+          </div>
+
+          <div className="form-row">
+            <div className="referral-info-box">
+              <strong>📱 QR კოდი ბეჭდვადი მარკეტინგისთვის</strong>
+              <p>
+                გენერირებულია ავტომატურად, პირდაპირ ვილის გვერდზე — შეიძლება დაბეჭდოს owner-მა ვიზიტკაზე, ბანერზე ან ვილის კართან.
+              </p>
+              <VillaQRCode villaId={villa.id} />
             </div>
           </div>
 
