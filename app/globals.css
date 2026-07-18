@@ -591,6 +591,52 @@ a {
   cursor: pointer;
 }
 
+.villa-qr-box {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.villa-qr-image {
+  border-radius: 10px;
+  background: #ffffff;
+  padding: 8px;
+  border: 1px solid var(--glass-border);
+}
+
+.villa-qr-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 260px;
+}
+
+.villa-qr-download {
+  background: var(--accent);
+  color: var(--foam);
+  border: none;
+  border-radius: 999px;
+  padding: 9px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  align-self: flex-start;
+}
+
+.villa-qr-download:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.villa-qr-hint {
+  font-size: 12px;
+  color: var(--sand-dim);
+  line-height: 1.5;
+  margin: 0;
+}
+
 .section-divider {
   height: 1px;
   margin: 28px 0;
