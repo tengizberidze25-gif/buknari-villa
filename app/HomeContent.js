@@ -114,7 +114,11 @@ export default function HomeContent({ villas, testimonials }) {
       const next = new Set(prev);
       if (next.has(villaId)) next.delete(villaId);
       else next.add(villaId);
-      localStorage.setItem('buknari_favorites', JSON.stringify([...next]));
+      try {
+        localStorage.setItem('buknari_favorites', JSON.stringify([...next]));
+      } catch (e) {
+        // ignore — favorites just won't persist across visits
+      }
       return next;
     });
   }
