@@ -516,7 +516,7 @@ export default function BookingCalendar({
           </div>
         ) : null}
 
-        {referralCode && !ownRewardDiscountPct && referralDiscountPctValue > 0 && (
+        {referralCode && !ownRewardDiscountPctValue && referralDiscountPctValue > 0 && (
           <p className="booking-referral-hint">🎁 {tt('bcReferralAppliedHint')}</p>
         )}
 
