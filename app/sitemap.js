@@ -43,13 +43,6 @@ export default async function sitemap() {
       priority: 0.4,
       alternates: langAlternates('/guide/guests'),
     },
-    {
-      url: `${baseUrl}/guide/owners`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.4,
-      alternates: langAlternates('/guide/owners'),
-    },
   ];
 
   let villaEntries = [];
