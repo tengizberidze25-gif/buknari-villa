@@ -9,6 +9,7 @@ export async function generateMetadata() {
     title: 'გზამკვლევი მფლობელებისთვის — Buknari Villa',
     description: 'ვილის მართვა, ფასდაკლებები, სარეფერალო სისტემა და ყველა ინსტრუმენტი buknarivilla.ge-ზე ვილის მფლობელებისთვის.',
     alternates: { canonical, languages },
+    robots: { index: false, follow: false },
   };
 }
 
