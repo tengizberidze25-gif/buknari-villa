@@ -5,6 +5,7 @@ import Analytics from './Analytics';
 import CookieConsent from './CookieConsent';
 import ReferralCapture from './ReferralCapture';
 import PwaRegister from './PwaRegister';
+import DebugErrorCapture from './DebugErrorCapture';
 
 export const metadata = {
   metadataBase: new URL('https://www.buknarivilla.ge'),
@@ -54,6 +55,7 @@ export default function RootLayout({ children }) {
         <Analytics gaId={gaId} />
         <ReferralCapture />
         <PwaRegister />
+        <DebugErrorCapture />
       </body>
     </html>
   );
