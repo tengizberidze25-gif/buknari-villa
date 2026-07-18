@@ -15,7 +15,6 @@ export default function GuideGuestsContent() {
         </a>
         <div className="nav-links">
           <a href={localizedHref('/', lang)}>მთავარი</a>
-          <a href={localizedHref('/guide/owners', lang)}>მფლობელებისთვის</a>
         </div>
         <LangSwitch />
       </nav>
@@ -163,7 +162,6 @@ export default function GuideGuestsContent() {
       <footer className="wrap footer">
         <div className="footer-logo">Buknari Villa</div>
         <a href="mailto:info@buknarivilla.ge" className="footer-email">info@buknarivilla.ge</a>
-        <a href={localizedHref('/guide/owners', lang)} className="footer-email">გზამკვლევი მფლობელებისთვის</a>
         <div className="footer-meta">© 2026 buknarivilla.ge</div>
       </footer>
     </div>
