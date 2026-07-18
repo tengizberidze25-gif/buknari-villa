@@ -4,6 +4,7 @@ import { LanguageProvider } from './LanguageContext';
 import Analytics from './Analytics';
 import CookieConsent from './CookieConsent';
 import ReferralCapture from './ReferralCapture';
+import PwaRegister from './PwaRegister';
 
 export const metadata = {
   metadataBase: new URL('https://www.buknarivilla.ge'),
@@ -33,6 +34,11 @@ export default function RootLayout({ children }) {
   return (
     <html lang={locale}>
       <head>
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#a3352f" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-title" content="Buknari Villa" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
         <link
@@ -47,6 +53,7 @@ export default function RootLayout({ children }) {
         </LanguageProvider>
         <Analytics gaId={gaId} />
         <ReferralCapture />
+        <PwaRegister />
       </body>
     </html>
   );
