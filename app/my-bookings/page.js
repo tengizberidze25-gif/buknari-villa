@@ -57,8 +57,12 @@ export default function MyBookingsPage() {
       .then((res) => res.json())
       .then((data) => {
         if (!data.ok) {
-          localStorage.removeItem('buknari_guest_phone');
-          localStorage.removeItem('buknari_guest_token');
+          try {
+            localStorage.removeItem('buknari_guest_phone');
+            localStorage.removeItem('buknari_guest_token');
+          } catch (e) {
+            // ignore
+          }
           setStep('phone');
           setError(data.message || tt('mbSessionExpired'));
         } else {
@@ -71,8 +75,14 @@ export default function MyBookingsPage() {
   }, [lang]);
 
   useEffect(() => {
-    const ph = localStorage.getItem('buknari_guest_phone');
-    const tok = localStorage.getItem('buknari_guest_token');
+    let ph = null;
+    let tok = null;
+    try {
+      ph = localStorage.getItem('buknari_guest_phone');
+      tok = localStorage.getItem('buknari_guest_token');
+    } catch (e) {
+      // localStorage blocked — just fall through to the phone-entry step
+    }
     if (ph && tok) {
       setSessionPhone(ph);
       setToken(tok);
@@ -118,8 +128,12 @@ export default function MyBookingsPage() {
       if (!data.ok) {
         setError(data.message || tt('genericError'));
       } else {
-        localStorage.setItem('buknari_guest_phone', data.phone);
-        localStorage.setItem('buknari_guest_token', data.token);
+        try {
+          localStorage.setItem('buknari_guest_phone', data.phone);
+          localStorage.setItem('buknari_guest_token', data.token);
+        } catch (e) {
+          // ignore — session just won't persist across visits
+        }
         setSessionPhone(data.phone);
         setToken(data.token);
         loadBookings(data.phone, data.token);
@@ -131,8 +145,12 @@ export default function MyBookingsPage() {
   }
 
   function handleLogout() {
-    localStorage.removeItem('buknari_guest_phone');
-    localStorage.removeItem('buknari_guest_token');
+    try {
+      localStorage.removeItem('buknari_guest_phone');
+      localStorage.removeItem('buknari_guest_token');
+    } catch (e) {
+      // ignore
+    }
     setSessionPhone(null);
     setToken(null);
     setBookings([]);
