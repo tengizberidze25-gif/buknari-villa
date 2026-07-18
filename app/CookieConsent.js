@@ -40,12 +40,21 @@ export default function CookieConsent() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const stored = localStorage.getItem('buknari_cookie_consent');
-    if (!stored) setVisible(true);
+    try {
+      const stored = localStorage.getItem('buknari_cookie_consent');
+      if (!stored) setVisible(true);
+    } catch (e) {
+      // localStorage blocked (Safari private mode, restricted in-app
+      // browsers) — just don't show the banner rather than crash.
+    }
   }, []);
 
   function choose(value) {
-    localStorage.setItem('buknari_cookie_consent', value);
+    try {
+      localStorage.setItem('buknari_cookie_consent', value);
+    } catch (e) {
+      // ignore — nothing to persist, but don't let it break the UI
+    }
     window.dispatchEvent(new Event('buknari-cookie-consent-changed'));
     setVisible(false);
   }
