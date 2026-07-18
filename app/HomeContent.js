@@ -547,7 +547,6 @@ export default function HomeContent({ villas, testimonials }) {
         <a href={localizedHref('/privacy', lang)} className="footer-email">{tt('footerPrivacy')}</a>
         <a href={localizedHref('/terms', lang)} className="footer-email">{tt('footerTerms')}</a>
         <a href={localizedHref('/guide/guests', lang)} className="footer-email">გზამკვლევი სტუმრებისთვის</a>
-        <a href={localizedHref('/guide/owners', lang)} className="footer-email">გზამკვლევი მფლობელებისთვის</a>
         <div className="footer-meta">{tt('footerMeta')}</div>
       </footer>
 
