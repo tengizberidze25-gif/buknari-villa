@@ -162,6 +162,7 @@ export default function DashboardPage() {
         </a>
         <div className="nav-links">
           <a href="/add-villa">+ ახალი ვილა</a>
+          <a href="/guide/owners">📖 გზამკვლევი</a>
         </div>
       </nav>
 
