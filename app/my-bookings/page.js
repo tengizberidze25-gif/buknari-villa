@@ -309,6 +309,11 @@ export default function MyBookingsPage() {
                 <span className={`guest-booking-status guest-booking-status-${b.status}`}>
                   {STATUS_LABELS[b.status] || b.status}
                 </span>
+                {b.cancel_code && (
+                  <a href={`/invoice/${b.cancel_code}`} target="_blank" rel="noopener noreferrer" className="btn-unblock">
+                    🧾 ინვოისი
+                  </a>
+                )}
                 {(b.status === 'pending' || b.status === 'confirmed') && (
                   <button
                     className="btn-unblock"
