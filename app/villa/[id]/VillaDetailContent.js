@@ -167,7 +167,7 @@ export default function VillaDetailContent({ villa, reviews, avgRating, photos, 
         <LangSwitch />
       </nav>
 
-      <main className="wrap villa-detail">
+      <main className="wrap villa-detail" id="main-content">
         <a href={localizedHref('/', lang)} className="back-link">{tt('backLink')}</a>
 
         <Gallery photos={photos} title={title} />
