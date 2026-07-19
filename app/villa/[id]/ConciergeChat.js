@@ -104,9 +104,10 @@ export default function ConciergeChat({ villaId }) {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder={tt('conciergePlaceholder')}
+              aria-label={tt('conciergePlaceholder')}
               maxLength={500}
             />
-            <button type="submit" disabled={sending || !input.trim()}>
+            <button type="submit" disabled={sending || !input.trim()} aria-label={tt('conciergeTitle')}>
               ➤
             </button>
           </form>
