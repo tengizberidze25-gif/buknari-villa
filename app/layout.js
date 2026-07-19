@@ -48,6 +48,9 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body>
+        <a href="#main-content" className="skip-to-content">
+          გვერდის ძირითად შიგთავსზე გადასვლა
+        </a>
         <LanguageProvider initialLocale={locale}>
           {children}
           <CookieConsent />
