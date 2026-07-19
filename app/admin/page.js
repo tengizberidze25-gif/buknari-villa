@@ -491,6 +491,14 @@ export default function AdminPage() {
           ⚙ საიტის პარამეტრები
         </a>
 
+        <a
+          href="/admin/analytics"
+          className="guest-logout-link"
+          style={{ marginBottom: '24px', display: 'inline-block', marginLeft: '16px' }}
+        >
+          📊 ანალიტიკა
+        </a>
+
         <div style={{ marginBottom: '24px' }}>
           <button
             type="button"
