@@ -16,6 +16,7 @@ import { approxPrice } from '../../currency';
 import { getAutoDistances } from '../../../lib/geo';
 import ConciergeChat from './ConciergeChat';
 import SunsetCountdown from './SunsetCountdown';
+import SeasonalityChart from './SeasonalityChart';
 
 function localized(villa, field, lang) {
   if (lang === 'en' && villa[`${field}_en`]) return villa[`${field}_en`];
@@ -245,6 +246,14 @@ export default function VillaDetailContent({ villa, reviews, avgRating, photos, 
                 </div>
               </>
             ) : null}
+
+            <div className="section-divider" />
+            <SeasonalityChart
+              basePrice={villa.price_per_night}
+              seasonPrice={villa.high_season_price}
+              seasonStart={villa.high_season_start}
+              seasonEnd={villa.high_season_end}
+            />
 
             {villa.lat && villa.lng ? (
               <>
