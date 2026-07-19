@@ -107,6 +107,7 @@ export default function BookingCalendar({
   const [referralCode, setReferralCode] = useState(null);
   const [ownRewardPct, setOwnRewardPct] = useState(0);
   const [siteReferralPct, setSiteReferralPct] = useState(10);
+  const [isReturningGuest, setIsReturningGuest] = useState(false);
 
   useEffect(() => {
     if (referralExcluded) return;
@@ -143,6 +144,24 @@ export default function BookingCalendar({
       cancelled = true;
     };
   }, [guestPhone, referralExcluded]);
+
+  useEffect(() => {
+    const digits = guestPhone.replace(/\D/g, '');
+    if (digits.length < 9) {
+      setIsReturningGuest(false);
+      return;
+    }
+    let cancelled = false;
+    fetch(`/api/check-returning-guest?phone=${digits}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (!cancelled && data.ok) setIsReturningGuest(!!data.isReturning);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [guestPhone]);
 
   useEffect(() => {
     if (!checkIn || !checkOut || !village) {
@@ -582,6 +601,7 @@ export default function BookingCalendar({
           value={guestPhone}
           onChange={(e) => setGuestPhone(e.target.value)}
         />
+        {isReturningGuest && <p className="booking-returning-guest">🎉 {tt('bcReturningGuest')}</p>}
         <input
           type="email"
           placeholder={tt('bcEmailPlaceholder')}
