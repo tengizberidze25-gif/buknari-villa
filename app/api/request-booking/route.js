@@ -243,10 +243,11 @@ export async function POST(request) {
     // see /api/cron/send-review-links.
     const normalizedGuest = normalizeSmsPhone(guestPhone);
     const cancelUrl = `https://buknarivilla.ge/cancel/${inserted.cancel_code}`;
+    const invoiceUrl = `https://buknarivilla.ge/invoice/${inserted.cancel_code}`;
     if (normalizedGuest) {
       await sendSms(
         normalizedGuest,
-        `თქვენი ჯავშნის მოთხოვნა მიღებულია — "${villa.title}", ${checkIn} → ${checkOut}. მფლობელი დაგიკავშირდებათ დასადასტურებლად. გაუქმება: ${cancelUrl}`
+        `თქვენი ჯავშნის მოთხოვნა მიღებულია — "${villa.title}", ${checkIn} → ${checkOut}. მფლობელი დაგიკავშირდებათ დასადასტურებლად.\n\nინვოისი: ${invoiceUrl}\nგაუქმება: ${cancelUrl}`
       );
     }
 
@@ -260,6 +261,7 @@ export async function POST(request) {
             <p><strong>${villa.title}</strong></p>
             <p>${checkIn} → ${checkOut}</p>
             <p>მფლობელი მალე დაგიკავშირდებათ დასადასტურებლად.</p>
+            <p><a href="${invoiceUrl}">ინვოისის ნახვა / PDF-ად შენახვა</a></p>
             <p><a href="${cancelUrl}">ჯავშნის გაუქმება</a></p>
             <p style="color: #888; font-size: 13px; margin-top: 24px;">Buknari Villa — buknarivilla.ge</p>
           </div>
