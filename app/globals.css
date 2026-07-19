@@ -22,6 +22,34 @@
   box-sizing: border-box;
 }
 
+/* Keyboard-only focus indicator — restores visibility for keyboard/screen
+   reader navigation even where a specific component sets outline:none for
+   mouse-click states. Mouse clicks don't trigger :focus-visible, so this
+   never adds an outline on click, only on Tab navigation. */
+:focus-visible {
+  outline: 2px solid var(--accent-bright) !important;
+  outline-offset: 2px;
+}
+
+.skip-to-content {
+  position: absolute;
+  top: -100px;
+  left: 12px;
+  z-index: 2000;
+  background: var(--accent);
+  color: var(--foam);
+  padding: 10px 18px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  transition: top 0.15s ease;
+}
+
+.skip-to-content:focus {
+  top: 12px;
+}
+
 html {
   scroll-behavior: smooth;
 }
