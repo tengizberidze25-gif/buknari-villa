@@ -329,7 +329,7 @@ export default function HomeContent({ villas, testimonials }) {
 
       <VillageVideoGallery village={effectiveVillageForVideo} />
 
-      <main className="wrap">
+      <main className="wrap" id="main-content">
         <section className="section" id="how-it-works">
           <div className="section-head">
             <div>
