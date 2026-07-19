@@ -592,12 +592,14 @@ export default function BookingCalendar({
         <input
           type="text"
           placeholder={tt('bcNamePlaceholder')}
+          aria-label={tt('bcNamePlaceholder')}
           value={guestName}
           onChange={(e) => setGuestName(e.target.value)}
         />
         <input
           type="tel"
           placeholder={tt('bcPhonePlaceholder')}
+          aria-label={tt('bcPhonePlaceholder')}
           value={guestPhone}
           onChange={(e) => setGuestPhone(e.target.value)}
         />
@@ -605,11 +607,13 @@ export default function BookingCalendar({
         <input
           type="email"
           placeholder={tt('bcEmailPlaceholder')}
+          aria-label={tt('bcEmailPlaceholder')}
           value={guestEmail}
           onChange={(e) => setGuestEmail(e.target.value)}
         />
         <textarea
           placeholder={tt('bcMessagePlaceholder')}
+          aria-label={tt('bcMessagePlaceholder')}
           rows={2}
           value={guestMessage}
           onChange={(e) => setGuestMessage(e.target.value)}
