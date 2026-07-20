@@ -843,6 +843,11 @@ a {
   min-width: 140px;
 }
 
+.advanced-filter-field select option {
+  background: var(--bg-panel);
+  color: var(--foam);
+}
+
 .advanced-filter-price-row {
   display: flex;
   align-items: center;
