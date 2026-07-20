@@ -183,7 +183,7 @@ export default function HomeContent({ villas, testimonials }) {
       const locOk = matchesLocation(villa, locationFilter);
       const guestsOk = !villa.max_guests || villa.max_guests >= minGuests;
       const favOk = !favoritesOnly || favorites.has(villa.id);
-      const price = villa.price_per_night;
+      const price = displayPrice(villa);
       const priceOk = (min === null || !price || price >= min) && (max === null || !price || price <= max);
       const bedroomsOk = !bedroomsMin || (villa.bedrooms || 0) >= bedroomsMin;
       const poolOk = !poolOnly || (villa.amenities || []).includes('pool');
