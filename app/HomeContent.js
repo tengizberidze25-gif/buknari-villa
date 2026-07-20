@@ -97,6 +97,12 @@ export default function HomeContent({ villas, testimonials }) {
   const [villages, setVillages] = useState([]);
   const [favorites, setFavorites] = useState(new Set());
   const [favoritesOnly, setFavoritesOnly] = useState(false);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [priceMin, setPriceMin] = useState('');
+  const [priceMax, setPriceMax] = useState('');
+  const [bedroomsMin, setBedroomsMin] = useState(0);
+  const [poolOnly, setPoolOnly] = useState(false);
+  const [maxSeaDistance, setMaxSeaDistance] = useState('');
 
   useEffect(() => {
     try {
@@ -169,11 +175,22 @@ export default function HomeContent({ villas, testimonials }) {
 
   const filteredVillas = useMemo(() => {
     const minGuests = guestsFilter;
+    const min = priceMin ? Number(priceMin) : null;
+    const max = priceMax ? Number(priceMax) : null;
+    const maxSea = maxSeaDistance ? Number(maxSeaDistance) : null;
+
     const matching = villas.filter((villa) => {
       const locOk = matchesLocation(villa, locationFilter);
       const guestsOk = !villa.max_guests || villa.max_guests >= minGuests;
       const favOk = !favoritesOnly || favorites.has(villa.id);
-      return locOk && guestsOk && favOk;
+      const price = villa.price_per_night;
+      const priceOk = (min === null || !price || price >= min) && (max === null || !price || price <= max);
+      const bedroomsOk = !bedroomsMin || (villa.bedrooms || 0) >= bedroomsMin;
+      const poolOk = !poolOnly || (villa.amenities || []).includes('pool');
+      const auto = getAutoDistances(villa.village, villa.lat, villa.lng);
+      const seaDist = villa.distance_sea_m || auto.sea;
+      const seaOk = maxSea === null || !seaDist || seaDist <= maxSea;
+      return locOk && guestsOk && favOk && priceOk && bedroomsOk && poolOk && seaOk;
     });
 
     return [...matching].sort((a, b) => {
@@ -182,7 +199,21 @@ export default function HomeContent({ villas, testimonials }) {
       return aAvail - bAvail;
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [villas, locationFilter, guestsFilter, checkInDate, checkOutDate, availabilityMap, favoritesOnly, favorites]);
+  }, [
+    villas,
+    locationFilter,
+    guestsFilter,
+    checkInDate,
+    checkOutDate,
+    availabilityMap,
+    favoritesOnly,
+    favorites,
+    priceMin,
+    priceMax,
+    bedroomsMin,
+    poolOnly,
+    maxSeaDistance,
+  ]);
 
   const popularVillaIds = useMemo(() => {
     const withViews = villas.filter((v) => (v.views_count || 0) >= 5);
@@ -368,6 +399,13 @@ export default function HomeContent({ villas, testimonials }) {
             <div className="section-head-right">
               <p>{tt('sectionSub')}</p>
               <div className="section-head-actions">
+                <button
+                  type="button"
+                  className={`favorites-toggle${filtersOpen ? ' active' : ''}`}
+                  onClick={() => setFiltersOpen((v) => !v)}
+                >
+                  🔍 {tt('moreFiltersLabel')}
+                </button>
                 {favorites.size > 0 && (
                   <button
                     type="button"
@@ -383,6 +421,75 @@ export default function HomeContent({ villas, testimonials }) {
               </div>
             </div>
           </div>
+
+          {filtersOpen && (
+            <div className="advanced-filters-panel">
+              <div className="advanced-filter-field">
+                <label>{tt('filterPriceLabel')}</label>
+                <div className="advanced-filter-price-row">
+                  <input
+                    type="number"
+                    min="0"
+                    placeholder={tt('filterPriceMinPlaceholder')}
+                    value={priceMin}
+                    onChange={(e) => setPriceMin(e.target.value)}
+                  />
+                  <span>—</span>
+                  <input
+                    type="number"
+                    min="0"
+                    placeholder={tt('filterPriceMaxPlaceholder')}
+                    value={priceMax}
+                    onChange={(e) => setPriceMax(e.target.value)}
+                  />
+                  <span>₾</span>
+                </div>
+              </div>
+
+              <div className="advanced-filter-field">
+                <label>{tt('filterBedroomsLabel')}</label>
+                <select value={bedroomsMin} onChange={(e) => setBedroomsMin(Number(e.target.value))}>
+                  <option value={0}>{tt('filterAnyLabel')}</option>
+                  {[1, 2, 3, 4, 5].map((n) => (
+                    <option key={n} value={n}>
+                      {n}+
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="advanced-filter-field">
+                <label>{tt('filterSeaDistanceLabel')}</label>
+                <select value={maxSeaDistance} onChange={(e) => setMaxSeaDistance(e.target.value)}>
+                  <option value="">{tt('filterAnyLabel')}</option>
+                  <option value="100">100 {tt('filterMetersUnit')}</option>
+                  <option value="500">500 {tt('filterMetersUnit')}</option>
+                  <option value="1000">1 {tt('filterKmUnit')}</option>
+                </select>
+              </div>
+
+              <label className="advanced-filter-checkbox">
+                <input type="checkbox" checked={poolOnly} onChange={(e) => setPoolOnly(e.target.checked)} />
+                🏊 {tt('filterPoolLabel')}
+              </label>
+
+              {(priceMin || priceMax || bedroomsMin > 0 || poolOnly || maxSeaDistance) && (
+                <button
+                  type="button"
+                  className="advanced-filter-clear"
+                  onClick={() => {
+                    setPriceMin('');
+                    setPriceMax('');
+                    setBedroomsMin(0);
+                    setPoolOnly(false);
+                    setMaxSeaDistance('');
+                  }}
+                >
+                  ✕ {tt('filterClearLabel')}
+                </button>
+              )}
+            </div>
+          )}
 
           {filteredVillas.length === 0 ? (
             <div className="empty-state">
